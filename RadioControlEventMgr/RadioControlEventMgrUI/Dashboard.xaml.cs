@@ -41,5 +41,10 @@ namespace RadioControlEventMgrUI
             this.Close();
         }
 
+        private void btnLogs_Click(object sender, RoutedEventArgs e)
+        {
+            Logs logs = new Logs();
+            frmMain.Navigate(logs);
+        }
     }
 }
