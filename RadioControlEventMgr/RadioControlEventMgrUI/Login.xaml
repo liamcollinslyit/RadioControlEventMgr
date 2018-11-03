@@ -35,8 +35,8 @@
                      ToolTip="Please enter your password" TabIndex="1" VerticalContentAlignment="Center"/>
 
         <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Name="btnLoginEnter" Content="Exit" Height="25" Width="80" Margin="10" ToolTip="Press to exit the application" TabIndex="3"/>
-            <Button Name="btnLoginExit" Content="Enter" Height="25" Width="80" Margin="10" ToolTip="Press to login with credentials" TabIndex="2"/>
+            <Button Name="btnLoginExit" Content="Exit" Height="25" Width="80" Margin="10" ToolTip="Press to login with credentials" TabIndex="3"/>
+            <Button Name="btnLoginEnter" Content="Enter" Height="25" Width="80" Margin="10" ToolTip="Press to exit the application" TabIndex="2" Click="btnLoginEnter_Click"/>
         </StackPanel>
 
        <Image Grid.Column="2" Grid.Row="0" Grid.RowSpan="4" Margin="10"

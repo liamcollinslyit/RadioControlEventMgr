@@ -24,5 +24,12 @@ namespace RadioControlEventMgrUI
         {
             InitializeComponent();
         }
+
+        private void btnLoginEnter_Click(object sender, RoutedEventArgs e)
+        {
+            Dashboard dashboard = new Dashboard();
+            dashboard.Show();
+            this.Close();
+        }
     }
 }
