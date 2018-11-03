@@ -1,0 +1,45 @@
+﻿<Window x:Class="RadioControlEventMgrUI.Dashboard"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RadioControlEventMgrUI"
+        mc:Ignorable="d"
+        WindowStyle="None"
+        Background= "#FFF2F2F2"
+        WindowState="Maximized"
+        Title="Dashboard" Height="700" Width="1200">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+
+
+        <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" >
+            <Button Name="btnSituation" Content="Situation" Width="150" Height="50"  Margin="20"/>
+            <Button Name="btnLogs" Content="Logs" Width="150" Height="50" Margin="20"/>
+            <Button Name="btnMap" Content="Map" Width="150" Height="50"  Margin="20"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Name="btnAdmin" Content="Admin" Width="150" Height="50" Margin="20"/>
+            <Button Name="btnExit" Content="Exit" Width="150" Height="50" Margin="20"/>
+        </StackPanel>
+
+        <DockPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="20,0,20,20">
+            <Border BorderThickness="3" BorderBrush="Black" CornerRadius="10" Padding="4">
+                <Border.Effect>
+                    <DropShadowEffect Color="Gray" Opacity=".50" ShadowDepth="4" />
+                </Border.Effect>
+                <Frame Name="frmMain"/>
+            </Border>
+        </DockPanel>
+
+    </Grid>
+</Window>
