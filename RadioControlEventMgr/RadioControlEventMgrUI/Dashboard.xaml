@@ -22,7 +22,7 @@
 
 
         <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" >
-            <Button Name="btnSituation" Content="Situation" Width="150" Height="50"  Margin="20"/>
+            <Button Name="btnSituation" Content="Situation" Width="150" Height="50"  Margin="20" Click="btnSituation_Click"/>
             <Button Name="btnLogs" Content="Logs" Width="150" Height="50" Margin="20"/>
             <Button Name="btnMap" Content="Map" Width="150" Height="50"  Margin="20"/>
         </StackPanel>
@@ -37,7 +37,7 @@
                 <Border.Effect>
                     <DropShadowEffect Color="Gray" Opacity=".50" ShadowDepth="4" />
                 </Border.Effect>
-                <Frame Name="frmMain"/>
+                <Frame Name="frmMain" NavigationUIVisibility="Hidden"/>
             </Border>
         </DockPanel>
 

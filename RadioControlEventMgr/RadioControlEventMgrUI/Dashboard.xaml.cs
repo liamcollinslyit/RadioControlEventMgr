@@ -24,6 +24,12 @@ namespace RadioControlEventMgrUI
             InitializeComponent();
         }
 
+        private void btnSituation_Click(object sender, RoutedEventArgs e)
+        {
+            Situation situation = new Situation();
+            frmMain.Navigate(situation);
+        }
+
         private void btnAdmin_Click(object sender, RoutedEventArgs e)
         {
             Admin admin = new Admin();
@@ -34,5 +40,6 @@ namespace RadioControlEventMgrUI
         {
             this.Close();
         }
+
     }
 }
