@@ -46,5 +46,11 @@ namespace RadioControlEventMgrUI
             Logs logs = new Logs();
             frmMain.Navigate(logs);
         }
+
+        private void btnMap_Click(object sender, RoutedEventArgs e)
+        {
+            Map map = new Map();
+            frmMain.Navigate(map);
+        }
     }
 }

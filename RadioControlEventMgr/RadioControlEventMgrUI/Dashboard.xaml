@@ -24,7 +24,7 @@
         <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" >
             <Button Name="btnSituation" Content="Situation" Width="150" Height="50"  Margin="20" Click="btnSituation_Click"/>
             <Button Name="btnLogs" Content="Logs" Width="150" Height="50" Margin="20" Click="btnLogs_Click"/>
-            <Button Name="btnMap" Content="Map" Width="150" Height="50"  Margin="20"/>
+            <Button Name="btnMap" Content="Map" Width="150" Height="50"  Margin="20" Click="btnMap_Click" />
         </StackPanel>
 
         <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
