@@ -28,8 +28,8 @@
         </StackPanel>
 
         <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Name="btnAdmin" Content="Admin" Width="150" Height="50" Margin="20"/>
-            <Button Name="btnExit" Content="Exit" Width="150" Height="50" Margin="20"/>
+            <Button Name="btnAdmin" Content="Admin" Width="150" Height="50" Margin="20" Click="btnAdmin_Click"/>
+            <Button Name="btnExit" Content="Exit" Width="150" Height="50" Margin="20" Click="btnExit_Click"/>
         </StackPanel>
 
         <DockPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="20,0,20,20">

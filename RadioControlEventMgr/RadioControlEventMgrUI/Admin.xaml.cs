@@ -10,29 +10,29 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace RadioControlEventMgrUI
 {
     /// <summary>
-    /// Interaction logic for Dashboard.xaml
+    /// Interaction logic for Admin.xaml
     /// </summary>
-    public partial class Dashboard : Window
+    public partial class Admin : Page
     {
-        public Dashboard()
+        public Admin()
         {
             InitializeComponent();
         }
 
-        private void btnAdmin_Click(object sender, RoutedEventArgs e)
+        private void submenuAddNewUser_Click(object sender, RoutedEventArgs e)
         {
-            Admin admin = new Admin();
-            frmMain.Navigate(admin);
+            stkUserDetails.Visibility = Visibility.Visible;
         }
 
-        private void btnExit_Click(object sender, RoutedEventArgs e)
+        private void btnEditUpdate_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            stkUserDetails.Visibility = Visibility.Collapsed;
         }
     }
 }

@@ -1,0 +1,151 @@
+﻿<Page x:Class="RadioControlEventMgrUI.Admin"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:RadioControlEventMgrUI"
+      mc:Ignorable="d" 
+      d:DesignHeight="700" d:DesignWidth="1200"
+      Title="Admin">
+
+    <Grid>
+        <TabControl Name="tabAdminOptions" Background="Transparent">
+            <TabItem Header="Users" >
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+
+                    <ListView Name="lstUserList" Grid.Row="0">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="UserName" Width="150">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="Password" Width="150">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="Suremane" Width="150">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="Forename" Width="150">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="Access level" Width="150">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                        <ListView.ContextMenu>
+                            <ContextMenu Name="mnuEditUser" IsEnabled="True">
+                                <ContextMenu.Items>
+                                    <MenuItem Header="Add new user" Name="submenuAddNewUser" IsEnabled="True" Click="submenuAddNewUser_Click" >
+                                        <MenuItem.Icon>
+                                           <Image Source="Images/add.png" Stretch="Uniform" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem Header="Edit selected user" Name="submenuEditUser" IsEnabled="False">
+                                        <MenuItem.Icon>
+                                            <Image Source="Images/edit.png" Stretch="Uniform"  />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem Header="Delete selected user" Name="submenuDeleteUser" IsEnabled="False">
+                                        <MenuItem.Icon>
+                                            <Image Source="Images/delete.png" Stretch="Uniform"  />
+                                        </MenuItem.Icon>                                       
+                                    </MenuItem>
+                                </ContextMenu.Items>
+                            </ContextMenu>
+                        </ListView.ContextMenu>
+                    </ListView>
+                    
+                    <StackPanel Name="stkUserDetails" Grid.Row="1" HorizontalAlignment="Center" Margin="10" Background="LightGray" Visibility="Collapsed">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
+
+                            <Label Content="Username" Grid.Row="0" Grid.Column="0" Margin="10,10,10,0"/>
+                            <Label Content="Password" Grid.Row="1" Grid.Column="0" Margin="10,0,10,0"/>
+                            <Label Content="Surname" Grid.Row="2" Grid.Column="0" Margin="10,0,10,0"/>
+                            <Label Content="Forename" Grid.Row="3" Grid.Column="0" Margin="10,0,10,0"/>
+                            <Label Content="Access Level" Grid.Row="4" Grid.Column="0" Margin="10,0,10,0"/>
+
+                            <TextBox Name="txtEditUsername" Grid.Row="0" Grid.Column="1" TabIndex="0" Margin="0,10,10,0" VerticalContentAlignment="Center"/>
+                            <TextBox Name="txtEditPassword" Grid.Row="1" Grid.Column="1" TabIndex="1" Margin="0,0,10,0" VerticalContentAlignment="Center"/>
+                            <TextBox Name="txtEditSurname" Grid.Row="2" Grid.Column="1" TabIndex="2" Margin="0,0,10,0" VerticalContentAlignment="Center"/>
+                            <TextBox Name="txtEditForename" Grid.Row="3" Grid.Column="1" TabIndex="3" Margin="0,0,10,0" VerticalContentAlignment="Center"/>
+
+                            <ComboBox Name="cboEditUserAccess" Grid.Row="4" Grid.Column="1" Width="200" TabIndex="4" Margin="0,0,10,0">
+                                <ComboBoxItem Content="View-Only"/>
+                                <ComboBoxItem Content="Controller"/>
+                            </ComboBox>
+
+                            <Button Name="btnEditUpdate" Content="Update" Grid.Row="5" Grid.Column="1" Height="25" Margin="0,10,10,10" TabIndex="5" Click="btnEditUpdate_Click"/>
+                            
+                        </Grid>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Logs">
+                <ListView Name="lstLogsList">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Date/Time" Width="200">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Event" Width="800">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="User ID" Width="200">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Page>
