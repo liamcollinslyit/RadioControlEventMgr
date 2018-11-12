@@ -15,9 +15,9 @@ using System.Windows.Shapes;
 
 namespace RadioControlEventMgrUI
 {
-    /// <summary>
-    /// Interaction logic for Situation.xaml
-    /// </summary>
+
+    // C# code for Situation page
+
     public partial class Situation : Page
     {
         public Situation()
@@ -25,22 +25,38 @@ namespace RadioControlEventMgrUI
             InitializeComponent();
         }
 
+        // Context menu - Add incident button - show incident stackpanel
         private void submenuAddIncident_Click(object sender, RoutedEventArgs e)
         {
             stkSituationIncident.Visibility = Visibility.Visible;
         }
 
-        private void btnSituationCancel_Click(object sender, RoutedEventArgs e)
-        {
-            stkSituationIncident.Visibility = Visibility.Collapsed;
-        }
-
+        // Context menu - New message button - show message stackpanel
         private void submenuNewMessage_Click(object sender, RoutedEventArgs e)
         {
             stkMessage.Visibility = Visibility.Visible;
         }
 
+        // Incident panel - Cancel button - hide incident stackpanel
+        private void btnSituationCancel_Click(object sender, RoutedEventArgs e)
+        {
+            stkSituationIncident.Visibility = Visibility.Collapsed;
+        }
+
+        // Incident panel - Ok button - hide message stackpanel
+        private void btnSituationOk_Click(object sender, RoutedEventArgs e)
+        {
+            stkSituationIncident.Visibility = Visibility.Collapsed;
+        }
+
+        // Message Panel  - Cancel button - hide message stackpanel
         private void btnMessageCancel_Click(object sender, RoutedEventArgs e)
+        {
+            stkMessage.Visibility = Visibility.Collapsed;
+        }
+
+        // Message Panel  - Ok button - hide message stackpanel
+        private void btnMessageOk_Click(object sender, RoutedEventArgs e)
         {
             stkMessage.Visibility = Visibility.Collapsed;
         }

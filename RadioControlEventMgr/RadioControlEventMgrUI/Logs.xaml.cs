@@ -15,9 +15,9 @@ using System.Windows.Shapes;
 
 namespace RadioControlEventMgrUI
 {
-    /// <summary>
-    /// Interaction logic for Logs.xaml
-    /// </summary>
+
+    // C# code for Logs page
+
     public partial class Logs : Page
     {
         public Logs()
@@ -25,6 +25,7 @@ namespace RadioControlEventMgrUI
             InitializeComponent();
         }
 
+        // Context menu - Open incident button - show incident details stackpanel
         private void submenuOpenIncident_Click(object sender, RoutedEventArgs e)
         {
             stkIncident.Visibility = Visibility.Visible;

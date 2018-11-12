@@ -7,8 +7,9 @@
       mc:Ignorable="d" 
       d:DesignHeight="700" d:DesignWidth="1200"
       Title="Situation">
-
+    <!-- XAML for situation page, entering message and incident information -->
     <Grid>
+        <!-- 2*2 Grid -->
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
@@ -18,7 +19,7 @@
             <ColumnDefinition Width="auto"/>
         </Grid.ColumnDefinitions>
 
-
+        <!-- Listview for incdient information - 5 Columns and context menu -->     
         <ListView Name="lstSituationIncidentList" Grid.Row="0" Grid.Column="0" Margin="10">
             <ListView.View>
                 <GridView>
@@ -59,10 +60,13 @@
                     </GridViewColumn>
                 </GridView>
             </ListView.View>
+
+            <!-- Context menu for opening incident stackpanel --> 
             <ListView.ContextMenu>
                 <ContextMenu Name="mnuIncident" IsEnabled="True">
                     <ContextMenu.Items>
-                        <MenuItem Header="Add new Incident" Name="submenuAddIncident" IsEnabled="True" Click="submenuAddIncident_Click">
+                        <MenuItem Header="Add new Incident" Name="submenuAddIncident" IsEnabled="True" 
+                                  Click="submenuAddIncident_Click">
                             <MenuItem.Icon>
                                 <Image Source="Images/add.png" Stretch="Uniform" />
                             </MenuItem.Icon>
@@ -72,7 +76,11 @@
             </ListView.ContextMenu>
         </ListView>
 
-        <StackPanel Name="stkSituationIncident" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" Height="300" Width="auto" Margin="10" Background="LightGray" Visibility="Collapsed">
+        <!-- Stackpanel for entering incident information -->
+        <StackPanel Name="stkSituationIncident" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" 
+                    Height="300" Width="auto" Margin="10" Background="LightGray" Visibility="Collapsed">
+            
+            <!-- 6*2 Grid with buttons, textboxes and combo boxes -->
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto"/>
@@ -87,27 +95,36 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <Label Name="lblSituationIncidentTitle"  Content="Incident No" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="10"
-                       HorizontalAlignment="Center" FontSize="20"/>
+                <!-- lblSituationIncidentTitle will display incident number -->
+                <Label Name="lblSituationIncidentTitle"  Content="Incident No" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
+                       Margin="10" HorizontalAlignment="Center" FontSize="20"/>
                 <Label Content="Time" Grid.Row="1" Grid.Column="0" Margin="10,0,10,0"/>
                 <Label Content="Location" Grid.Row="2" Grid.Column="0" Margin="10,5,10,0"/>
                 <Label Content="Details" Grid.Row="3" Grid.Column="0" Margin="10,10,10,0"/>
 
-                <TextBox Name="txtSituationTime" Grid.Row="1" Grid.Column="1" TabIndex="0" Margin="0,0,10,0" VerticalContentAlignment="Center"/>
-                <TextBox Name="txtSituationDetails" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" TabIndex="2" Margin="10,0,10,0" Height="100" Width="265" TextWrapping="Wrap"/>
+                <TextBox Name="txtSituationTime" Grid.Row="1" Grid.Column="1" TabIndex="0" Margin="0,0,10,0" 
+                         VerticalContentAlignment="Center"/>
+                <!-- Details box should wrap text and is fix in size to allow this-->
+                <TextBox Name="txtSituationDetails" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" TabIndex="2" 
+                         Margin="10,0,10,0" Height="100" Width="265" TextWrapping="Wrap"/>
 
+                <!-- Combobox shows information from DB location table-->
                 <ComboBox Name="cboEditUserAccess" Grid.Row="2" Grid.Column="1" Width="200" TabIndex="1" Margin="0,5,10,0">
                     <ComboBoxItem Content="Location1"/>
                     <ComboBoxItem Content="Location2"/>
                 </ComboBox>
 
+                <!-- Stackpanel for Ok and cancel buttons -->
                 <StackPanel Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center">
-                    <Button Name="btnSituationCancel" Content="Cancel" Grid.Row="5" Grid.Column="1" Height="25" Width="120"  Margin="0,10,10,10" TabIndex="5" Click="btnSituationCancel_Click" />
-                <Button Name="btnSituationOk" Content="Ok" Grid.Row="5" Grid.Column="1" Height="25" Width="120" Margin="10,10,0,10" TabIndex="5" />
+                    <Button Name="btnSituationCancel" Content="Cancel" Grid.Row="5" Grid.Column="1" Height="25" Width="120"  
+                            Margin="0,10,10,10" TabIndex="5" Click="btnSituationCancel_Click" />
+                    <Button Name="btnSituationOk" Content="Ok" Grid.Row="5" Grid.Column="1" Height="25" Width="120" 
+                            Margin="10,10,0,10" TabIndex="5" Click="btnSituationOk_Click"/>
                 </StackPanel>
             </Grid>
         </StackPanel>
 
+        <!-- Listview for crew information - 5 Columns and context menu -->
         <ListView Name="lstCrewList" Grid.Row="1" Grid.Column="0" Margin="10">
             <ListView.View>
                 <GridView>
@@ -148,10 +165,13 @@
                     </GridViewColumn>
                 </GridView>
             </ListView.View>
+            
+            <!-- Context menu for opening message stack panel -->
             <ListView.ContextMenu>
                 <ContextMenu Name="mnuCrew" IsEnabled="True">
                     <ContextMenu.Items>
-                        <MenuItem Header="Add new message" Name="submenuNewMessage" IsEnabled="True" Click="submenuNewMessage_Click">
+                        <MenuItem Header="Add new message" Name="submenuNewMessage" IsEnabled="True" 
+                                  Click="submenuNewMessage_Click">
                             <MenuItem.Icon>
                                 <Image Source="Images/add.png" Stretch="Uniform" />
                             </MenuItem.Icon>
@@ -161,7 +181,11 @@
             </ListView.ContextMenu>
         </ListView>
 
-        <StackPanel Name="stkMessage" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" Height="360" Width="auto" Margin="10" Background="LightGray" Visibility="Collapsed">
+        <!-- Stackpanel for entering message information -->
+        <StackPanel Name="stkMessage" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" 
+                    Height="360" Width="auto" Margin="10" Background="LightGray" Visibility="Collapsed">
+            
+            <!-- 8*2 Grid -->
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto"/>
@@ -178,8 +202,9 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <Label Name="lblMessageTitle"  Content="Call sign" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="10"
-                       HorizontalAlignment="Center" FontSize="20"/>
+                <!-- lblMessageTitle will diplay crew name -->
+                <Label Name="lblMessageTitle"  Content="Call sign" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
+                       Margin="10" HorizontalAlignment="Center" FontSize="20"/>
                 <Label Content="Time" Grid.Row="1" Grid.Column="0" Margin="10,0,10,0"/>
                 <Label Content="Status" Grid.Row="2" Grid.Column="0" Margin="10,5,10,0"/>
                 <Label Content="Location" Grid.Row="3" Grid.Column="0" Margin="10,5,10,0"/>
@@ -187,24 +212,32 @@
                 <Label Content="Message" Grid.Row="5" Grid.Column="0" Margin="10,5,10,0"/>
 
                 <TextBox Name="txtMessageTime" Grid.Row="1" Grid.Column="1" TabIndex="0" Margin="0,0,10,0" VerticalContentAlignment="Center"/>
-                <TextBox Name="txtMessageText" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" TabIndex="2" Margin="10,0,10,0" Height="100" Width="265" TextWrapping="Wrap"/>
+                <!-- Message box should wrap text and is fix in size to allow this-->
+                <TextBox Name="txtMessageText" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" TabIndex="2" 
+                         Margin="10,0,10,0" Height="100" Width="265" TextWrapping="Wrap"/>
 
+                <!-- Combobox shows information from DB status table-->
                 <ComboBox Name="cboMessageStatus" Grid.Row="2" Grid.Column="1" Width="200" TabIndex="1" Margin="0,5,10,0">
                     <ComboBoxItem Content="Status1"/>
                     <ComboBoxItem Content="Status1"/>
                 </ComboBox>
+                <!-- Combobox shows information from DB location table-->
                 <ComboBox Name="cboMessageLocation" Grid.Row="3" Grid.Column="1" Width="200" TabIndex="1" Margin="0,5,10,0">
                     <ComboBoxItem Content="Location1"/>
                     <ComboBoxItem Content="Location2"/>
                 </ComboBox>
+                <!-- Combobox shows information from DB incident table-->
                 <ComboBox Name="cboMessageIncident" Grid.Row="4" Grid.Column="1" Width="200" TabIndex="1" Margin="0,5,10,0">
                     <ComboBoxItem Content="Incident1"/>
                     <ComboBoxItem Content="Incident2"/>
                 </ComboBox>
 
+                <!-- Stackpanel for Ok and cancel buttons -->
                 <StackPanel Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center">
-                    <Button Name="btnMessageCancel" Content="Cancel" Grid.Row="5" Grid.Column="1" Height="25" Width="120"  Margin="0,10,10,10" TabIndex="5" Click="btnMessageCancel_Click" />
-                    <Button Name="btnMessageOk" Content="Ok" Grid.Row="5" Grid.Column="1" Height="25" Width="120" Margin="10,10,0,10" TabIndex="5" />
+                    <Button Name="btnMessageCancel" Content="Cancel" Grid.Row="5" Grid.Column="1" Height="25" Width="120"  
+                            Margin="0,10,10,10" TabIndex="5" Click="btnMessageCancel_Click" />
+                    <Button Name="btnMessageOk" Content="Ok" Grid.Row="5" Grid.Column="1" Height="25" Width="120" 
+                            Margin="10,10,0,10" TabIndex="5"  Click="btnMessageOk_Click"   />
                 </StackPanel>
             </Grid>
         </StackPanel>

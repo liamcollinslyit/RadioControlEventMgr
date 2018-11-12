@@ -15,9 +15,9 @@ using System.Windows.Shapes;
 
 namespace RadioControlEventMgrUI
 {
-    /// <summary>
-    /// Interaction logic for Map.xaml
-    /// </summary>
+
+    // C# code for map page
+
     public partial class Map : Page
     {
         public Map()
@@ -25,12 +25,14 @@ namespace RadioControlEventMgrUI
             InitializeComponent();
         }
 
+        // Context menu - Offline map button - show offline map and hide online map
         private void submenuOfflineMap_Click(object sender, RoutedEventArgs e)
         {
             webMap.Visibility = Visibility.Collapsed;
             imgMap.Visibility = Visibility.Visible;
         }
 
+        // Context menu - Online map button - show online map and hide offline map
         private void submenuOnlineMap_Click(object sender, RoutedEventArgs e)
         {
             imgMap.Visibility = Visibility.Collapsed;

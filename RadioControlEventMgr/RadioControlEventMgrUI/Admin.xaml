@@ -7,16 +7,20 @@
       mc:Ignorable="d" 
       d:DesignHeight="700" d:DesignWidth="1200"
       Title="Admin">
-
+    <!-- XAML for admin page, user control and user logs -->
     <Grid>
+        <!-- Tab control for Users and Logs -->
         <TabControl Name="tabAdminOptions" Background="Transparent">
+            <!-- Users Tab, Listview for user details, context menu to open user stackpanel-->
             <TabItem Header="Users" >
                 <Grid>
+                    <!-- 2*1 grid -->
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
 
+                    <!-- List view with 5 columns -->
                     <ListView Name="lstUserList" Grid.Row="0">
                         <ListView.View>
                             <GridView>
@@ -57,20 +61,25 @@
                                 </GridViewColumn>
                             </GridView>
                         </ListView.View>
+                        
+                        <!-- Contxt menu to add, edit and delete users -->
                         <ListView.ContextMenu>
                             <ContextMenu Name="mnuEditUser" IsEnabled="True">
                                 <ContextMenu.Items>
-                                    <MenuItem Header="Add new user" Name="submenuAddNewUser" IsEnabled="True" Click="submenuAddNewUser_Click" >
+                                    <MenuItem Header="Add new user" Name="submenuAddNewUser" IsEnabled="True" 
+                                              Click="submenuAddNewUser_Click" >
                                         <MenuItem.Icon>
                                            <Image Source="Images/add.png" Stretch="Uniform" />
                                         </MenuItem.Icon>
                                     </MenuItem>
-                                    <MenuItem Header="Edit selected user" Name="submenuEditUser" IsEnabled="False">
+                                    <MenuItem Header="Edit selected user" Name="submenuEditUser" IsEnabled="False" 
+                                              Click="submenuEditUser_Click">
                                         <MenuItem.Icon>
                                             <Image Source="Images/edit.png" Stretch="Uniform"  />
                                         </MenuItem.Icon>
                                     </MenuItem>
-                                    <MenuItem Header="Delete selected user" Name="submenuDeleteUser" IsEnabled="False">
+                                    <MenuItem Header="Delete selected user" Name="submenuDeleteUser" IsEnabled="False" 
+                                              Click="submenuDeleteUser_Click">
                                         <MenuItem.Icon>
                                             <Image Source="Images/delete.png" Stretch="Uniform"  />
                                         </MenuItem.Icon>                                       
@@ -80,8 +89,11 @@
                         </ListView.ContextMenu>
                     </ListView>
                     
-                    <StackPanel Name="stkUserDetails" Grid.Row="1" HorizontalAlignment="Center" Margin="10" Background="LightGray" Visibility="Collapsed">
+                    <!-- Stackpanel for adding/editing user details -->
+                    <StackPanel Name="stkUserDetails" Grid.Row="1" HorizontalAlignment="Center" Margin="10" 
+                                Background="LightGray" Visibility="Collapsed">
                         <Grid>
+                            <!-- 6*2 Grid -->
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="auto"/>
                                 <ColumnDefinition Width="auto"/>
@@ -101,22 +113,32 @@
                             <Label Content="Forename" Grid.Row="3" Grid.Column="0" Margin="10,0,10,0"/>
                             <Label Content="Access Level" Grid.Row="4" Grid.Column="0" Margin="10,0,10,0"/>
 
-                            <TextBox Name="txtEditUsername" Grid.Row="0" Grid.Column="1" TabIndex="0" Margin="0,10,10,0" VerticalContentAlignment="Center"/>
-                            <TextBox Name="txtEditPassword" Grid.Row="1" Grid.Column="1" TabIndex="1" Margin="0,0,10,0" VerticalContentAlignment="Center"/>
-                            <TextBox Name="txtEditSurname" Grid.Row="2" Grid.Column="1" TabIndex="2" Margin="0,0,10,0" VerticalContentAlignment="Center"/>
-                            <TextBox Name="txtEditForename" Grid.Row="3" Grid.Column="1" TabIndex="3" Margin="0,0,10,0" VerticalContentAlignment="Center"/>
+                            <TextBox Name="txtEditUsername" Grid.Row="0" Grid.Column="1" TabIndex="0" 
+                                     Margin="0,10,10,0" VerticalContentAlignment="Center"/>
+                            <TextBox Name="txtEditPassword" Grid.Row="1" Grid.Column="1" TabIndex="1" 
+                                     Margin="0,0,10,0" VerticalContentAlignment="Center"/>
+                            <TextBox Name="txtEditSurname" Grid.Row="2" Grid.Column="1" TabIndex="2" 
+                                     Margin="0,0,10,0" VerticalContentAlignment="Center"/>
+                            <TextBox Name="txtEditForename" Grid.Row="3" Grid.Column="1" TabIndex="3" 
+                                     Margin="0,0,10,0" VerticalContentAlignment="Center"/>
 
-                            <ComboBox Name="cboEditUserAccess" Grid.Row="4" Grid.Column="1" Width="200" TabIndex="4" Margin="0,0,10,0">
+                            <!-- Combobox to select user level of access from DB table -->
+                            <ComboBox Name="cboEditUserAccess" Grid.Row="4" Grid.Column="1" Width="200" 
+                                      TabIndex="4" Margin="0,0,10,0">
                                 <ComboBoxItem Content="View-Only"/>
                                 <ComboBoxItem Content="Controller"/>
                             </ComboBox>
 
-                            <Button Name="btnEditUpdate" Content="Update" Grid.Row="5" Grid.Column="1" Height="25" Margin="0,10,10,10" TabIndex="5" Click="btnEditUpdate_Click"/>
+                            <!-- Buttons to submit and close panel -->
+                            <Button Name="btnEditUpdate" Content="Update" Grid.Row="5" Grid.Column="1" Height="25" 
+                                    Margin="0,10,10,10" TabIndex="5" Click="btnEditUpdate_Click"/>
                             
                         </Grid>
                     </StackPanel>
                 </Grid>
             </TabItem>
+            
+            <!-- Tab for user log information, list view with 3 columns -->
             <TabItem Header="Logs">
                 <ListView Name="lstLogsList">
                     <ListView.View>

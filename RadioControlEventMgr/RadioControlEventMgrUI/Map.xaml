@@ -7,18 +7,20 @@
       mc:Ignorable="d" 
       d:DesignHeight="700" d:DesignWidth="1200"
       Title="Map">
-
+    <!-- XAML for map page, viewing online/offline map -->
     <Grid>
-
+        <!-- Context menu for switching between online/offline map-->  
         <Grid.ContextMenu>
             <ContextMenu Name="mnuMapMenu" IsEnabled="True">
                 <ContextMenu.Items>
-                    <MenuItem Header="Switch to local map" Name="submenuOfflineMap" IsEnabled="True" Click="submenuOfflineMap_Click" >
+                    <MenuItem Header="Switch to local map" Name="submenuOfflineMap" IsEnabled="True" 
+                              Click="submenuOfflineMap_Click" >
                         <MenuItem.Icon>
                             <Image Source="Images/edit.png" Stretch="Uniform" />
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="Switch to online map" Name="submenuOnlineMap" IsEnabled="True" Click="submenuOnlineMap_Click" >
+                    <MenuItem Header="Switch to online map" Name="submenuOnlineMap" IsEnabled="True" 
+                              Click="submenuOnlineMap_Click" >
                         <MenuItem.Icon>
                             <Image Source="Images/Add.png" Stretch="Uniform" />
                         </MenuItem.Icon>
@@ -27,8 +29,10 @@
             </ContextMenu>
         </Grid.ContextMenu>
 
+        <!-- Display google map in web browser -->
         <WebBrowser Name="webMap" Source="https://www.google.ie/maps" Margin="20" Visibility="Collapsed"/>
-        <Image Name="imgMap" Source="Images/Map.jpg" Margin="20" Visibility="Visible"/>
         
+        <!-- Display offline image file-->
+        <Image Name="imgMap" Source="Images/Map.jpg" Margin="20" Visibility="Visible"/>
     </Grid>
 </Page>

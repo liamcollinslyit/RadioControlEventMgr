@@ -15,20 +15,26 @@ using System.Windows.Shapes;
 
 namespace RadioControlEventMgrUI
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
+    // C# code for login screen
+
+    public partial class Login : Window
     {
-        public MainWindow()
+        public Login()
         {
             InitializeComponent();
         }
 
+        // Enter button - validate user and initilise correct dashboard.
         private void btnLoginEnter_Click(object sender, RoutedEventArgs e)
         {
             Dashboard dashboard = new Dashboard();
             dashboard.Show();
+            this.Close();
+        }
+
+        //Exit button - close application
+        private void btnLoginExit_Click(object sender, RoutedEventArgs e)
+        {
             this.Close();
         }
     }

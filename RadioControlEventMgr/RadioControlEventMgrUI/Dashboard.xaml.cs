@@ -14,9 +14,9 @@ using System.Windows.Shapes;
 
 namespace RadioControlEventMgrUI
 {
-    /// <summary>
-    /// Interaction logic for Dashboard.xaml
-    /// </summary>
+
+    // C# code for dashboard
+
     public partial class Dashboard : Window
     {
         public Dashboard()
@@ -24,33 +24,38 @@ namespace RadioControlEventMgrUI
             InitializeComponent();
         }
 
+        // Situation button - Open Situation page in frame
         private void btnSituation_Click(object sender, RoutedEventArgs e)
         {
             Situation situation = new Situation();
             frmMain.Navigate(situation);
         }
 
-        private void btnAdmin_Click(object sender, RoutedEventArgs e)
-        {
-            Admin admin = new Admin();
-            frmMain.Navigate(admin);
-        }
-
-        private void btnExit_Click(object sender, RoutedEventArgs e)
-        {
-            this.Close();
-        }
-
+        // Logs button - Open Logs page in frame
         private void btnLogs_Click(object sender, RoutedEventArgs e)
         {
             Logs logs = new Logs();
             frmMain.Navigate(logs);
         }
 
+        // Map button - Open Map page in frame
         private void btnMap_Click(object sender, RoutedEventArgs e)
         {
             Map map = new Map();
             frmMain.Navigate(map);
+        }
+
+        // Admin button - Open Admin page in frame
+        private void btnAdmin_Click(object sender, RoutedEventArgs e)
+        {
+            Admin admin = new Admin();
+            frmMain.Navigate(admin);
+        }
+
+        //Exit button - close application
+        private void btnExit_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
     }
 }

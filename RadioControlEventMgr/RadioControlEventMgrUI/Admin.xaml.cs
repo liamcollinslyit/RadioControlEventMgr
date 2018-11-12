@@ -34,5 +34,15 @@ namespace RadioControlEventMgrUI
         {
             stkUserDetails.Visibility = Visibility.Collapsed;
         }
+
+        private void submenuEditUser_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void submenuDeleteUser_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
