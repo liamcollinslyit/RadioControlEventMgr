@@ -94,7 +94,7 @@
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-
+    
                 <!-- lblSituationIncidentTitle will display incident number -->
                 <Label Name="lblSituationIncidentTitle"  Content="Incident No" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
                        Margin="10" HorizontalAlignment="Center" FontSize="20"/>
@@ -109,7 +109,7 @@
                          Margin="10,0,10,0" Height="100" Width="265" TextWrapping="Wrap"/>
 
                 <!-- Combobox shows information from DB location table-->
-                <ComboBox Name="cboEditUserAccess" Grid.Row="2" Grid.Column="1" Width="200" TabIndex="1" Margin="0,5,10,0">
+                <ComboBox Name="cboSituationLocation" Grid.Row="2" Grid.Column="1" Width="200" TabIndex="1" Margin="0,5,10,0">
                     <ComboBoxItem Content="Location1"/>
                     <ComboBoxItem Content="Location2"/>
                 </ComboBox>

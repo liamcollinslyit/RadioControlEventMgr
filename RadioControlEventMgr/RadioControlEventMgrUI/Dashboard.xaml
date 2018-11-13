@@ -26,19 +26,19 @@
         <!-- Left aligned stackpanel - Situation, Log and Map options   -->
         <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" >
             <Button Name="btnSituation" Content="Situation" Width="150" Height="50"  Margin="20" 
-                    Click="btnSituation_Click"/>
+                    FontWeight="DemiBold"  FontSize="16" Click="btnSituation_Click"/>
             <Button Name="btnLogs" Content="Logs" Width="150" Height="50" Margin="20" 
-                    Click="btnLogs_Click"/>
+                    FontWeight="DemiBold" FontSize="16" Click="btnLogs_Click"/>
             <Button Name="btnMap" Content="Map" Width="150" Height="50"  Margin="20" 
-                    Click="btnMap_Click" />
+                    FontWeight="DemiBold" FontSize="16" Click="btnMap_Click" />
         </StackPanel>
 
          <!-- Right aligned stackpanel - Admin and Exit -->
         <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Name="btnAdmin" Content="Admin" Width="150" Height="50" Margin="20" 
-                    Click="btnAdmin_Click"/>
+                    FontWeight="DemiBold" FontSize="16" Click="btnAdmin_Click"/>
             <Button Name="btnExit" Content="Exit" Width="150" Height="50" Margin="20" 
-                    Click="btnExit_Click"/>
+                    FontWeight="DemiBold" FontSize="16" Click="btnExit_Click"/>
         </StackPanel>
 
         <!-- Dock panel for with border and frame -->
