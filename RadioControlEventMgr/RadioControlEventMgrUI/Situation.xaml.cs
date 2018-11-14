@@ -16,6 +16,15 @@ using System.Windows.Shapes;
 namespace RadioControlEventMgrUI
 {
 
+    class Incident
+    {
+        public string IncidentNo { get; set; }
+        public string Location { get; set; }
+        public string AtScene { get; set; }
+        public string LeaveScene { get; set; }
+        public string Description { get; set; }
+    }
+
     // C# code for Situation page
 
     public partial class Situation : Page
@@ -48,7 +57,6 @@ namespace RadioControlEventMgrUI
                 if (i < 10) cboMessageTimeMin.Items.Add($"0{i}");
                 else cboMessageTimeMin.Items.Add(i);
             }
-
         }
 
         // Context menu - Add incident button - show incident stackpanel , and set time to now
@@ -76,6 +84,12 @@ namespace RadioControlEventMgrUI
             else cboMessageTimeMin.SelectedValue = DateTime.Now.Minute;
         }
 
+        private void submenuAtScene_Click(object sender, RoutedEventArgs e)
+        {
+            Incident incident = lstSituationIncidentList.SelectedItem as Incident;
+            incident.AtScene = "Test";
+        }
+
         // Incident panel - Now button - Set time to now in combobox
         private void btnSituationNow_Click(object sender, RoutedEventArgs e)
         {
@@ -95,6 +109,14 @@ namespace RadioControlEventMgrUI
         // Incident panel - Ok button - hide message stackpanel
         private void btnSituationOk_Click(object sender, RoutedEventArgs e)
         {
+
+            lstSituationIncidentList.Items.Add(new Incident()
+            {
+                IncidentNo = "INC",
+                Location = cboSituationLocation.SelectedValue.ToString(),
+                Description = txtSituationDetails.Text
+            });
+
             stkSituationIncident.Visibility = Visibility.Collapsed;
         }
 
@@ -119,6 +141,7 @@ namespace RadioControlEventMgrUI
         {
             stkMessage.Visibility = Visibility.Collapsed;
         }
+
 
     }
 }

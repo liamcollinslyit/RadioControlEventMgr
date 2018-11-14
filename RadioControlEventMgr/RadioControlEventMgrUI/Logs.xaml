@@ -120,7 +120,7 @@
 
                     <!-- Stackpanel for displying detail incident information-->
                     <StackPanel Name="stkIncident" Grid.Row="1" HorizontalAlignment="Center" Margin="10" 
-                                Background="LightGray" Visibility="Collapsed">
+                                Background="CornflowerBlue" Visibility="Collapsed">
                         <Grid>
                             <!-- 8*3 Grid -->
                             <Grid.ColumnDefinitions>

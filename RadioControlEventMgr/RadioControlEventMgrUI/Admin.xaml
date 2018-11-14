@@ -90,13 +90,13 @@
                     </ListView>
                     
                     <!-- Stackpanel for adding/editing user details -->
-                    <StackPanel Name="stkUserDetails" Grid.Row="1" HorizontalAlignment="Center" Margin="10" 
-                                Background="LightGray" Visibility="Collapsed">
+                    <StackPanel Name="stkUserDetails" Grid.Row="1" HorizontalAlignment="Center" Margin="10,50" 
+                                Background="LightGray" Visibility="Collapsed" >
                         <Grid>
                             <!-- 6*2 Grid -->
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="95"/>
+                                <ColumnDefinition Width="210"/>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*"/>
