@@ -78,7 +78,7 @@
 
         <!-- Stackpanel for entering incident information -->
         <StackPanel Name="stkSituationIncident" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" 
-                    Height="300" Width="auto" Margin="10" Background="LightGray" Visibility="Visible">
+                    Height="300" Width="auto" Margin="10" Background="LightGray" Visibility="Collapsed">
             
             <!-- 6*2 Grid with buttons, textboxes and combo boxes -->
             <Grid>
@@ -102,14 +102,12 @@
                 <Label Content="Location" Grid.Row="2" Grid.Column="0" Margin="10,5,10,0"/>
                 <Label Content="Details" Grid.Row="3" Grid.Column="0" Margin="10,10,10,0"/>
 
-                <!--<TextBox Name="txtSituationTime" Grid.Row="1" Grid.Column="1" TabIndex="0" Margin="0,0,10,0" 
-                         VerticalContentAlignment="Center"/> -->
                 <!-- Details box should wrap text and is fix in size to allow this-->
-                <TextBox Name="txtSituationDetails" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" TabIndex="2" 
+                <TextBox Name="txtSituationDetails" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" TabIndex="3" 
                          Margin="10,0,10,0" Height="100" Width="265" TextWrapping="Wrap"/>
 
                 <!-- Combobox shows information from DB location table-->
-                <ComboBox Name="cboSituationLocation" Grid.Row="2" Grid.Column="1" Width="200" TabIndex="1" Margin="0,5,10,0">
+                <ComboBox Name="cboSituationLocation" Grid.Row="2" Grid.Column="1" Width="200" TabIndex="2" Margin="0,5,10,0">
                     <ComboBoxItem Content="Location1"/>
                     <ComboBoxItem Content="Location2"/>
                 </ComboBox>
@@ -119,15 +117,17 @@
                     <Button Name="btnSituationCancel" Content="Cancel" Grid.Row="5" Grid.Column="1" Height="25" Width="120"  
                             Margin="0,10,10,10" TabIndex="5" Click="btnSituationCancel_Click" />
                     <Button Name="btnSituationOk" Content="Ok" Grid.Row="5" Grid.Column="1" Height="25" Width="120" 
-                            Margin="10,10,0,10" TabIndex="5" Click="btnSituationOk_Click"/>
+                            Margin="10,10,0,10" TabIndex="4" Click="btnSituationOk_Click"/>
                 </StackPanel>
 
+                <!-- Stackpanel for time boxes, hour, minute and now button -->
                 <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left"
-                            Width="200">
-                    <ComboBox Name ="cboSituationTimeHour" Width="55" />
+                            Width="200" >
+                    <ComboBox Name ="cboSituationTimeHour" Width="55" HorizontalContentAlignment="Center" TabIndex="0" />
                     <Label Content=":" Width="15" HorizontalContentAlignment="Center" />
-                    <ComboBox Name ="cboSituationTimeMin" Width="55"/>
-                    <ComboBox Name ="cboSituationTimeAMPM" Width="55" Margin="20,0,0,0"/>
+                    <ComboBox Name ="cboSituationTimeMin" Width="55" HorizontalContentAlignment="Center" TabIndex="1"/>
+                    <Button Name="btnSituationNow" Content="Now" Width="55" Margin="20,0,0,0"
+                            TabIndex="6" Click="btnSituationNow_Click"/>
                 </StackPanel>
             </Grid>
         </StackPanel>
@@ -219,23 +219,22 @@
                 <Label Content="Incident" Grid.Row="4" Grid.Column="0" Margin="10,5,10,0"/>
                 <Label Content="Message" Grid.Row="5" Grid.Column="0" Margin="10,5,10,0"/>
 
-                <TextBox Name="txtMessageTime" Grid.Row="1" Grid.Column="1" TabIndex="0" Margin="0,0,10,0" VerticalContentAlignment="Center"/>
                 <!-- Message box should wrap text and is fix in size to allow this-->
-                <TextBox Name="txtMessageText" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" TabIndex="2" 
+                <TextBox Name="txtMessageText" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" TabIndex="5" 
                          Margin="10,0,10,0" Height="100" Width="265" TextWrapping="Wrap"/>
 
                 <!-- Combobox shows information from DB status table-->
-                <ComboBox Name="cboMessageStatus" Grid.Row="2" Grid.Column="1" Width="200" TabIndex="1" Margin="0,5,10,0">
+                <ComboBox Name="cboMessageStatus" Grid.Row="2" Grid.Column="1" Width="200" TabIndex="2" Margin="0,5,10,0">
                     <ComboBoxItem Content="Status1"/>
                     <ComboBoxItem Content="Status1"/>
                 </ComboBox>
                 <!-- Combobox shows information from DB location table-->
-                <ComboBox Name="cboMessageLocation" Grid.Row="3" Grid.Column="1" Width="200" TabIndex="1" Margin="0,5,10,0">
+                <ComboBox Name="cboMessageLocation" Grid.Row="3" Grid.Column="1" Width="200" TabIndex="3" Margin="0,5,10,0">
                     <ComboBoxItem Content="Location1"/>
                     <ComboBoxItem Content="Location2"/>
                 </ComboBox>
                 <!-- Combobox shows information from DB incident table-->
-                <ComboBox Name="cboMessageIncident" Grid.Row="4" Grid.Column="1" Width="200" TabIndex="1" Margin="0,5,10,0">
+                <ComboBox Name="cboMessageIncident" Grid.Row="4" Grid.Column="1" Width="200" TabIndex="4" Margin="0,5,10,0">
                     <ComboBoxItem Content="Incident1"/>
                     <ComboBoxItem Content="Incident2"/>
                 </ComboBox>
@@ -243,9 +242,19 @@
                 <!-- Stackpanel for Ok and cancel buttons -->
                 <StackPanel Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center">
                     <Button Name="btnMessageCancel" Content="Cancel" Grid.Row="5" Grid.Column="1" Height="25" Width="120"  
-                            Margin="0,10,10,10" TabIndex="5" Click="btnMessageCancel_Click" />
+                            Margin="0,10,10,10" TabIndex="7" Click="btnMessageCancel_Click" />
                     <Button Name="btnMessageOk" Content="Ok" Grid.Row="5" Grid.Column="1" Height="25" Width="120" 
-                            Margin="10,10,0,10" TabIndex="5"  Click="btnMessageOk_Click"   />
+                            Margin="10,10,0,10" TabIndex="6"  Click="btnMessageOk_Click"   />
+                </StackPanel>
+
+                <!-- Stackpanel for time boxes, hour, minute and now button -->
+                <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left"
+                            Width="200">
+                    <ComboBox Name ="cboMessageTimeHour" Width="55" HorizontalContentAlignment="Center" TabIndex="0" />
+                    <Label Content=":" Width="15" HorizontalContentAlignment="Center" />
+                    <ComboBox Name ="cboMessageTimeMin" Width="55" HorizontalContentAlignment="Center" TabIndex="1"/>
+                    <Button Name="btnMessageNow" Content="Now" Width="55" Margin="20,0,0,0"
+                            TabIndex="7" Click="btnMessageNow_Click"/>
                 </StackPanel>
             </Grid>
         </StackPanel>
