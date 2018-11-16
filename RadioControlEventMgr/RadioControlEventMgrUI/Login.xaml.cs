@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RadioLibrary;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,6 +20,11 @@ namespace RadioControlEventMgrUI
 
     public partial class Login : Window
     {
+
+       RadioDBEntities db = new RadioDBEntities();
+        int loginCounter = 0;
+
+
         public Login()
         {
             InitializeComponent();
@@ -27,9 +33,36 @@ namespace RadioControlEventMgrUI
         // Enter button - validate user and initilise correct dashboard.
         private void btnLoginEnter_Click(object sender, RoutedEventArgs e)
         {
-            Dashboard dashboard = new Dashboard();
-            dashboard.Show();
-            this.Close();
+            string currentUser = tbxUsername.Text;
+            string currentPassword = tbxPassword.Password;
+
+            foreach (var userRecord in db.Users)
+            {
+                if(currentUser == userRecord.Username)
+                {
+                    if (currentPassword == userRecord.Password)
+                    {
+                        Dashboard dashboard = new Dashboard();
+                        dashboard.Show();
+                        this.Close();
+                    }
+                }
+            }
+
+            loginCounter++;
+            if (loginCounter<3)
+            {
+                lblLoginHeading.Content = "Login Failed - Please try again";
+                lblLoginHeading.Foreground = Brushes.Red;
+            }
+            else
+            {
+                lblLoginHeading.Content = "Max number of attempts - try again in 5 minutes";
+                lblLoginHeading.Foreground = Brushes.Red;
+                System.Threading.Thread.Sleep(10000);
+                loginCounter = 0;
+            }
+
         }
 
         //Exit button - close application

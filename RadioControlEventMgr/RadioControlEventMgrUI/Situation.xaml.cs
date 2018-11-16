@@ -88,6 +88,7 @@ namespace RadioControlEventMgrUI
         {
             Incident incident = lstSituationIncidentList.SelectedItem as Incident;
             incident.AtScene = "Test";
+            lstSituationIncidentList.Items.Add(incident);
         }
 
         // Incident panel - Now button - Set time to now in combobox

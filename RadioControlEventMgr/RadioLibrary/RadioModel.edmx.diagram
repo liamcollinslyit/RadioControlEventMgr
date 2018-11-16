@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="f40c2e0826f04846be280d335da42920" Name="Diagram1">
+        <EntityTypeShape EntityType="RadioDBModel.AccessLevel" Width="1.5" PointX="2.75" PointY="0.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="RadioDBModel.Crew" Width="1.5" PointX="5" PointY="3.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="RadioDBModel.CrewType" Width="1.5" PointX="5" PointY="7.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="RadioDBModel.Incident" Width="1.5" PointX="7.375" PointY="3.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="RadioDBModel.Location" Width="1.5" PointX="7.125" PointY="7.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="RadioDBModel.Log" Width="1.5" PointX="7.125" PointY="0.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="RadioDBModel.Status" Width="1.5" PointX="2.75" PointY="7.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="RadioDBModel.User" Width="1.5" PointX="5" PointY="0.5" IsExpanded="true" />
+        <AssociationConnector Association="RadioDBModel.FK_User_AccessLevel" ManuallyRouted="false" />
+        <AssociationConnector Association="RadioDBModel.FK_Crew_CrewType" ManuallyRouted="false" />
+        <AssociationConnector Association="RadioDBModel.FK_Crew_Incident" ManuallyRouted="false" />
+        <AssociationConnector Association="RadioDBModel.FK_Crew_Location" ManuallyRouted="false" />
+        <AssociationConnector Association="RadioDBModel.FK_Crew_Status" ManuallyRouted="false" />
+        <AssociationConnector Association="RadioDBModel.FK_Incident_Location" ManuallyRouted="false" />
+        <AssociationConnector Association="RadioDBModel.FK_Log_User" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="RadioDBModel.Message" Width="1.5" PointX="2" PointY="3.625" />
+        <AssociationConnector Association="RadioDBModel.FK_Table_Crew" />
+        <AssociationConnector Association="RadioDBModel.FK_Table_Incident" />
+        <AssociationConnector Association="RadioDBModel.FK_Table_Status" />
+        </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
