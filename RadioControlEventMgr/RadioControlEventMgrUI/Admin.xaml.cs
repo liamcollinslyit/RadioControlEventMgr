@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RadioLibrary;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,6 +21,11 @@ namespace RadioControlEventMgrUI
     /// </summary>
     public partial class Admin : Page
     {
+        RadioDBEntities db = new RadioDBEntities("metadata=res://*/RadioModel.csdl|res://*/RadioModel.ssdl|res://*/RadioModel.msl;provider=System.Data.SqlClient;provider connection string='data source=192.168.60.132" +
+                                         ";initial catalog=RadioDB;user id=radiouser;password=password;pooling=False;MultipleActiveResultSets=True;App=EntityFramework'");
+        List<User> users = new List<User>();
+        List<Log> logs = new List<Log>();
+
         public Admin()
         {
             InitializeComponent();
@@ -42,6 +48,22 @@ namespace RadioControlEventMgrUI
 
         private void submenuDeleteUser_Click(object sender, RoutedEventArgs e)
         {
+
+        }
+
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            lstUserList.ItemsSource = users;
+            lstLogsList.ItemsSource = logs;
+            foreach (var user in db.Users)
+            {
+                users.Add(user);
+            }
+
+            foreach (var log in db.Logs)
+            {
+                logs.Add(log);
+            }
 
         }
     }

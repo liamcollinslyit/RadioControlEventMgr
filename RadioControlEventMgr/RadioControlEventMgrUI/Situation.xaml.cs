@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RadioLibrary;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,19 +17,16 @@ using System.Windows.Shapes;
 namespace RadioControlEventMgrUI
 {
 
-    class Incident
-    {
-        public string IncidentNo { get; set; }
-        public string Location { get; set; }
-        public string AtScene { get; set; }
-        public string LeaveScene { get; set; }
-        public string Description { get; set; }
-    }
-
     // C# code for Situation page
 
     public partial class Situation : Page
     {
+        RadioDBEntities db = new RadioDBEntities("metadata=res://*/RadioModel.csdl|res://*/RadioModel.ssdl|res://*/RadioModel.msl;provider=System.Data.SqlClient;provider connection string='data source=192.168.60.132" +
+                                 ";initial catalog=RadioDB;user id=radiouser;password=password;pooling=False;MultipleActiveResultSets=True;App=EntityFramework'");
+        List<Incident> incidents = new List<Incident>();
+        List<Crew> crews = new List<Crew>();
+        List<Location> locations = new List<Location>();
+
         public Situation()
         {
             InitializeComponent();
@@ -86,9 +84,6 @@ namespace RadioControlEventMgrUI
 
         private void submenuAtScene_Click(object sender, RoutedEventArgs e)
         {
-            Incident incident = lstSituationIncidentList.SelectedItem as Incident;
-            incident.AtScene = "Test";
-            lstSituationIncidentList.Items.Add(incident);
         }
 
         // Incident panel - Now button - Set time to now in combobox
@@ -110,14 +105,13 @@ namespace RadioControlEventMgrUI
         // Incident panel - Ok button - hide message stackpanel
         private void btnSituationOk_Click(object sender, RoutedEventArgs e)
         {
+            TimeSpan time = new TimeSpan(Convert.ToInt32(cboSituationTimeHour.SelectedValue), Convert.ToInt32(cboSituationTimeMin.SelectedValue), 0);
+            string details = txtSituationDetails.Text;
 
-            lstSituationIncidentList.Items.Add(new Incident()
-            {
-                IncidentNo = "INC",
-                Location = cboSituationLocation.SelectedValue.ToString(),
-                Description = txtSituationDetails.Text
-            });
+            Location location = new Location();
+            location = (Location)cboSituationLocation.SelectedItem;
 
+            CreateIncidentEntry(location, time, details);
             stkSituationIncident.Visibility = Visibility.Collapsed;
         }
 
@@ -141,6 +135,44 @@ namespace RadioControlEventMgrUI
         private void btnMessageOk_Click(object sender, RoutedEventArgs e)
         {
             stkMessage.Visibility = Visibility.Collapsed;
+        }
+
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            lstSituationIncidentList.ItemsSource = incidents;
+            lstCrewList.ItemsSource = crews;
+            cboSituationLocation.ItemsSource = locations;
+
+            foreach (var incident in db.Incidents)
+            {
+                incidents.Add(incident);
+            }
+
+            foreach (var crew in db.Crews)
+            {
+                crews.Add(crew);
+            }
+
+            foreach (var location in db.Locations)
+            {
+                locations.Add(location);
+            }
+        }
+
+        private void CreateIncidentEntry(Location location, TimeSpan time ,string details)
+        {
+            Incident incident = new Incident();
+            incident.IncidentNo = "INC";
+            incident.LocationID = location.LocationID;
+            incident.ReportedTime = time;
+            incident.Description = details;
+            SaveIncident(incident);
+        }
+
+        private void SaveIncident(Incident incident)
+        {
+            db.Entry(incident).State = System.Data.Entity.EntityState.Added;
+            db.SaveChanges();
         }
 
 

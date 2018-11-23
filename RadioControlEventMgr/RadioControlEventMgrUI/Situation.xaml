@@ -5,6 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:RadioControlEventMgrUI"
       mc:Ignorable="d" 
+      Loaded="Page_Loaded"
       d:DesignHeight="700" d:DesignWidth="1200"
       Title="Situation">
     <!-- XAML for situation page, entering message and incident information -->
@@ -20,7 +21,7 @@
         </Grid.ColumnDefinitions>
 
         <!-- Listview for incdient information - 5 Columns and context menu -->
-        <ListView Name="lstSituationIncidentList" Grid.Row="0" Grid.Column="0" Margin="10" SelectedItem="{Binding SelectedIncident}">
+        <ListView Name="lstSituationIncidentList" Grid.Row="0" Grid.Column="0" Margin="10">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="IncidentNo" Width="150" DisplayMemberBinding="{Binding IncidentNo}">
@@ -30,7 +31,14 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="Location" Width="150" DisplayMemberBinding="{Binding Location}">
+                    <GridViewColumn Header="Location" Width="150" DisplayMemberBinding="{Binding Location.LocationName}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Reported At" Width="150" DisplayMemberBinding="{Binding ReportedTime}">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap"/>
@@ -111,9 +119,7 @@
 
                 <!-- Combobox shows information from DB location table-->
                 <ComboBox Name="cboSituationLocation" Grid.Row="2" Grid.Column="1" Width="200" 
-                          SelectedValuePath="Content" TabIndex="2" Margin="0,5,10,0">
-                    <ComboBoxItem Content="Location1"/>
-                    <ComboBoxItem Content="Location2"/>
+                          TabIndex="2" Margin="0,5,10,0" DisplayMemberPath="LocationName">
                 </ComboBox>
 
                 <!-- Stackpanel for Ok and cancel buttons -->
@@ -143,35 +149,35 @@
                     <GridViewColumn Header="Call Sign" Width="150">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap"/>
+                                <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding CallSign}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
                     <GridViewColumn Header="Type" Width="150">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap"/>
+                                <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding CrewType.CrewTypeName}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
                     <GridViewColumn Header="Status" Width="150">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap"/>
+                                <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding Status.StatusName }"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
                     <GridViewColumn Header="Location" Width="150">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap"/>
+                                <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding Location.LocationName}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
                     <GridViewColumn Header="Incident" Width="150">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap"/>
+                                <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding Incident.IncidentNo}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>

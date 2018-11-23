@@ -22,7 +22,7 @@ namespace RadioLibrary
         public string MessageText { get; set; }
     
         public virtual Crew Crew { get; set; }
-        public virtual Incident Incident { get; set; }
         public virtual Status Status { get; set; }
+        public virtual Incident Incident { get; set; }
     }
 }

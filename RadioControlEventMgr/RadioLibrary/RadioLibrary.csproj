@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6950013F-F7DB-42A4-BCCD-57E958488491}</ProjectGuid>
+    <ProjectGuid>{B60AF83E-3E00-4985-8699-70AA63BA384D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>RadioLibrary</RootNamespace>

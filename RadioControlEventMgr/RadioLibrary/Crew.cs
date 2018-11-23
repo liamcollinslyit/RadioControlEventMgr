@@ -24,14 +24,14 @@ namespace RadioLibrary
         public string CallSign { get; set; }
         public int StatusID { get; set; }
         public int CrewTypeID { get; set; }
-        public int IncidentID { get; set; }
+        public Nullable<int> IncidentID { get; set; }
         public int LocationID { get; set; }
     
         public virtual CrewType CrewType { get; set; }
-        public virtual Incident Incident { get; set; }
         public virtual Location Location { get; set; }
         public virtual Status Status { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Message> Messages { get; set; }
+        public virtual Incident Incident { get; set; }
     }
 }

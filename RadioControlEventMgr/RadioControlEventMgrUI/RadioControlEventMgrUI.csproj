@@ -151,7 +151,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RadioLibrary\RadioLibrary.csproj">
-      <Project>{6950013f-f7db-42a4-bccd-57e958488491}</Project>
+      <Project>{b60af83e-3e00-4985-8699-70aa63ba384d}</Project>
       <Name>RadioLibrary</Name>
     </ProjectReference>
   </ItemGroup>

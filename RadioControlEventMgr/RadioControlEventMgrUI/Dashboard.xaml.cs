@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RadioLibrary;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,6 +20,8 @@ namespace RadioControlEventMgrUI
 
     public partial class Dashboard : Window
     {
+        public User user = new User();
+
         public Dashboard()
         {
             InitializeComponent();
@@ -56,6 +59,27 @@ namespace RadioControlEventMgrUI
         private void btnExit_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
+            Environment.Exit(0);
+        }
+
+        private void CheckUserAccess(User user)
+        {
+            if (user.LevelID == 3)
+            {
+                btnSituation.Visibility = Visibility.Visible;
+                btnMap.Visibility = Visibility.Visible;
+                btnAdmin.Visibility = Visibility.Visible;
+            }
+            if (user.LevelID == 2)
+            {
+                btnSituation.Visibility = Visibility.Visible;
+                btnMap.Visibility = Visibility.Visible;
+            }
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            CheckUserAccess(user);
         }
     }
 }
