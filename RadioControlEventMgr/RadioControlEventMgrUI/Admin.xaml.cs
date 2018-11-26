@@ -25,6 +25,7 @@ namespace RadioControlEventMgrUI
                                          ";initial catalog=RadioDB;user id=radiouser;password=password;pooling=False;MultipleActiveResultSets=True;App=EntityFramework'");
         List<User> users = new List<User>();
         List<Log> logs = new List<Log>();
+        List<AccessLevel> accessLevels = new List<AccessLevel>();
 
         public Admin()
         {
@@ -34,11 +35,38 @@ namespace RadioControlEventMgrUI
         private void submenuAddNewUser_Click(object sender, RoutedEventArgs e)
         {
             stkUserDetails.Visibility = Visibility.Visible;
+
         }
 
         private void btnEditUpdate_Click(object sender, RoutedEventArgs e)
         {
+            string username = txtEditUsername.Text;
+            string password = txtEditPassword.Text;
+            string forename = txtEditForename.Text;
+            string surname = txtEditSurname.Text;
+
+            AccessLevel accessLevel = new AccessLevel();
+            accessLevel = (AccessLevel)cboEditUserAccess.SelectedItem;
+
+            CreateUser(username, password, forename, surname, accessLevel);
             stkUserDetails.Visibility = Visibility.Collapsed;
+        }
+
+        private void CreateUser(string username, string password, string forename, string surname, AccessLevel accessLevel)
+        {
+            User user = new User();
+            user.Username = username;
+            user.Password = password;
+            user.Forename = forename;
+            user.Surname = surname;
+            user.LevelID = accessLevel.LevelID;
+            SaveUser(user);
+        }
+
+        private void SaveUser(User user)
+        {
+            db.Entry(user).State = System.Data.Entity.EntityState.Added;
+            db.SaveChanges();
         }
 
         private void submenuEditUser_Click(object sender, RoutedEventArgs e)
@@ -55,6 +83,8 @@ namespace RadioControlEventMgrUI
         {
             lstUserList.ItemsSource = users;
             lstLogsList.ItemsSource = logs;
+            cboEditUserAccess.ItemsSource = accessLevels;
+
             foreach (var user in db.Users)
             {
                 users.Add(user);
@@ -63,6 +93,11 @@ namespace RadioControlEventMgrUI
             foreach (var log in db.Logs)
             {
                 logs.Add(log);
+            }
+
+            foreach (var accessLevel in db.AccessLevels)
+            {
+                accessLevels.Add(accessLevel);
             }
 
         }

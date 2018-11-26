@@ -26,6 +26,7 @@ namespace RadioControlEventMgrUI
         List<Incident> incidents = new List<Incident>();
         List<Crew> crews = new List<Crew>();
         List<Location> locations = new List<Location>();
+        List<Status> statuses = new List<Status>();
 
         public Situation()
         {
@@ -134,6 +135,16 @@ namespace RadioControlEventMgrUI
         // Message Panel  - Ok button - hide message stackpanel
         private void btnMessageOk_Click(object sender, RoutedEventArgs e)
         {
+            DateTime dateTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, Convert.ToInt32(cboMessageTimeHour.SelectedValue), Convert.ToInt32(cboMessageTimeMin.SelectedValue), 0);
+            Crew crew = new Crew();
+            crew.CallSignID = 1;
+            Location location = (Location)cboMessageLocation.SelectedItem;
+            Status status = (Status)cboMessageStatus.SelectedItem;
+            Incident incident = (Incident)cboMessageIncident.SelectedItem;
+            string text = txtMessageText.Text;
+
+            CreateMessageEntry(dateTime, crew, incident, status, text);
+
             stkMessage.Visibility = Visibility.Collapsed;
         }
 
@@ -142,6 +153,9 @@ namespace RadioControlEventMgrUI
             lstSituationIncidentList.ItemsSource = incidents;
             lstCrewList.ItemsSource = crews;
             cboSituationLocation.ItemsSource = locations;
+            cboMessageLocation.ItemsSource = locations;
+            cboMessageStatus.ItemsSource = statuses;
+            cboMessageIncident.ItemsSource = incidents;
 
             foreach (var incident in db.Incidents)
             {
@@ -156,6 +170,11 @@ namespace RadioControlEventMgrUI
             foreach (var location in db.Locations)
             {
                 locations.Add(location);
+            }
+
+            foreach (var status in db.Status)
+            {
+                statuses.Add(status);
             }
         }
 
@@ -175,6 +194,22 @@ namespace RadioControlEventMgrUI
             db.SaveChanges();
         }
 
+        private void CreateMessageEntry(DateTime dateTime, Crew crew, Incident incident, Status status, string text)
+        {
+            Message message = new Message();
+            message.Date = dateTime;
+            message.CallSignID = crew.CallSignID;
+            message.IncidentID = incident.IncidentID;
+            message.StatusID = status.StatusID;
+            message.MessageText = text;
+            SaveMessage(message);
+        }
 
+        private void SaveMessage(Message message)
+        {
+            db.Entry(message).State = System.Data.Entity.EntityState.Added;
+            db.SaveChanges();
+        }
+        
     }
 }

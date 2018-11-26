@@ -234,19 +234,16 @@
                          Margin="10,0,10,0" Height="100" Width="265" TextWrapping="Wrap"/>
 
                 <!-- Combobox shows information from DB status table-->
-                <ComboBox Name="cboMessageStatus" Grid.Row="2" Grid.Column="1" Width="200" TabIndex="2" Margin="0,5,10,0">
-                    <ComboBoxItem Content="Status1"/>
-                    <ComboBoxItem Content="Status1"/>
+                <ComboBox Name="cboMessageStatus" Grid.Row="2" Grid.Column="1" Width="200" TabIndex="2" Margin="0,5,10,0" 
+                          DisplayMemberPath="StatusName">
                 </ComboBox>
                 <!-- Combobox shows information from DB location table-->
-                <ComboBox Name="cboMessageLocation" Grid.Row="3" Grid.Column="1" Width="200" TabIndex="3" Margin="0,5,10,0">
-                    <ComboBoxItem Content="Location1"/>
-                    <ComboBoxItem Content="Location2"/>
+                <ComboBox Name="cboMessageLocation" Grid.Row="3" Grid.Column="1" Width="200" TabIndex="3" Margin="0,5,10,0"
+                          DisplayMemberPath="LocationName">
                 </ComboBox>
                 <!-- Combobox shows information from DB incident table-->
-                <ComboBox Name="cboMessageIncident" Grid.Row="4" Grid.Column="1" Width="200" TabIndex="4" Margin="0,5,10,0">
-                    <ComboBoxItem Content="Incident1"/>
-                    <ComboBoxItem Content="Incident2"/>
+                <ComboBox Name="cboMessageIncident" Grid.Row="4" Grid.Column="1" Width="200" TabIndex="4" Margin="0,5,10,0"
+                          DisplayMemberPath="IncidentNo">
                 </ComboBox>
 
                 <!-- Stackpanel for Ok and cancel buttons -->
