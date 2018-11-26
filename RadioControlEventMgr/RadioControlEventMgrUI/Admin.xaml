@@ -11,7 +11,7 @@
     <!-- XAML for admin page, user control and user logs -->
     <Grid>
         <!-- Tab control for Users and Logs -->
-        <TabControl Name="tabAdminOptions" Background="Transparent">
+        <TabControl Name="tabAdminOptions" Background="Transparent" >
             <!-- Users Tab, Listview for user details, context menu to open user stackpanel-->
             <TabItem Header="Users" >
                 <Grid>
@@ -22,7 +22,7 @@
                     </Grid.RowDefinitions>
 
                     <!-- List view with 5 columns -->
-                    <ListView Name="lstUserList" Grid.Row="0">
+                    <ListView Name="lstUserList" Grid.Row="0" SelectionChanged="lstUserList_SelectionChanged">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Header="UserName" Width="150">
