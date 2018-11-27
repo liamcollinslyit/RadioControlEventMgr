@@ -39,7 +39,7 @@
           <Property Name="LocationID" Type="int" Nullable="false" />
           <Property Name="ReportedTime" Type="time" Precision="7" />
           <Property Name="AtSceneTime" Type="time" Precision="7" />
-          <Property Name="LevelSceneTime" Type="time" Precision="7" />
+          <Property Name="LeaveSceneTime" Type="time" Precision="7" />
           <Property Name="Description" Type="varchar" MaxLength="500" Nullable="false" />
         </EntityType>
         <EntityType Name="Location">
@@ -62,10 +62,10 @@
           <Key>
             <PropertyRef Name="MessageID" />
           </Key>
-          <Property Name="MessageID" Type="int" Nullable="false" />
+          <Property Name="MessageID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Date" Type="datetime" Nullable="false" />
           <Property Name="CallSignID" Type="int" Nullable="false" />
-          <Property Name="IncidentID" Type="int" Nullable="false" />
+          <Property Name="IncidentID" Type="int" />
           <Property Name="StatusID" Type="int" Nullable="false" />
           <Property Name="MessageText" Type="varchar" MaxLength="500" Nullable="false" />
         </EntityType>
@@ -172,7 +172,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Table_Incident">
-          <End Role="Incident" Type="Self.Incident" Multiplicity="1" />
+          <End Role="Incident" Type="Self.Incident" Multiplicity="0..1" />
           <End Role="Message" Type="Self.Message" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Incident">
@@ -283,7 +283,7 @@
           <NavigationProperty Name="CrewType" Relationship="Self.FK_Crew_CrewType" FromRole="Crew" ToRole="CrewType" />
           <NavigationProperty Name="Location" Relationship="Self.FK_Crew_Location" FromRole="Crew" ToRole="Location" />
           <NavigationProperty Name="Status" Relationship="Self.FK_Crew_Status" FromRole="Crew" ToRole="Status" />
-          <NavigationProperty Name="Messages" Relationship="Self.FK_Table_Crew" FromRole="Crew" ToRole="Message" />
+          <NavigationProperty Name="Messages" Relationship="RadioDBModel.FK_Table_Crew" FromRole="Crew" ToRole="Message" />
           <NavigationProperty Name="Incident" Relationship="RadioDBModel.FK_Crew_Incident" FromRole="Crew" ToRole="Incident" />
         </EntityType>
         <EntityType Name="CrewType">
@@ -313,20 +313,6 @@
           <Property Name="UserID" Type="Int32" Nullable="false" />
           <NavigationProperty Name="User" Relationship="Self.FK_Log_User" FromRole="Log" ToRole="User" />
         </EntityType>
-        <EntityType Name="Message">
-          <Key>
-            <PropertyRef Name="MessageID" />
-          </Key>
-          <Property Name="MessageID" Type="Int32" Nullable="false" />
-          <Property Name="Date" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="CallSignID" Type="Int32" Nullable="false" />
-          <Property Name="IncidentID" Type="Int32" Nullable="false" />
-          <Property Name="StatusID" Type="Int32" Nullable="false" />
-          <Property Name="MessageText" Type="String" MaxLength="500" FixedLength="false" Unicode="false" Nullable="false" />
-          <NavigationProperty Name="Crew" Relationship="Self.FK_Table_Crew" FromRole="Message" ToRole="Crew" />
-          <NavigationProperty Name="Status" Relationship="Self.FK_Table_Status" FromRole="Message" ToRole="Status" />
-          <NavigationProperty Name="Incident" Relationship="RadioDBModel.FK_Table_Incident" FromRole="Message" ToRole="Incident" />
-        </EntityType>
         <EntityType Name="Status">
           <Key>
             <PropertyRef Name="StatusID" />
@@ -334,7 +320,7 @@
           <Property Name="StatusID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="StatusName" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
           <NavigationProperty Name="Crews" Relationship="Self.FK_Crew_Status" FromRole="Status" ToRole="Crew" />
-          <NavigationProperty Name="Messages" Relationship="Self.FK_Table_Status" FromRole="Status" ToRole="Message" />
+          <NavigationProperty Name="Messages" Relationship="RadioDBModel.FK_Table_Status" FromRole="Status" ToRole="Message" />
         </EntityType>
         <EntityType Name="User">
           <Key>
@@ -397,18 +383,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Table_Crew">
-          <End Role="Crew" Type="Self.Crew" Multiplicity="1" />
-          <End Role="Message" Type="Self.Message" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Crew">
-              <PropertyRef Name="CallSignID" />
-            </Principal>
-            <Dependent Role="Message">
-              <PropertyRef Name="CallSignID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Log_User">
           <End Role="User" Type="Self.User" Multiplicity="1" />
           <End Role="Log" Type="Self.Log" Multiplicity="*" />
@@ -421,25 +395,12 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Table_Status">
-          <End Role="Status" Type="Self.Status" Multiplicity="1" />
-          <End Role="Message" Type="Self.Message" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Status">
-              <PropertyRef Name="StatusID" />
-            </Principal>
-            <Dependent Role="Message">
-              <PropertyRef Name="StatusID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityContainer Name="RadioDBEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="AccessLevels" EntityType="Self.AccessLevel" />
           <EntitySet Name="Crews" EntityType="Self.Crew" />
           <EntitySet Name="CrewTypes" EntityType="Self.CrewType" />
           <EntitySet Name="Locations" EntityType="Self.Location" />
           <EntitySet Name="Logs" EntityType="Self.Log" />
-          <EntitySet Name="Messages" EntityType="Self.Message" />
           <EntitySet Name="Status" EntityType="Self.Status" />
           <EntitySet Name="Users" EntityType="Self.User" />
           <AssociationSet Name="FK_User_AccessLevel" Association="Self.FK_User_AccessLevel">
@@ -458,15 +419,16 @@
             <End Role="Status" EntitySet="Status" />
             <End Role="Crew" EntitySet="Crews" />
           </AssociationSet>
-          <AssociationSet Name="FK_Table_Crew" Association="Self.FK_Table_Crew">
-            <End Role="Crew" EntitySet="Crews" />
-            <End Role="Message" EntitySet="Messages" />
-          </AssociationSet>
           <AssociationSet Name="FK_Log_User" Association="Self.FK_Log_User">
             <End Role="User" EntitySet="Users" />
             <End Role="Log" EntitySet="Logs" />
           </AssociationSet>
-          <AssociationSet Name="FK_Table_Status" Association="Self.FK_Table_Status">
+          <EntitySet Name="Messages" EntityType="RadioDBModel.Message" />
+          <AssociationSet Name="FK_Table_Crew" Association="RadioDBModel.FK_Table_Crew">
+            <End Role="Crew" EntitySet="Crews" />
+            <End Role="Message" EntitySet="Messages" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Table_Status" Association="RadioDBModel.FK_Table_Status">
             <End Role="Status" EntitySet="Status" />
             <End Role="Message" EntitySet="Messages" />
           </AssociationSet>
@@ -484,6 +446,44 @@
             <End Role="Message" EntitySet="Messages" />
           </AssociationSet>
         </EntityContainer>
+        <EntityType Name="Message">
+          <Key>
+            <PropertyRef Name="MessageID" />
+          </Key>
+          <Property Name="MessageID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Date" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CallSignID" Type="Int32" Nullable="false" />
+          <Property Name="IncidentID" Type="Int32" />
+          <Property Name="StatusID" Type="Int32" Nullable="false" />
+          <Property Name="MessageText" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Crew" Relationship="RadioDBModel.FK_Table_Crew" FromRole="Message" ToRole="Crew" />
+          <NavigationProperty Name="Status" Relationship="RadioDBModel.FK_Table_Status" FromRole="Message" ToRole="Status" />
+          <NavigationProperty Name="Incident" Relationship="RadioDBModel.FK_Table_Incident" FromRole="Message" ToRole="Incident" />
+        </EntityType>
+        <Association Name="FK_Table_Crew">
+          <End Type="RadioDBModel.Crew" Role="Crew" Multiplicity="1" />
+          <End Type="RadioDBModel.Message" Role="Message" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Crew">
+              <PropertyRef Name="CallSignID" />
+            </Principal>
+            <Dependent Role="Message">
+              <PropertyRef Name="CallSignID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Table_Status">
+          <End Type="RadioDBModel.Status" Role="Status" Multiplicity="1" />
+          <End Type="RadioDBModel.Message" Role="Message" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Status">
+              <PropertyRef Name="StatusID" />
+            </Principal>
+            <Dependent Role="Message">
+              <PropertyRef Name="StatusID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityType Name="Incident">
           <Key>
             <PropertyRef Name="IncidentID" />
@@ -493,7 +493,7 @@
           <Property Name="LocationID" Type="Int32" Nullable="false" />
           <Property Name="ReportedTime" Type="Time" Precision="7" />
           <Property Name="AtSceneTime" Type="Time" Precision="7" />
-          <Property Name="LevelSceneTime" Type="Time" Precision="7" />
+          <Property Name="LeaveSceneTime" Type="Time" Precision="7" />
           <Property Name="Description" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="Crews" Relationship="RadioDBModel.FK_Crew_Incident" FromRole="Incident" ToRole="Crew" />
           <NavigationProperty Name="Location" Relationship="RadioDBModel.FK_Incident_Location" FromRole="Incident" ToRole="Location" />
@@ -524,7 +524,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Table_Incident">
-          <End Type="RadioDBModel.Incident" Role="Incident" Multiplicity="1" />
+          <End Type="RadioDBModel.Incident" Role="Incident" Multiplicity="0..1" />
           <End Type="RadioDBModel.Message" Role="Message" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Incident">
@@ -587,18 +587,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Messages">
-            <EntityTypeMapping TypeName="RadioDBModel.Message">
-              <MappingFragment StoreEntitySet="Message">
-                <ScalarProperty Name="MessageID" ColumnName="MessageID" />
-                <ScalarProperty Name="Date" ColumnName="Date" />
-                <ScalarProperty Name="CallSignID" ColumnName="CallSignID" />
-                <ScalarProperty Name="IncidentID" ColumnName="IncidentID" />
-                <ScalarProperty Name="StatusID" ColumnName="StatusID" />
-                <ScalarProperty Name="MessageText" ColumnName="MessageText" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Status">
             <EntityTypeMapping TypeName="RadioDBModel.Status">
               <MappingFragment StoreEntitySet="Status">
@@ -619,11 +607,23 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="Messages">
+            <EntityTypeMapping TypeName="RadioDBModel.Message">
+              <MappingFragment StoreEntitySet="Message">
+                <ScalarProperty Name="MessageText" ColumnName="MessageText" />
+                <ScalarProperty Name="StatusID" ColumnName="StatusID" />
+                <ScalarProperty Name="IncidentID" ColumnName="IncidentID" />
+                <ScalarProperty Name="CallSignID" ColumnName="CallSignID" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="MessageID" ColumnName="MessageID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="Incidents">
             <EntityTypeMapping TypeName="RadioDBModel.Incident">
               <MappingFragment StoreEntitySet="Incident">
                 <ScalarProperty Name="Description" ColumnName="Description" />
-                <ScalarProperty Name="LevelSceneTime" ColumnName="LevelSceneTime" />
+                <ScalarProperty Name="LeaveSceneTime" ColumnName="LeaveSceneTime" />
                 <ScalarProperty Name="AtSceneTime" ColumnName="AtSceneTime" />
                 <ScalarProperty Name="ReportedTime" ColumnName="ReportedTime" />
                 <ScalarProperty Name="LocationID" ColumnName="LocationID" />

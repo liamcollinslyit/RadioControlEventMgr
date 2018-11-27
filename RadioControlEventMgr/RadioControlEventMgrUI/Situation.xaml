@@ -21,7 +21,7 @@
         </Grid.ColumnDefinitions>
 
         <!-- Listview for incdient information - 5 Columns and context menu -->
-        <ListView Name="lstSituationIncidentList" Grid.Row="0" Grid.Column="0" Margin="10">
+        <ListView Name="lstSituationIncidentList" Grid.Row="0" Grid.Column="0" Margin="10" SelectionChanged="lstSituationIncidentList_SelectionChanged">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="IncidentNo" Width="150" DisplayMemberBinding="{Binding IncidentNo}">
@@ -45,14 +45,14 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="At Scene" Width="150" DisplayMemberBinding="{Binding AtScene}">
+                    <GridViewColumn Header="At Scene" Width="150" DisplayMemberBinding="{Binding AtSceneTime}">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="Leave Scene" Width="150" DisplayMemberBinding="{Binding LeaveScene}">
+                    <GridViewColumn Header="Leave Scene" Width="150" DisplayMemberBinding="{Binding LeaveSceneTime}">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap"/>
@@ -79,8 +79,17 @@
                                 <Image Source="Images/add.png" Stretch="Uniform" />
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem Header="At Scene" Name="submenuAtScene" IsEnabled="True"
+                        <MenuItem Header="At Scene" Name="submenuAtScene" IsEnabled="False"
                                   Click="submenuAtScene_Click">
+                        </MenuItem>
+                        <MenuItem Header="Leave Scene" Name="submenuLeaveScene" IsEnabled="False"
+                                  Click="submenuLeaveScene_Click">
+                        </MenuItem>
+                        <MenuItem Header="Delete Incident" Name="submenuDeleteIncident" IsEnabled="False"
+                                  Click="submenuDeleteIncident_Click">
+                            <MenuItem.Icon>
+                                <Image Source="Images/delete.png" Stretch="Uniform" />
+                            </MenuItem.Icon>
                         </MenuItem>
                     </ContextMenu.Items>
                 </ContextMenu>
@@ -107,7 +116,7 @@
                 </Grid.RowDefinitions>
     
                 <!-- lblSituationIncidentTitle will display incident number -->
-                <Label Name="lblSituationIncidentTitle"  Content="Incident No" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
+                <Label Name="lblSituationIncidentTitle"  Content="New Incident" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
                        Margin="10" HorizontalAlignment="Center" FontSize="20"/>
                 <Label Content="Time" Grid.Row="1" Grid.Column="0" Margin="10,0,10,0"/>
                 <Label Content="Location" Grid.Row="2" Grid.Column="0" Margin="10,5,10,0"/>
@@ -143,7 +152,7 @@
         </StackPanel>
 
         <!-- Listview for crew information - 5 Columns and context menu -->
-        <ListView Name="lstCrewList" Grid.Row="1" Grid.Column="0" Margin="10">
+        <ListView Name="lstCrewList" Grid.Row="1" Grid.Column="0" Margin="10" SelectionChanged="lstCrewList_SelectionChanged">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="Call Sign" Width="150">
@@ -188,7 +197,7 @@
             <ListView.ContextMenu>
                 <ContextMenu Name="mnuCrew" IsEnabled="True">
                     <ContextMenu.Items>
-                        <MenuItem Header="Add new message" Name="submenuNewMessage" IsEnabled="True" 
+                        <MenuItem Header="Add new message" Name="submenuNewMessage" IsEnabled="False" 
                                   Click="submenuNewMessage_Click">
                             <MenuItem.Icon>
                                 <Image Source="Images/add.png" Stretch="Uniform" />

@@ -26,7 +26,7 @@ namespace RadioLibrary
         public int LocationID { get; set; }
         public Nullable<System.TimeSpan> ReportedTime { get; set; }
         public Nullable<System.TimeSpan> AtSceneTime { get; set; }
-        public Nullable<System.TimeSpan> LevelSceneTime { get; set; }
+        public Nullable<System.TimeSpan> LeaveSceneTime { get; set; }
         public string Description { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

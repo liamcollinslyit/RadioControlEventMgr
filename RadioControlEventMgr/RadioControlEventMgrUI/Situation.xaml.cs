@@ -23,10 +23,14 @@ namespace RadioControlEventMgrUI
     {
         RadioDBEntities db = new RadioDBEntities("metadata=res://*/RadioModel.csdl|res://*/RadioModel.ssdl|res://*/RadioModel.msl;provider=System.Data.SqlClient;provider connection string='data source=192.168.60.132" +
                                  ";initial catalog=RadioDB;user id=radiouser;password=password;pooling=False;MultipleActiveResultSets=True;App=EntityFramework'");
+
         List<Incident> incidents = new List<Incident>();
         List<Crew> crews = new List<Crew>();
         List<Location> locations = new List<Location>();
         List<Status> statuses = new List<Status>();
+
+        Incident selectedIncident = new Incident();
+        Crew selectedCrew = new Crew();
 
         public Situation()
         {
@@ -35,66 +39,83 @@ namespace RadioControlEventMgrUI
             // Initialize time comboboxes Hours 00-23, Minutes 00-59
             for (int i = 0; i <= 23 ; i++)
             {
-                if (i < 10) cboSituationTimeHour.Items.Add($"0{i}");
-                else cboSituationTimeHour.Items.Add(i);
+                if (i < 10)
+                {
+                    cboSituationTimeHour.Items.Add($"0{i}");
+                    cboMessageTimeHour.Items.Add($"0{i}");
+                }
+                else
+                {
+                    cboSituationTimeHour.Items.Add(i);
+                    cboMessageTimeHour.Items.Add(i);
+                }
             }
-
             for (int i = 0; i <= 59; i++)
             {
-                if (i<10) cboSituationTimeMin.Items.Add($"0{i}");
-                else cboSituationTimeMin.Items.Add(i);  
+                if (i < 10)
+                {
+                    cboSituationTimeMin.Items.Add($"0{i}");
+                    cboMessageTimeMin.Items.Add($"0{i}");
+                }
+                else
+                {
+                    cboSituationTimeMin.Items.Add(i);
+                    cboMessageTimeMin.Items.Add(i);
+                }
             }
+        }
 
-            for (int i = 0; i <= 23; i++)
-            {
-                if (i < 10) cboMessageTimeHour.Items.Add($"0{i}");
-                else cboMessageTimeHour.Items.Add(i);
-            }
-
-            for (int i = 0; i <= 59; i++)
-            {
-                if (i < 10) cboMessageTimeMin.Items.Add($"0{i}");
-                else cboMessageTimeMin.Items.Add(i);
-            }
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            RefreshIncidentList();
+            RefreshCrewList();
+            RefreshLocations();
+            RefreshStatus();
         }
 
         // Context menu - Add incident button - show incident stackpanel , and set time to now
         private void submenuAddIncident_Click(object sender, RoutedEventArgs e)
         {
             stkSituationIncident.Visibility = Visibility.Visible;
+            ClearSituationDetails();
+        }
 
-            if (DateTime.Now.Hour < 10) cboSituationTimeHour.SelectedValue = $"0{DateTime.Now.Hour}";
-            else cboSituationTimeHour.SelectedValue = DateTime.Now.Hour;
+        private void submenuAtScene_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (var incident in db.Incidents.Where(t => t.IncidentID == selectedIncident.IncidentID))
+            {
+                incident.AtSceneTime = new TimeSpan(DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second) ;
+            }
 
-            if (DateTime.Now.Minute < 10) cboSituationTimeMin.SelectedValue = $"0{DateTime.Now.Minute}";
-            else cboSituationTimeMin.SelectedValue = DateTime.Now.Minute;
+            db.SaveChanges();
+            RefreshIncidentList();
+            submenuAtScene.IsEnabled = false;
+            submenuLeaveScene.IsEnabled = true;
+        }
 
+        private void submenuLeaveScene_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (var incident in db.Incidents.Where(t => t.IncidentID == selectedIncident.IncidentID))
+            {
+                incident.LeaveSceneTime = new TimeSpan(DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
+            }
+
+            db.SaveChanges();
+            RefreshIncidentList();
+            submenuLeaveScene.IsEnabled = false;
         }
 
         // Context menu - New message button - show message stackpanel, and set time to now
         private void submenuNewMessage_Click(object sender, RoutedEventArgs e)
         {
             stkMessage.Visibility = Visibility.Visible;
-
-            if (DateTime.Now.Hour < 10) cboMessageTimeHour.SelectedValue = $"0{DateTime.Now.Hour}";
-            else cboMessageTimeHour.SelectedValue = DateTime.Now.Hour;
-
-            if (DateTime.Now.Minute < 10) cboMessageTimeMin.SelectedValue = $"0{DateTime.Now.Minute}";
-            else cboMessageTimeMin.SelectedValue = DateTime.Now.Minute;
-        }
-
-        private void submenuAtScene_Click(object sender, RoutedEventArgs e)
-        {
+            SetMessageTime();
         }
 
         // Incident panel - Now button - Set time to now in combobox
         private void btnSituationNow_Click(object sender, RoutedEventArgs e)
         {
-            if (DateTime.Now.Hour < 10) cboSituationTimeHour.SelectedValue = $"0{DateTime.Now.Hour}";
-            else cboSituationTimeHour.SelectedValue = DateTime.Now.Hour;
-
-            if (DateTime.Now.Minute < 10) cboSituationTimeMin.SelectedValue = $"0{DateTime.Now.Minute}";
-            else cboSituationTimeMin.SelectedValue = DateTime.Now.Minute;
+            SetIncidentTime();
         }
 
         // Incident panel - Cancel button - hide incident stackpanel
@@ -113,17 +134,14 @@ namespace RadioControlEventMgrUI
             location = (Location)cboSituationLocation.SelectedItem;
 
             CreateIncidentEntry(location, time, details);
+            RefreshIncidentList();
             stkSituationIncident.Visibility = Visibility.Collapsed;
         }
 
         // Message panel - Now button - Set time to now in combobox
         private void btnMessageNow_Click(object sender, RoutedEventArgs e)
         {
-            if (DateTime.Now.Hour < 10) cboMessageTimeHour.SelectedValue = $"0{DateTime.Now.Hour}";
-            else cboMessageTimeHour.SelectedValue = DateTime.Now.Hour;
-
-            if (DateTime.Now.Minute < 10) cboMessageTimeMin.SelectedValue = $"0{DateTime.Now.Minute}";
-            else cboMessageTimeMin.SelectedValue = DateTime.Now.Minute;
+            SetMessageTime();
         }
 
         // Message Panel  - Cancel button - hide message stackpanel
@@ -137,61 +155,82 @@ namespace RadioControlEventMgrUI
         {
             DateTime dateTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, Convert.ToInt32(cboMessageTimeHour.SelectedValue), Convert.ToInt32(cboMessageTimeMin.SelectedValue), 0);
             Crew crew = new Crew();
-            crew.CallSignID = 1;
+            crew.CallSignID = selectedCrew.CallSignID;
             Location location = (Location)cboMessageLocation.SelectedItem;
             Status status = (Status)cboMessageStatus.SelectedItem;
             Incident incident = (Incident)cboMessageIncident.SelectedItem;
             string text = txtMessageText.Text;
 
             CreateMessageEntry(dateTime, crew, incident, status, text);
-
+            UpdateCrew(status, location, incident);
             stkMessage.Visibility = Visibility.Collapsed;
+            RefreshCrewList();
         }
 
-        private void Page_Loaded(object sender, RoutedEventArgs e)
+
+
+
+        private void RefreshIncidentList()
         {
             lstSituationIncidentList.ItemsSource = incidents;
-            lstCrewList.ItemsSource = crews;
-            cboSituationLocation.ItemsSource = locations;
-            cboMessageLocation.ItemsSource = locations;
-            cboMessageStatus.ItemsSource = statuses;
             cboMessageIncident.ItemsSource = incidents;
-
+            incidents.Clear();
             foreach (var incident in db.Incidents)
             {
                 incidents.Add(incident);
             }
-
+            lstSituationIncidentList.Items.Refresh();
+            cboMessageIncident.Items.Refresh();
+        }
+        private void RefreshCrewList()
+        {
+            lstCrewList.ItemsSource = crews;
+            crews.Clear();
             foreach (var crew in db.Crews)
             {
                 crews.Add(crew);
             }
+            lstCrewList.Items.Refresh();
+        }
 
+        private void RefreshLocations()
+        {
+            cboSituationLocation.ItemsSource = locations;
+            cboMessageLocation.ItemsSource = locations;
+            locations.Clear();
             foreach (var location in db.Locations)
             {
                 locations.Add(location);
             }
+            cboSituationLocation.Items.Refresh();
+            cboMessageLocation.Items.Refresh();
+        }
 
+        private void RefreshStatus()
+        {
+            cboMessageStatus.ItemsSource = statuses;
+            statuses.Clear();
             foreach (var status in db.Status)
             {
                 statuses.Add(status);
             }
-        }
+            cboMessageStatus.Items.Refresh();
+        } 
 
         private void CreateIncidentEntry(Location location, TimeSpan time ,string details)
         {
             Incident incident = new Incident();
-            incident.IncidentNo = "INC";
+
+            incident.IncidentNo = "NEWINC";
             incident.LocationID = location.LocationID;
             incident.ReportedTime = time;
             incident.Description = details;
-            SaveIncident(incident);
-        }
-
-        private void SaveIncident(Incident incident)
-        {
             db.Entry(incident).State = System.Data.Entity.EntityState.Added;
             db.SaveChanges();
+
+            incident.IncidentNo = $"INC {incident.IncidentID}";
+            db.SaveChanges();
+
         }
 
         private void CreateMessageEntry(DateTime dateTime, Crew crew, Incident incident, Status status, string text)
@@ -199,17 +238,103 @@ namespace RadioControlEventMgrUI
             Message message = new Message();
             message.Date = dateTime;
             message.CallSignID = crew.CallSignID;
-            message.IncidentID = incident.IncidentID;
+
+            if (incident != null)
+            {
+                message.IncidentID = incident.IncidentID;
+            }
+
             message.StatusID = status.StatusID;
             message.MessageText = text;
-            SaveMessage(message);
-        }
-
-        private void SaveMessage(Message message)
-        {
             db.Entry(message).State = System.Data.Entity.EntityState.Added;
             db.SaveChanges();
         }
-        
+
+        private void UpdateCrew(Status status, Location location, Incident incident)
+        {
+            foreach (var crew in db.Crews.Where(t => t.CallSignID == selectedCrew.CallSignID))
+            {
+                crew.Status = status;
+                crew.Location = location;
+                crew.Incident = incident;
+            }
+            db.SaveChanges();
+        }
+
+        private void SetIncidentTime()
+        {
+            if (DateTime.Now.Hour < 10) cboSituationTimeHour.SelectedValue = $"0{DateTime.Now.Hour}";
+            else cboSituationTimeHour.SelectedValue = DateTime.Now.Hour;
+
+            if (DateTime.Now.Minute < 10) cboSituationTimeMin.SelectedValue = $"0{DateTime.Now.Minute}";
+            else cboSituationTimeMin.SelectedValue = DateTime.Now.Minute;
+        }
+
+        private void SetMessageTime()
+        {
+            if (DateTime.Now.Hour < 10) cboMessageTimeHour.SelectedValue = $"0{DateTime.Now.Hour}";
+            else cboMessageTimeHour.SelectedValue = DateTime.Now.Hour;
+
+            if (DateTime.Now.Minute < 10) cboMessageTimeMin.SelectedValue = $"0{DateTime.Now.Minute}";
+            else cboMessageTimeMin.SelectedValue = DateTime.Now.Minute;
+        }
+
+        private void ClearSituationDetails()
+        {
+            SetIncidentTime();
+            cboSituationLocation.SelectedIndex = -1;
+            txtSituationDetails.Text = "";
+        }
+
+        private void lstSituationIncidentList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(lstSituationIncidentList.SelectedIndex >= 0)
+            {
+
+                submenuAtScene.IsEnabled = false;
+                submenuLeaveScene.IsEnabled = false;
+
+                selectedIncident = incidents.ElementAt(lstSituationIncidentList.SelectedIndex);
+                if (selectedIncident.AtSceneTime == null)
+                {
+                   submenuAtScene.IsEnabled = true;
+                }
+                else if (selectedIncident.LeaveSceneTime == null)
+                {
+                   submenuLeaveScene.IsEnabled = true;
+                }
+
+                submenuDeleteIncident.IsEnabled = true;
+            }        
+        }
+
+        private void lstCrewList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (lstCrewList.SelectedIndex >= 0)
+            {
+                submenuNewMessage.IsEnabled = true;
+                selectedCrew = crews.ElementAt(lstCrewList.SelectedIndex);
+                UpdateCrewDetails();
+            }
+            
+        }
+
+        private void UpdateCrewDetails()
+        {
+            SetMessageTime();
+            lblMessageTitle.Content = selectedCrew.CallSign;
+            cboMessageStatus.SelectedItem = selectedCrew.Status;
+            cboMessageLocation.SelectedItem = selectedCrew.Location;
+            cboMessageIncident.SelectedItem = selectedCrew.Incident;
+            txtMessageText.Text = "";
+        }
+
+        private void submenuDeleteIncident_Click(object sender, RoutedEventArgs e)
+        {
+            db.Incidents.RemoveRange(db.Incidents.Where(t => t.IncidentID == selectedIncident.IncidentID));
+            db.SaveChanges();
+            RefreshIncidentList();
+        }
     }
 }
+// Add save error messages hadling

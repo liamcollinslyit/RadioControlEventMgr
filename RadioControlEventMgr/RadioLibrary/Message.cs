@@ -17,7 +17,7 @@ namespace RadioLibrary
         public int MessageID { get; set; }
         public System.DateTime Date { get; set; }
         public int CallSignID { get; set; }
-        public int IncidentID { get; set; }
+        public Nullable<int> IncidentID { get; set; }
         public int StatusID { get; set; }
         public string MessageText { get; set; }
     

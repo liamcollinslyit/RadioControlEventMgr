@@ -10,17 +10,17 @@
         <EntityTypeShape EntityType="RadioDBModel.CrewType" Width="1.5" PointX="7.625" PointY="8.25" IsExpanded="true" />
         <EntityTypeShape EntityType="RadioDBModel.Location" Width="1.5" PointX="10.5" PointY="8.125" IsExpanded="true" />
         <EntityTypeShape EntityType="RadioDBModel.Log" Width="1.5" PointX="10.5" PointY="1.25" IsExpanded="true" />
-        <EntityTypeShape EntityType="RadioDBModel.Message" Width="1.5" PointX="4.375" PointY="4.5" IsExpanded="true" />
         <EntityTypeShape EntityType="RadioDBModel.Status" Width="1.5" PointX="4.25" PointY="8.125" IsExpanded="true" />
         <EntityTypeShape EntityType="RadioDBModel.User" Width="1.5" PointX="7.625" PointY="1" IsExpanded="true" />
         <AssociationConnector Association="RadioDBModel.FK_User_AccessLevel" ManuallyRouted="false" />
         <AssociationConnector Association="RadioDBModel.FK_Crew_CrewType" ManuallyRouted="false" />
         <AssociationConnector Association="RadioDBModel.FK_Crew_Location" ManuallyRouted="false" />
         <AssociationConnector Association="RadioDBModel.FK_Crew_Status" ManuallyRouted="false" />
-        <AssociationConnector Association="RadioDBModel.FK_Table_Crew" ManuallyRouted="false" />
         <AssociationConnector Association="RadioDBModel.FK_Log_User" ManuallyRouted="false" />
-        <AssociationConnector Association="RadioDBModel.FK_Table_Status" ManuallyRouted="false" />
-        <EntityTypeShape EntityType="RadioDBModel.Incident" Width="1.5" PointX="10.5" PointY="4.375" />
+        <EntityTypeShape EntityType="RadioDBModel.Message" Width="1.5" PointX="4.5" PointY="4.375" />
+        <AssociationConnector Association="RadioDBModel.FK_Table_Crew" />
+        <AssociationConnector Association="RadioDBModel.FK_Table_Status" />
+        <EntityTypeShape EntityType="RadioDBModel.Incident" Width="1.5" PointX="10.5" PointY="4.5" />
         <AssociationConnector Association="RadioDBModel.FK_Crew_Incident" />
         <AssociationConnector Association="RadioDBModel.FK_Incident_Location" />
         <AssociationConnector Association="RadioDBModel.FK_Table_Incident" />
