@@ -26,7 +26,10 @@ namespace RadioControlEventMgrUI
                                          ";initial catalog=RadioDB;user id=radiouser;password=password;pooling=False;MultipleActiveResultSets=True;App=EntityFramework'");
 
         List<Message> messages = new List<Message>();
+        List<Message> incidentMessage = new List<Message>();
         List<Incident> incidents = new List<Incident>();
+
+        Incident selectedIncident = new Incident();
 
         public Logs()
         {
@@ -47,11 +50,40 @@ namespace RadioControlEventMgrUI
             {
                 messages.Add(message);
             }
-
             foreach (var incident in db.Incidents)
             {
                 incidents.Add(incident);
             }
+            messages = messages.OrderBy(t => t.Date).ToList();
+            lstMessageList.Items.Refresh();
+        }
+
+        private void lstIncidentList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (lstIncidentList.SelectedIndex >= 0)
+            {
+                selectedIncident = incidents.ElementAt(lstIncidentList.SelectedIndex);
+                submenuOpenIncident.IsEnabled = true;
+                UpdateIncidentMessages();
+            }
+        }
+
+        private void UpdateIncidentMessages()
+        {
+            lstIncidentMessages.ItemsSource = incidentMessage;
+            incidentMessage.Clear();
+            foreach (var message in db.Messages.Where(t => t.IncidentID == selectedIncident.IncidentID))
+            {
+                incidentMessage.Add(message);
+            }
+            lstIncidentMessages.Items.Refresh();
+
+            lblIncidentTitle.Content = selectedIncident.IncidentNo;
+            txtIncidentAt.Text = selectedIncident.AtSceneTime.ToString();
+            txtIncidentLeave.Text = selectedIncident.LeaveSceneTime.ToString();
+            txtIncidentLocation.Text = selectedIncident.Location.LocationName;
+            txtIncidentDescription.Text = selectedIncident.Description;
+
         }
     }
 }

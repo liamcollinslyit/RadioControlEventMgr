@@ -163,6 +163,7 @@ namespace RadioControlEventMgrUI
 
             CreateMessageEntry(dateTime, crew, incident, status, text);
             UpdateCrew(status, location, incident);
+            txtMessageText.Text = "";
             stkMessage.Visibility = Visibility.Collapsed;
             RefreshCrewList();
         }
@@ -174,6 +175,7 @@ namespace RadioControlEventMgrUI
         {
             lstSituationIncidentList.ItemsSource = incidents;
             cboMessageIncident.ItemsSource = incidents;
+            submenuIncident.ItemsSource = incidents;
             incidents.Clear();
             foreach (var incident in db.Incidents)
             {
@@ -181,6 +183,7 @@ namespace RadioControlEventMgrUI
             }
             lstSituationIncidentList.Items.Refresh();
             cboMessageIncident.Items.Refresh();
+            submenuIncident.Items.Refresh();
         }
         private void RefreshCrewList()
         {
@@ -197,6 +200,7 @@ namespace RadioControlEventMgrUI
         {
             cboSituationLocation.ItemsSource = locations;
             cboMessageLocation.ItemsSource = locations;
+            submenuLocation.ItemsSource = locations;
             locations.Clear();
             foreach (var location in db.Locations)
             {
@@ -204,17 +208,20 @@ namespace RadioControlEventMgrUI
             }
             cboSituationLocation.Items.Refresh();
             cboMessageLocation.Items.Refresh();
+            submenuLocation.Items.Refresh();
         }
 
         private void RefreshStatus()
         {
             cboMessageStatus.ItemsSource = statuses;
+            submenuStatus.ItemsSource = statuses;
             statuses.Clear();
             foreach (var status in db.Status)
             {
                 statuses.Add(status);
             }
             cboMessageStatus.Items.Refresh();
+            submenuStatus.Items.Refresh();
         } 
 
         private void CreateIncidentEntry(Location location, TimeSpan time ,string details)
@@ -286,6 +293,8 @@ namespace RadioControlEventMgrUI
             txtSituationDetails.Text = "";
         }
 
+
+
         private void lstSituationIncidentList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if(lstSituationIncidentList.SelectedIndex >= 0)
@@ -335,6 +344,7 @@ namespace RadioControlEventMgrUI
             db.SaveChanges();
             RefreshIncidentList();
         }
+
     }
 }
-// Add save error messages hadling
+// Add save error/confirm messages hadling

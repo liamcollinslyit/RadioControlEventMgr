@@ -81,9 +81,15 @@
                         </MenuItem>
                         <MenuItem Header="At Scene" Name="submenuAtScene" IsEnabled="False"
                                   Click="submenuAtScene_Click">
+                            <MenuItem.Icon>
+                                <Image Source="Images/RedTime.png" Stretch="Uniform" />
+                            </MenuItem.Icon>
                         </MenuItem>
                         <MenuItem Header="Leave Scene" Name="submenuLeaveScene" IsEnabled="False"
                                   Click="submenuLeaveScene_Click">
+                            <MenuItem.Icon>
+                                <Image Source="Images/GreenTime.png" Stretch="Uniform" />
+                            </MenuItem.Icon>
                         </MenuItem>
                         <MenuItem Header="Delete Incident" Name="submenuDeleteIncident" IsEnabled="False"
                                   Click="submenuDeleteIncident_Click">
@@ -201,6 +207,21 @@
                                   Click="submenuNewMessage_Click">
                             <MenuItem.Icon>
                                 <Image Source="Images/add.png" Stretch="Uniform" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Status" Name="submenuStatus" DisplayMemberPath="StatusName">
+                            <MenuItem.Icon>
+                                <Image Source="Images/Status.png" Stretch="Uniform" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Location" Name="submenuLocation" DisplayMemberPath="LocationName">
+                            <MenuItem.Icon>
+                                <Image Source="Images/Location.png" Stretch="Uniform" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Incident" Name="submenuIncident" DisplayMemberPath="IncidentNo">
+                            <MenuItem.Icon>
+                                <Image Source="Images/Incident.png" Stretch="Uniform" />
                             </MenuItem.Icon>
                         </MenuItem>
                     </ContextMenu.Items>

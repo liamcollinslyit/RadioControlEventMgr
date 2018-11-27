@@ -155,5 +155,16 @@
       <Name>RadioLibrary</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\GreenTime.png" />
+    <Resource Include="Images\RedTime.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Incident.png" />
+    <Resource Include="Images\Status.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Location.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

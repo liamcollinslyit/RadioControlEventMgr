@@ -70,7 +70,7 @@
                         <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
 
-                    <ListView Name="lstIncidentList" Grid.Row="0" Margin="10">
+                    <ListView Name="lstIncidentList" Grid.Row="0" Margin="10" SelectionChanged="lstIncidentList_SelectionChanged">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Header="Incident No" Width="150">
@@ -122,7 +122,7 @@
                         <ListView.ContextMenu>
                             <ContextMenu Name="mnuEditUser" IsEnabled="True">
                                 <ContextMenu.Items>
-                                    <MenuItem Header="Open Incident" Name="submenuOpenIncident" IsEnabled="True" 
+                                    <MenuItem Header="Open Incident" Name="submenuOpenIncident" IsEnabled="False" 
                                               Click="submenuOpenIncident_Click">
                                         <MenuItem.Icon>
                                             <Image Source="Images/edit.png" Stretch="Uniform" />
@@ -181,34 +181,34 @@
 
                             <!-- Listview for diaplying message related to incident, 4 columns -->
                             <ListView Name="lstIncidentMessages" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="9" 
-                                      Margin="10" MinHeight="100">
+                                      Margin="10" MinHeight="100" MaxHeight="500">
                                 <ListView.View>
                                     <GridView>
-                                        <GridViewColumn Header="Date" Width="150">
+                                        <GridViewColumn Header="Date/Time" Width="150">
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate>
-                                                    <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap"/>
-                                                </DataTemplate>
-                                            </GridViewColumn.CellTemplate>
-                                        </GridViewColumn>
-                                        <GridViewColumn Header="Timne" Width="150">
-                                            <GridViewColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap"/>
+                                                    <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding Date}"/>
                                                 </DataTemplate>
                                             </GridViewColumn.CellTemplate>
                                         </GridViewColumn>
                                         <GridViewColumn Header="Call sign" Width="150">
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate>
-                                                    <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap"/>
+                                                    <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding Crew.CallSign}"/>
                                                 </DataTemplate>
                                             </GridViewColumn.CellTemplate>
                                         </GridViewColumn>
-                                        <GridViewColumn Header="Message text" Width="500">
+                                        <GridViewColumn Header="Status" Width="150">
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate>
-                                                    <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap"/>
+                                                    <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding Status.StatusName}"/>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn Header="Message Text" Width="500">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding MessageText}"/>
                                                 </DataTemplate>
                                             </GridViewColumn.CellTemplate>
                                         </GridViewColumn>

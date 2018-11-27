@@ -73,6 +73,7 @@ namespace RadioControlEventMgrUI
 
         private void submenuAddNewUser_Click(object sender, RoutedEventArgs e)
         {
+            ClearUserDetails();
             stkUserDetails.Visibility = Visibility.Visible;
             dbOperation = DBOperation.Add;
         }
