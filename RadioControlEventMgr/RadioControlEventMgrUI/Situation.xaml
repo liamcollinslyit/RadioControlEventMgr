@@ -209,17 +209,17 @@
                                 <Image Source="Images/add.png" Stretch="Uniform" />
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem Header="Status" Name="submenuStatus" DisplayMemberPath="StatusName">
+                        <MenuItem Header="Status" Name="submenuStatus" DisplayMemberPath="StatusName" Click="submenuStatus_Click">
                             <MenuItem.Icon>
                                 <Image Source="Images/Status.png" Stretch="Uniform" />
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem Header="Location" Name="submenuLocation" DisplayMemberPath="LocationName">
+                        <MenuItem Header="Location" Name="submenuLocation" DisplayMemberPath="LocationName" Click="submenuLocation_Click">
                             <MenuItem.Icon>
                                 <Image Source="Images/Location.png" Stretch="Uniform" />
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem Header="Incident" Name="submenuIncident" DisplayMemberPath="IncidentNo">
+                        <MenuItem Header="Incident" Name="submenuIncident" DisplayMemberPath="IncidentNo" Click="submenuIncident_Click">
                             <MenuItem.Icon>
                                 <Image Source="Images/Incident.png" Stretch="Uniform" />
                             </MenuItem.Icon>

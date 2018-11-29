@@ -32,12 +32,23 @@ namespace RadioControlEventMgrUI
         Incident selectedIncident = new Incident();
         Crew selectedCrew = new Crew();
 
+        Style incidentStyle = new Style();
+        Style crewStyle = new Style();
+
         public Situation()
         {
             InitializeComponent();
+        }
+
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            RefreshIncidentList();
+            RefreshCrewList();
+            RefreshLocations();
+            RefreshStatus();
 
             // Initialize time comboboxes Hours 00-23, Minutes 00-59
-            for (int i = 0; i <= 23 ; i++)
+            for (int i = 0; i <= 23; i++)
             {
                 if (i < 10)
                 {
@@ -63,14 +74,45 @@ namespace RadioControlEventMgrUI
                     cboMessageTimeMin.Items.Add(i);
                 }
             }
-        }
 
-        private void Page_Loaded(object sender, RoutedEventArgs e)
-        {
-            RefreshIncidentList();
-            RefreshCrewList();
-            RefreshLocations();
-            RefreshStatus();
+            incidentStyle.Setters.Add(new Setter() {Property = Control.BackgroundProperty,Value = Brushes.LightGray});
+            AddStyleTrigger(incidentStyle, "LeaveSceneTime", null, Brushes.LightGreen);
+            AddStyleTrigger(incidentStyle, "AtSceneTime", null, Brushes.LightCoral);
+            lstSituationIncidentList.Resources.Add(typeof(ListViewItem), incidentStyle);
+
+
+
+            AddStyleTrigger(crewStyle, "Status.StatusName", "Available", Brushes.LightGreen);
+            AddStyleTrigger(crewStyle, "Status.StatusName", "Unavailable", Brushes.LightCoral);
+            lstCrewList.Resources.Add(typeof(ListViewItem), crewStyle);
+
+
+            //< ListView.Resources >
+            //    < Style TargetType = "{x:Type ListViewItem}" >
+
+            //         < Style.Triggers >
+
+            //             < DataTrigger Binding = "{Binding Status.StatusName}" Value = "Available" >
+
+            //                    < Setter Property = "Background" Value = "LightGreen" />
+
+            //                   </ DataTrigger >
+
+            //                   < DataTrigger Binding = "{Binding Status.StatusName}" Value = "Available" >
+
+            //                          < Setter Property = "Background" Value = "LightCoral" />
+
+            //                         </ DataTrigger >
+
+            //                     </ Style.Triggers >
+
+            //                 </ Style >
+
+            //             </ ListView.Resources >
+
+
+
+
         }
 
         // Context menu - Add incident button - show incident stackpanel , and set time to now
@@ -266,6 +308,7 @@ namespace RadioControlEventMgrUI
                 crew.Incident = incident;
             }
             db.SaveChanges();
+            RefreshCrewList();
         }
 
         private void SetIncidentTime()
@@ -345,6 +388,43 @@ namespace RadioControlEventMgrUI
             RefreshIncidentList();
         }
 
+        private void submenuIncident_Click(object sender, RoutedEventArgs e)
+        {
+            MenuItem selectedItem = e.OriginalSource as MenuItem;
+            Incident menuIncident = selectedItem.DataContext as Incident;
+            UpdateCrew(selectedCrew.Status, selectedCrew.Location, menuIncident);
+        }
+
+        private void submenuLocation_Click(object sender, RoutedEventArgs e)
+        {
+            MenuItem selectedItem = e.OriginalSource as MenuItem;
+            Location menuLocation = selectedItem.DataContext as Location;
+            UpdateCrew(selectedCrew.Status, menuLocation, selectedCrew.Incident);
+        }
+
+        private void submenuStatus_Click(object sender, RoutedEventArgs e)
+        {
+            MenuItem selectedItem = e.OriginalSource as MenuItem;
+            Status menuStatus = selectedItem.DataContext as Status;
+            UpdateCrew(menuStatus, selectedCrew.Location, selectedCrew.Incident);
+        }
+
+        private void AddStyleTrigger(Style style, string binding, string value, Brush brush)
+        {
+
+            DataTrigger dataTrigger = new DataTrigger()
+            {
+                Binding = new Binding($"{binding}"),
+                Value = value
+            };
+            dataTrigger.Setters.Add(new Setter()
+            {
+                Property = Control.BackgroundProperty,
+                Value = brush
+            });
+            style.Triggers.Add(dataTrigger);
+        }
     }
 }
 // Add save error/confirm messages hadling
+// add message updating to context menus
