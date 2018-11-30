@@ -249,7 +249,7 @@ namespace RadioControlEventMgrUI
         {
             lstUserList.ItemsSource = users;
             users.Clear();
-            foreach (var user in db.Users)
+            foreach (var user in db.Users.Where(t => t.UserId != 0))
             {
                 users.Add(user);
             }

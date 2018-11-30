@@ -80,40 +80,15 @@ namespace RadioControlEventMgrUI
             AddStyleTrigger(incidentStyle, "AtSceneTime", null, Brushes.LightCoral);
             lstSituationIncidentList.Resources.Add(typeof(ListViewItem), incidentStyle);
 
-
-
             AddStyleTrigger(crewStyle, "Status.StatusName", "Available", Brushes.LightGreen);
             AddStyleTrigger(crewStyle, "Status.StatusName", "Unavailable", Brushes.LightCoral);
             lstCrewList.Resources.Add(typeof(ListViewItem), crewStyle);
 
-
-            //< ListView.Resources >
-            //    < Style TargetType = "{x:Type ListViewItem}" >
-
-            //         < Style.Triggers >
-
-            //             < DataTrigger Binding = "{Binding Status.StatusName}" Value = "Available" >
-
-            //                    < Setter Property = "Background" Value = "LightGreen" />
-
-            //                   </ DataTrigger >
-
-            //                   < DataTrigger Binding = "{Binding Status.StatusName}" Value = "Available" >
-
-            //                          < Setter Property = "Background" Value = "LightCoral" />
-
-            //                         </ DataTrigger >
-
-            //                     </ Style.Triggers >
-
-            //                 </ Style >
-
-            //             </ ListView.Resources >
-
-
-
-
         }
+
+        // ---------------------------------------------------------------------------------------//
+        // Incident context menu Click Events
+        // ---------------------------------------------------------------------------------------//
 
         // Context menu - Add incident button - show incident stackpanel , and set time to now
         private void submenuAddIncident_Click(object sender, RoutedEventArgs e)
@@ -126,7 +101,7 @@ namespace RadioControlEventMgrUI
         {
             foreach (var incident in db.Incidents.Where(t => t.IncidentID == selectedIncident.IncidentID))
             {
-                incident.AtSceneTime = new TimeSpan(DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second) ;
+                incident.AtSceneTime = new TimeSpan(DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
             }
 
             db.SaveChanges();
@@ -147,12 +122,16 @@ namespace RadioControlEventMgrUI
             submenuLeaveScene.IsEnabled = false;
         }
 
-        // Context menu - New message button - show message stackpanel, and set time to now
-        private void submenuNewMessage_Click(object sender, RoutedEventArgs e)
+        private void submenuDeleteIncident_Click(object sender, RoutedEventArgs e)
         {
-            stkMessage.Visibility = Visibility.Visible;
-            SetMessageTime();
+            db.Incidents.RemoveRange(db.Incidents.Where(t => t.IncidentID == selectedIncident.IncidentID));
+            db.SaveChanges();
+            RefreshIncidentList();
         }
+
+        // ---------------------------------------------------------------------------------------//
+        // Incident panel Click Events
+        // ---------------------------------------------------------------------------------------//
 
         // Incident panel - Now button - Set time to now in combobox
         private void btnSituationNow_Click(object sender, RoutedEventArgs e)
@@ -179,6 +158,42 @@ namespace RadioControlEventMgrUI
             RefreshIncidentList();
             stkSituationIncident.Visibility = Visibility.Collapsed;
         }
+
+        // ---------------------------------------------------------------------------------------//
+        // Crew Context Click Events
+        // ---------------------------------------------------------------------------------------//
+
+        // Context menu - New message button - show message stackpanel, and set time to now
+        private void submenuNewMessage_Click(object sender, RoutedEventArgs e)
+        {
+            stkMessage.Visibility = Visibility.Visible;
+            SetMessageTime();
+        }
+
+        private void submenuIncident_Click(object sender, RoutedEventArgs e)
+        {
+            MenuItem selectedItem = e.OriginalSource as MenuItem;
+            Incident menuIncident = selectedItem.DataContext as Incident;
+            UpdateCrew(selectedCrew.Status, selectedCrew.Location, menuIncident);
+        }
+
+        private void submenuLocation_Click(object sender, RoutedEventArgs e)
+        {
+            MenuItem selectedItem = e.OriginalSource as MenuItem;
+            Location menuLocation = selectedItem.DataContext as Location;
+            UpdateCrew(selectedCrew.Status, menuLocation, selectedCrew.Incident);
+        }
+
+        private void submenuStatus_Click(object sender, RoutedEventArgs e)
+        {
+            MenuItem selectedItem = e.OriginalSource as MenuItem;
+            Status menuStatus = selectedItem.DataContext as Status;
+            UpdateCrew(menuStatus, selectedCrew.Location, selectedCrew.Incident);
+        }
+
+        // ---------------------------------------------------------------------------------------//
+        // Message panel Click Events
+        // ---------------------------------------------------------------------------------------//
 
         // Message panel - Now button - Set time to now in combobox
         private void btnMessageNow_Click(object sender, RoutedEventArgs e)
@@ -210,8 +225,9 @@ namespace RadioControlEventMgrUI
             RefreshCrewList();
         }
 
-
-
+        // ---------------------------------------------------------------------------------------//
+        // Refreshing Data in tables and combo boxes
+        // ---------------------------------------------------------------------------------------//
 
         private void RefreshIncidentList()
         {
@@ -264,9 +280,105 @@ namespace RadioControlEventMgrUI
             }
             cboMessageStatus.Items.Refresh();
             submenuStatus.Items.Refresh();
-        } 
+        }
 
-        private void CreateIncidentEntry(Location location, TimeSpan time ,string details)
+        private void SetIncidentTime()
+        {
+            if (DateTime.Now.Hour < 10) cboSituationTimeHour.SelectedValue = $"0{DateTime.Now.Hour}";
+            else cboSituationTimeHour.SelectedValue = DateTime.Now.Hour;
+
+            if (DateTime.Now.Minute < 10) cboSituationTimeMin.SelectedValue = $"0{DateTime.Now.Minute}";
+            else cboSituationTimeMin.SelectedValue = DateTime.Now.Minute;
+        }
+
+        private void SetMessageTime()
+        {
+            if (DateTime.Now.Hour < 10) cboMessageTimeHour.SelectedValue = $"0{DateTime.Now.Hour}";
+            else cboMessageTimeHour.SelectedValue = DateTime.Now.Hour;
+
+            if (DateTime.Now.Minute < 10) cboMessageTimeMin.SelectedValue = $"0{DateTime.Now.Minute}";
+            else cboMessageTimeMin.SelectedValue = DateTime.Now.Minute;
+        }
+
+        // ---------------------------------------------------------------------------------------//
+        // List box selection changes + style setter
+        // ---------------------------------------------------------------------------------------//
+
+        private void lstSituationIncidentList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (lstSituationIncidentList.SelectedIndex >= 0)
+            {
+
+                submenuAtScene.IsEnabled = false;
+                submenuLeaveScene.IsEnabled = false;
+
+                selectedIncident = incidents.ElementAt(lstSituationIncidentList.SelectedIndex);
+                if (selectedIncident.AtSceneTime == null)
+                {
+                    submenuAtScene.IsEnabled = true;
+                }
+                else if (selectedIncident.LeaveSceneTime == null)
+                {
+                    submenuLeaveScene.IsEnabled = true;
+                }
+
+                submenuDeleteIncident.IsEnabled = true;
+            }
+        }
+
+        private void lstCrewList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (lstCrewList.SelectedIndex >= 0)
+            {
+                submenuNewMessage.IsEnabled = true;
+                selectedCrew = crews.ElementAt(lstCrewList.SelectedIndex);
+                UpdateCrewDetails();
+            }
+
+        }
+
+        private void AddStyleTrigger(Style style, string binding, string value, Brush brush)
+        {
+
+            DataTrigger dataTrigger = new DataTrigger()
+            {
+                Binding = new Binding($"{binding}"),
+                Value = value
+            };
+            dataTrigger.Setters.Add(new Setter()
+            {
+                Property = Control.BackgroundProperty,
+                Value = brush
+            });
+            style.Triggers.Add(dataTrigger);
+        }
+
+        // ---------------------------------------------------------------------------------------//
+        // Panels update and clear
+        // ---------------------------------------------------------------------------------------//
+
+        private void UpdateCrewDetails()
+        {
+            SetMessageTime();
+            lblMessageTitle.Content = selectedCrew.CallSign;
+            cboMessageStatus.SelectedItem = selectedCrew.Status;
+            cboMessageLocation.SelectedItem = selectedCrew.Location;
+            cboMessageIncident.SelectedItem = selectedCrew.Incident;
+            txtMessageText.Text = "";
+        }
+
+        private void ClearSituationDetails()
+        {
+            SetIncidentTime();
+            cboSituationLocation.SelectedIndex = -1;
+            txtSituationDetails.Text = "";
+        }
+
+        // ---------------------------------------------------------------------------------------//
+        // Database Updates 
+        // ---------------------------------------------------------------------------------------//
+
+        private void CreateIncidentEntry(Location location, TimeSpan time, string details)
         {
             Incident incident = new Incident();
 
@@ -298,7 +410,6 @@ namespace RadioControlEventMgrUI
             db.Entry(message).State = System.Data.Entity.EntityState.Added;
             db.SaveChanges();
         }
-
         private void UpdateCrew(Status status, Location location, Incident incident)
         {
             foreach (var crew in db.Crews.Where(t => t.CallSignID == selectedCrew.CallSignID))
@@ -311,119 +422,6 @@ namespace RadioControlEventMgrUI
             RefreshCrewList();
         }
 
-        private void SetIncidentTime()
-        {
-            if (DateTime.Now.Hour < 10) cboSituationTimeHour.SelectedValue = $"0{DateTime.Now.Hour}";
-            else cboSituationTimeHour.SelectedValue = DateTime.Now.Hour;
-
-            if (DateTime.Now.Minute < 10) cboSituationTimeMin.SelectedValue = $"0{DateTime.Now.Minute}";
-            else cboSituationTimeMin.SelectedValue = DateTime.Now.Minute;
-        }
-
-        private void SetMessageTime()
-        {
-            if (DateTime.Now.Hour < 10) cboMessageTimeHour.SelectedValue = $"0{DateTime.Now.Hour}";
-            else cboMessageTimeHour.SelectedValue = DateTime.Now.Hour;
-
-            if (DateTime.Now.Minute < 10) cboMessageTimeMin.SelectedValue = $"0{DateTime.Now.Minute}";
-            else cboMessageTimeMin.SelectedValue = DateTime.Now.Minute;
-        }
-
-        private void ClearSituationDetails()
-        {
-            SetIncidentTime();
-            cboSituationLocation.SelectedIndex = -1;
-            txtSituationDetails.Text = "";
-        }
-
-
-
-        private void lstSituationIncidentList_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if(lstSituationIncidentList.SelectedIndex >= 0)
-            {
-
-                submenuAtScene.IsEnabled = false;
-                submenuLeaveScene.IsEnabled = false;
-
-                selectedIncident = incidents.ElementAt(lstSituationIncidentList.SelectedIndex);
-                if (selectedIncident.AtSceneTime == null)
-                {
-                   submenuAtScene.IsEnabled = true;
-                }
-                else if (selectedIncident.LeaveSceneTime == null)
-                {
-                   submenuLeaveScene.IsEnabled = true;
-                }
-
-                submenuDeleteIncident.IsEnabled = true;
-            }        
-        }
-
-        private void lstCrewList_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (lstCrewList.SelectedIndex >= 0)
-            {
-                submenuNewMessage.IsEnabled = true;
-                selectedCrew = crews.ElementAt(lstCrewList.SelectedIndex);
-                UpdateCrewDetails();
-            }
-            
-        }
-
-        private void UpdateCrewDetails()
-        {
-            SetMessageTime();
-            lblMessageTitle.Content = selectedCrew.CallSign;
-            cboMessageStatus.SelectedItem = selectedCrew.Status;
-            cboMessageLocation.SelectedItem = selectedCrew.Location;
-            cboMessageIncident.SelectedItem = selectedCrew.Incident;
-            txtMessageText.Text = "";
-        }
-
-        private void submenuDeleteIncident_Click(object sender, RoutedEventArgs e)
-        {
-            db.Incidents.RemoveRange(db.Incidents.Where(t => t.IncidentID == selectedIncident.IncidentID));
-            db.SaveChanges();
-            RefreshIncidentList();
-        }
-
-        private void submenuIncident_Click(object sender, RoutedEventArgs e)
-        {
-            MenuItem selectedItem = e.OriginalSource as MenuItem;
-            Incident menuIncident = selectedItem.DataContext as Incident;
-            UpdateCrew(selectedCrew.Status, selectedCrew.Location, menuIncident);
-        }
-
-        private void submenuLocation_Click(object sender, RoutedEventArgs e)
-        {
-            MenuItem selectedItem = e.OriginalSource as MenuItem;
-            Location menuLocation = selectedItem.DataContext as Location;
-            UpdateCrew(selectedCrew.Status, menuLocation, selectedCrew.Incident);
-        }
-
-        private void submenuStatus_Click(object sender, RoutedEventArgs e)
-        {
-            MenuItem selectedItem = e.OriginalSource as MenuItem;
-            Status menuStatus = selectedItem.DataContext as Status;
-            UpdateCrew(menuStatus, selectedCrew.Location, selectedCrew.Incident);
-        }
-
-        private void AddStyleTrigger(Style style, string binding, string value, Brush brush)
-        {
-
-            DataTrigger dataTrigger = new DataTrigger()
-            {
-                Binding = new Binding($"{binding}"),
-                Value = value
-            };
-            dataTrigger.Setters.Add(new Setter()
-            {
-                Property = Control.BackgroundProperty,
-                Value = brush
-            });
-            style.Triggers.Add(dataTrigger);
-        }
     }
 }
 // Add save error/confirm messages hadling

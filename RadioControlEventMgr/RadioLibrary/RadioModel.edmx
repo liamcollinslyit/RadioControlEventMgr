@@ -55,7 +55,7 @@
           </Key>
           <Property Name="LogID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Date" Type="datetime" Nullable="false" />
-          <Property Name="Event" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Event" Type="varchar" MaxLength="200" Nullable="false" />
           <Property Name="UserID" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="Message">
@@ -303,16 +303,6 @@
           <NavigationProperty Name="Crews" Relationship="Self.FK_Crew_Location" FromRole="Location" ToRole="Crew" />
           <NavigationProperty Name="Incidents" Relationship="RadioDBModel.FK_Incident_Location" FromRole="Location" ToRole="Incident" />
         </EntityType>
-        <EntityType Name="Log">
-          <Key>
-            <PropertyRef Name="LogID" />
-          </Key>
-          <Property Name="LogID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Date" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="Event" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="UserID" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="User" Relationship="Self.FK_Log_User" FromRole="Log" ToRole="User" />
-        </EntityType>
         <EntityType Name="Status">
           <Key>
             <PropertyRef Name="StatusID" />
@@ -333,7 +323,7 @@
           <Property Name="Surname" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="LevelID" Type="Int32" Nullable="false" />
           <NavigationProperty Name="AccessLevel" Relationship="Self.FK_User_AccessLevel" FromRole="User" ToRole="AccessLevel" />
-          <NavigationProperty Name="Logs" Relationship="Self.FK_Log_User" FromRole="User" ToRole="Log" />
+          <NavigationProperty Name="Logs" Relationship="RadioDBModel.FK_Log_User" FromRole="User" ToRole="Log" />
         </EntityType>
         <Association Name="FK_User_AccessLevel">
           <End Role="AccessLevel" Type="Self.AccessLevel" Multiplicity="1" />
@@ -383,24 +373,11 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Log_User">
-          <End Role="User" Type="Self.User" Multiplicity="1" />
-          <End Role="Log" Type="Self.Log" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="User">
-              <PropertyRef Name="UserId" />
-            </Principal>
-            <Dependent Role="Log">
-              <PropertyRef Name="UserID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityContainer Name="RadioDBEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="AccessLevels" EntityType="Self.AccessLevel" />
           <EntitySet Name="Crews" EntityType="Self.Crew" />
           <EntitySet Name="CrewTypes" EntityType="Self.CrewType" />
           <EntitySet Name="Locations" EntityType="Self.Location" />
-          <EntitySet Name="Logs" EntityType="Self.Log" />
           <EntitySet Name="Status" EntityType="Self.Status" />
           <EntitySet Name="Users" EntityType="Self.User" />
           <AssociationSet Name="FK_User_AccessLevel" Association="Self.FK_User_AccessLevel">
@@ -418,10 +395,6 @@
           <AssociationSet Name="FK_Crew_Status" Association="Self.FK_Crew_Status">
             <End Role="Status" EntitySet="Status" />
             <End Role="Crew" EntitySet="Crews" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Log_User" Association="Self.FK_Log_User">
-            <End Role="User" EntitySet="Users" />
-            <End Role="Log" EntitySet="Logs" />
           </AssociationSet>
           <EntitySet Name="Messages" EntityType="RadioDBModel.Message" />
           <AssociationSet Name="FK_Table_Crew" Association="RadioDBModel.FK_Table_Crew">
@@ -444,6 +417,11 @@
           <AssociationSet Name="FK_Table_Incident" Association="RadioDBModel.FK_Table_Incident">
             <End Role="Incident" EntitySet="Incidents" />
             <End Role="Message" EntitySet="Messages" />
+          </AssociationSet>
+          <EntitySet Name="Logs" EntityType="RadioDBModel.Log" />
+          <AssociationSet Name="FK_Log_User" Association="RadioDBModel.FK_Log_User">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Log" EntitySet="Logs" />
           </AssociationSet>
         </EntityContainer>
         <EntityType Name="Message">
@@ -535,6 +513,28 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="Log">
+          <Key>
+            <PropertyRef Name="LogID" />
+          </Key>
+          <Property Name="LogID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Date" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Event" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="UserID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="User" Relationship="RadioDBModel.FK_Log_User" FromRole="Log" ToRole="User" />
+        </EntityType>
+        <Association Name="FK_Log_User">
+          <End Type="RadioDBModel.User" Role="User" Multiplicity="1" />
+          <End Type="RadioDBModel.Log" Role="Log" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Log">
+              <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -574,16 +574,6 @@
               <MappingFragment StoreEntitySet="Location">
                 <ScalarProperty Name="LocationID" ColumnName="LocationID" />
                 <ScalarProperty Name="LocationName" ColumnName="LocationName" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Logs">
-            <EntityTypeMapping TypeName="RadioDBModel.Log">
-              <MappingFragment StoreEntitySet="Log">
-                <ScalarProperty Name="LogID" ColumnName="LogID" />
-                <ScalarProperty Name="Date" ColumnName="Date" />
-                <ScalarProperty Name="Event" ColumnName="Event" />
-                <ScalarProperty Name="UserID" ColumnName="UserID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -629,6 +619,16 @@
                 <ScalarProperty Name="LocationID" ColumnName="LocationID" />
                 <ScalarProperty Name="IncidentNo" ColumnName="IncidentNo" />
                 <ScalarProperty Name="IncidentID" ColumnName="IncidentID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Logs">
+            <EntityTypeMapping TypeName="RadioDBModel.Log">
+              <MappingFragment StoreEntitySet="Log">
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="Event" ColumnName="Event" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="LogID" ColumnName="LogID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

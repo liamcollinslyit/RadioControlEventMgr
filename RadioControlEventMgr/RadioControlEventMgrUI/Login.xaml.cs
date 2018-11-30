@@ -1,6 +1,7 @@
 ﻿using RadioLibrary;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Core;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -33,68 +34,124 @@ namespace RadioControlEventMgrUI
         // Enter button - validate user and initilise correct dashboard.
         private void btnLoginEnter_Click(object sender, RoutedEventArgs e)
         {
-            string currentUser = tbxUsername.Text;
-            string currentPassword = tbxPassword.Password;
-            bool login = false;
-            User validatedUser = new User();
+            string enteredUsername = tbxUsername.Text;
+            string enteredPassword = tbxPassword.Password;
 
-            foreach (var user in db.Users)
-            {
-                if (currentUser == user.Username && currentPassword == user.Password)
-                {
-                    login = true;
-                    validatedUser = user;
-                }
-            }
+            User validatedUser = ValidateUser(enteredUsername, enteredPassword);
 
-            if (login)
-            {
-                CreateLogsEntry("User log in successfully", validatedUser);
-                Dashboard dashboard = new Dashboard();
-                dashboard.Owner = this;
-                dashboard.user = validatedUser;
-                this.Hide();
-                dashboard.ShowDialog();
-            }
-            else
-            {
-                lblLoginHeading.Content = $"Login attempt {loginCounter} of 3 failed - Please try again";
-                lblLoginHeading.Foreground = Brushes.Red;
-                loginCounter++;
-            }
-
-            if (loginCounter > 3)
-            {
-                lblLoginHeading.Content = $"Login attempt 3 of 3 failed - relaunch application to try again";
-                lblLoginHeading.Foreground = Brushes.Red;
-                lblLoginHeading.FontSize = 16;
-                btnLoginEnter.IsEnabled = false;
-            }
-
+            if (validatedUser.UserId > 0) LoginSuccess(validatedUser);
+            else LoginFailed(enteredUsername);
         }
-
-        private void CreateLogsEntry(string eventDescription, User user)
-        {
-            Log log = new Log();
-            log.Event = eventDescription;
-            log.UserID = user.UserId;
-            log.Date = DateTime.Now;
-            SaveLog(log);
-        }
-
-        private void SaveLog(Log log)
-        {
-            db.Entry(log).State = System.Data.Entity.EntityState.Added;
-            db.SaveChanges();
-        }
-
-
 
         //Exit button - close application
         private void btnLoginExit_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
+            CreateLogEntry("Login screen closed by user using exit button", 0);
             Environment.Exit(0);
         }
+
+        private User ValidateUser(string enteredUsername , string enteredPassword)
+        {
+            User validatedUser = new User();
+
+            try
+            {
+                foreach (var user in db.Users.Where(t => t.Username == enteredUsername && t.Password == enteredPassword))
+                {
+                    validatedUser = user;
+                }
+            }
+            catch (EntityException)
+            {
+                DBConnectionError();
+            }
+
+            return validatedUser;
+        }
+
+        private void LoginSuccess(User validatedUser)
+        {
+            Dashboard dashboard = new Dashboard();
+            dashboard.Owner = this;
+            dashboard.user = validatedUser;
+            this.Hide();
+            CreateLogEntry($"User {validatedUser.Username} login successful: Access Level - {validatedUser.AccessLevel.AccessLevelName}", validatedUser.UserId);
+            dashboard.ShowDialog();
+        }
+
+        private void LoginFailed(string enteredUsername)
+        {
+            CreateLogEntry($"User failed to login with username {enteredUsername}, invalid username/password: Attempt {loginCounter}", 0);
+
+            if (loginCounter < 3)
+            {
+                lblLoginHeading.Content = $"Login attempt {loginCounter} of 3 failed - Please try again";
+            }
+            else
+            {
+                lblLoginHeading.Content = $"Login attempt 3 of 3 failed - relaunch application to try again";                
+                lblLoginHeading.FontSize = 16;
+                CreateLogEntry($"Max number of attempts, user login locked", 0);
+            }
+
+            lblLoginHeading.Foreground = Brushes.Red;
+            tbxUsername.Background = Brushes.LightCoral;
+            tbxPassword.Background = Brushes.LightCoral;
+            btnLoginEnter.IsEnabled = false;
+            loginCounter++;
+        }
+
+        private void tbxUsername_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            tbxUsername.Background = Brushes.White;
+            tbxPassword.Background = Brushes.White;
+            btnLoginEnter.IsEnabled = true;
+        }
+
+        private void tbxPassword_PasswordChanged(object sender, RoutedEventArgs e)
+        {
+            tbxUsername.Background = Brushes.White;
+            tbxPassword.Background = Brushes.White;
+            btnLoginEnter.IsEnabled = true;
+        }
+
+        /// <summary>
+        /// Create an entry in the log database
+        /// </summary>
+        /// <param name="eventDescription"></param>
+        /// Description of the event
+        /// <param name="userID"></param>
+        /// User ID of event generator
+        public void CreateLogEntry(string eventDescription, int userID)
+        {
+            Log log = new Log();
+            log.Date = DateTime.Now;
+            log.Event = eventDescription;
+            log.UserID = userID;
+            db.Entry(log).State = System.Data.Entity.EntityState.Added;
+            SaveDBChnages();
+        }
+
+        public void SaveDBChnages()
+        {
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (EntityException)
+            {
+                DBConnectionError();               
+            }
+            
+        }
+
+        public void DBConnectionError()
+        {
+            MessageBox.Show("Problem connecting to the SQL server, contact system administrator. Application will now close.", "Connection to Database", MessageBoxButton.OK, MessageBoxImage.Error);
+            this.Close();
+            Environment.Exit(0);
+        }
+
     }
 }
