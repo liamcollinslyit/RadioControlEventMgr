@@ -31,6 +31,10 @@ namespace RadioControlEventMgrUI
             InitializeComponent();
         }
 
+        // ---------------------------------------------------------------------------------------//
+        // Log In Window Click Events
+        // ---------------------------------------------------------------------------------------//
+
         // Enter button - validate user and initilise correct dashboard.
         private void btnLoginEnter_Click(object sender, RoutedEventArgs e)
         {
@@ -50,6 +54,10 @@ namespace RadioControlEventMgrUI
             CreateLogEntry("Login screen closed by user using exit button", 0);
             Environment.Exit(0);
         }
+
+        // ---------------------------------------------------------------------------------------//
+        // User Validation And Login Events
+        // ---------------------------------------------------------------------------------------//
 
         private User ValidateUser(string enteredUsername , string enteredPassword)
         {
@@ -74,7 +82,7 @@ namespace RadioControlEventMgrUI
         {
             Dashboard dashboard = new Dashboard();
             dashboard.Owner = this;
-            dashboard.user = validatedUser;
+            dashboard.loggedInUser = validatedUser;
             this.Hide();
             CreateLogEntry($"User {validatedUser.Username} login successful: Access Level - {validatedUser.AccessLevel.AccessLevelName}", validatedUser.UserId);
             dashboard.ShowDialog();
@@ -102,6 +110,10 @@ namespace RadioControlEventMgrUI
             loginCounter++;
         }
 
+        // ---------------------------------------------------------------------------------------//
+        // Reset Textboxes And Button After Failed Login
+        // ---------------------------------------------------------------------------------------//
+
         private void tbxUsername_TextChanged(object sender, TextChangedEventArgs e)
         {
             tbxUsername.Background = Brushes.White;
@@ -115,6 +127,10 @@ namespace RadioControlEventMgrUI
             tbxPassword.Background = Brushes.White;
             btnLoginEnter.IsEnabled = true;
         }
+
+        // ---------------------------------------------------------------------------------------//
+        // Log Messages And DB Updates With Error Control
+        // ---------------------------------------------------------------------------------------//
 
         /// <summary>
         /// Create an entry in the log database
@@ -130,20 +146,21 @@ namespace RadioControlEventMgrUI
             log.Event = eventDescription;
             log.UserID = userID;
             db.Entry(log).State = System.Data.Entity.EntityState.Added;
-            SaveDBChnages();
+            SaveDBChanges();
         }
 
-        public void SaveDBChnages()
+        public int SaveDBChanges()
         {
+            int success = 0;
             try
             {
-                db.SaveChanges();
+                success = db.SaveChanges();
             }
             catch (EntityException)
             {
                 DBConnectionError();               
             }
-            
+            return success;
         }
 
         public void DBConnectionError()

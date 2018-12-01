@@ -1,6 +1,7 @@
 ﻿using RadioLibrary;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Core;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,7 +21,10 @@ namespace RadioControlEventMgrUI
 
     public partial class Dashboard : Window
     {
-        public User user = new User();
+        public User loggedInUser = new User();
+
+        RadioDBEntities db = new RadioDBEntities("metadata=res://*/RadioModel.csdl|res://*/RadioModel.ssdl|res://*/RadioModel.msl;provider=System.Data.SqlClient;provider connection string='data source=192.168.60.132" +
+                                         ";initial catalog=RadioDB;user id=radiouser;password=password;pooling=False;MultipleActiveResultSets=True;App=EntityFramework'");
 
         public Dashboard()
         {
@@ -52,7 +56,9 @@ namespace RadioControlEventMgrUI
         private void btnAdmin_Click(object sender, RoutedEventArgs e)
         {
             Admin admin = new Admin();
+            admin.loggedInUser = loggedInUser;
             frmMain.Navigate(admin);
+            CreateLogEntry("User opened Admin screen", loggedInUser.UserId);
         }
 
         //Exit button - close application
@@ -79,7 +85,38 @@ namespace RadioControlEventMgrUI
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            CheckUserAccess(user);
+            CheckUserAccess(loggedInUser);
+        }
+
+
+        public void CreateLogEntry(string eventDescription, int userID)
+        {
+            Log log = new Log();
+            log.Date = DateTime.Now;
+            log.Event = eventDescription;
+            log.UserID = userID;
+            db.Entry(log).State = System.Data.Entity.EntityState.Added;
+            SaveDBChanges();
+        }
+
+        public int SaveDBChanges()
+        {
+            int success = 0;
+            try
+            {
+                success = db.SaveChanges();
+            }
+            catch (EntityException)
+            {
+                DBConnectionError();
+            }
+            return success;
+        }
+
+        public void DBConnectionError()
+        {
+            MessageBox.Show("Problem connecting to the SQL server, contact system administrator. Application will now close.", "Connection to Database", MessageBoxButton.OK, MessageBoxImage.Error);
+            Environment.Exit(0);
         }
     }
 }
