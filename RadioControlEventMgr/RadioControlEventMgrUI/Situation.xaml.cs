@@ -21,6 +21,8 @@ namespace RadioControlEventMgrUI
 
     public partial class Situation : Page
     {
+        public User loggedInUser = new User();
+
         RadioDBEntities db = new RadioDBEntities("metadata=res://*/RadioModel.csdl|res://*/RadioModel.ssdl|res://*/RadioModel.msl;provider=System.Data.SqlClient;provider connection string='data source=192.168.60.132" +
                                  ";initial catalog=RadioDB;user id=radiouser;password=password;pooling=False;MultipleActiveResultSets=True;App=EntityFramework'");
 

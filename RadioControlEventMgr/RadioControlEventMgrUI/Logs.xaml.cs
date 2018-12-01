@@ -1,6 +1,7 @@
 ﻿using RadioLibrary;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Core;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,6 +22,7 @@ namespace RadioControlEventMgrUI
 
     public partial class Logs : Page
     {
+        public User loggedInUser = new User();
 
         RadioDBEntities db = new RadioDBEntities("metadata=res://*/RadioModel.csdl|res://*/RadioModel.ssdl|res://*/RadioModel.msl;provider=System.Data.SqlClient;provider connection string='data source=192.168.60.132" +
                                          ";initial catalog=RadioDB;user id=radiouser;password=password;pooling=False;MultipleActiveResultSets=True;App=EntityFramework'");
@@ -36,27 +38,66 @@ namespace RadioControlEventMgrUI
             InitializeComponent();
         }
 
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            RefreshIncidentList();
+            RefreshMessagesList();
+        }
+
+        // ---------------------------------------------------------------------------------------//
+        // Incident Log Click Events
+        // ---------------------------------------------------------------------------------------//
+
         // Context menu - Open incident button - show incident details stackpanel
         private void submenuOpenIncident_Click(object sender, RoutedEventArgs e)
         {
             stkIncident.Visibility = Visibility.Visible;
         }
 
-        private void Page_Loaded(object sender, RoutedEventArgs e)
+        // ---------------------------------------------------------------------------------------//
+        // Refreshing Data In Tables And Combo Boxes
+        // ---------------------------------------------------------------------------------------//
+
+        private void RefreshMessagesList()
         {
-            lstMessageList.ItemsSource = messages;
-            lstIncidentList.ItemsSource = incidents;
-            foreach (var message in db.Messages)
+            try
             {
-                messages.Add(message);
+                lstMessageList.ItemsSource = messages;
+                messages.Clear();
+                foreach (var message in db.Messages)
+                {
+                    messages.Add(message);
+                }
+                messages = messages.OrderByDescending(t => t.CallSignID).ToList();
+                lstMessageList.Items.Refresh();
             }
-            foreach (var incident in db.Incidents)
+            catch (EntityException)
             {
-                incidents.Add(incident);
+                DBConnectionError();
             }
-            messages = messages.OrderBy(t => t.Date).ToList();
-            lstMessageList.Items.Refresh();
         }
+
+        private void RefreshIncidentList()
+        {
+            try
+            {
+                lstIncidentList.ItemsSource = incidents;
+                incidents.Clear();
+                foreach (var incident in db.Incidents)
+                {
+                    incidents.Add(incident);
+                }
+                lstIncidentList.Items.Refresh();
+            }
+            catch (EntityException)
+            {
+                DBConnectionError();
+            }
+        }
+
+        // ---------------------------------------------------------------------------------------//
+        // List box Selection Change and Incident Messages Panel
+        // ---------------------------------------------------------------------------------------//
 
         private void lstIncidentList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -84,6 +125,47 @@ namespace RadioControlEventMgrUI
             txtIncidentLocation.Text = selectedIncident.Location.LocationName;
             txtIncidentDescription.Text = selectedIncident.Description;
 
+        }
+
+        // ---------------------------------------------------------------------------------------//
+        // Log Messages And DB Updates With Error Control
+        // ---------------------------------------------------------------------------------------//
+
+        /// <summary>
+        /// Create an entry in the log database
+        /// </summary>
+        /// <param name="eventDescription"></param>
+        /// Description of the event
+        /// <param name="userID"></param>
+        /// User ID of event generator
+        public void CreateLogEntry(string eventDescription, int userID)
+        {
+            Log log = new Log();
+            log.Date = DateTime.Now;
+            log.Event = eventDescription;
+            log.UserID = userID;
+            db.Entry(log).State = System.Data.Entity.EntityState.Added;
+            SaveDBChanges();
+        }
+
+        public int SaveDBChanges()
+        {
+            int success = 0;
+            try
+            {
+                success = db.SaveChanges();
+            }
+            catch (EntityException)
+            {
+                DBConnectionError();
+            }
+            return success;
+        }
+
+        public void DBConnectionError()
+        {
+            MessageBox.Show("Problem connecting to the SQL server, contact system administrator. Application will now close.", "Connection to Database", MessageBoxButton.OK, MessageBoxImage.Error);
+            Environment.Exit(0);
         }
     }
 }

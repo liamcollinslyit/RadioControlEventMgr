@@ -31,11 +31,22 @@ namespace RadioControlEventMgrUI
             InitializeComponent();
         }
 
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            CheckUserAccess(loggedInUser);
+        }
+
+        // ---------------------------------------------------------------------------------------//
+        // Dashboard Button Click Events
+        // ---------------------------------------------------------------------------------------//
+
         // Situation button - Open Situation page in frame
         private void btnSituation_Click(object sender, RoutedEventArgs e)
         {
             Situation situation = new Situation();
             frmMain.Navigate(situation);
+            situation.loggedInUser = loggedInUser;
+            CreateLogEntry("User opened Situation screen", loggedInUser.UserId);
         }
 
         // Logs button - Open Logs page in frame
@@ -43,6 +54,8 @@ namespace RadioControlEventMgrUI
         {
             Logs logs = new Logs();
             frmMain.Navigate(logs);
+            logs.loggedInUser = loggedInUser;
+            CreateLogEntry("User opened Logs screen", loggedInUser.UserId);
         }
 
         // Map button - Open Map page in frame
@@ -50,14 +63,16 @@ namespace RadioControlEventMgrUI
         {
             Map map = new Map();
             frmMain.Navigate(map);
+            map.loggedInUser = loggedInUser;
+            CreateLogEntry("User opened Map screen", loggedInUser.UserId);
         }
 
         // Admin button - Open Admin page in frame
         private void btnAdmin_Click(object sender, RoutedEventArgs e)
         {
             Admin admin = new Admin();
-            admin.loggedInUser = loggedInUser;
             frmMain.Navigate(admin);
+            admin.loggedInUser = loggedInUser;
             CreateLogEntry("User opened Admin screen", loggedInUser.UserId);
         }
 
@@ -66,7 +81,12 @@ namespace RadioControlEventMgrUI
         {
             this.Close();
             Environment.Exit(0);
+            CreateLogEntry("User closed application", loggedInUser.UserId);
         }
+
+        // ---------------------------------------------------------------------------------------//
+        // Check User Access
+        // ---------------------------------------------------------------------------------------//
 
         private void CheckUserAccess(User user)
         {
@@ -83,11 +103,10 @@ namespace RadioControlEventMgrUI
             }
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            CheckUserAccess(loggedInUser);
-        }
 
+        // ---------------------------------------------------------------------------------------//
+        // Log Messages And DB Updates With Error Control
+        // ---------------------------------------------------------------------------------------//
 
         public void CreateLogEntry(string eventDescription, int userID)
         {

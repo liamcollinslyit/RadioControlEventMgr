@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RadioLibrary;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,6 +21,8 @@ namespace RadioControlEventMgrUI
 
     public partial class Map : Page
     {
+        public User loggedInUser = new User();
+
         public Map()
         {
             InitializeComponent();
