@@ -45,7 +45,7 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="At Scene" Width="150" DisplayMemberBinding="{Binding AtSceneTime}">
+                    <GridViewColumn Header="Arrive Scene" Width="150" DisplayMemberBinding="{Binding AtSceneTime}">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap"/>
@@ -79,6 +79,12 @@
                                 <Image Source="Images/add.png" Stretch="Uniform" />
                             </MenuItem.Icon>
                         </MenuItem>
+                        <MenuItem Header="Edit Incident" Name="submenuEditIncident" IsEnabled="True" 
+                                 Click="submenuEditIncident_Click">
+                            <MenuItem.Icon>
+                                <Image Source="Images/Edit.png" Stretch="Uniform" />
+                            </MenuItem.Icon>
+                        </MenuItem>
                         <MenuItem Header="At Scene" Name="submenuAtScene" IsEnabled="False"
                                   Click="submenuAtScene_Click">
                             <MenuItem.Icon>
@@ -104,7 +110,7 @@
 
         <!-- Stackpanel for entering incident information -->
         <StackPanel Name="stkSituationIncident" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" 
-                    Height="300" Width="auto" Margin="10" Background="CornflowerBlue" Visibility="Collapsed">
+                    Height="auto" MaxHeight="350" Width="auto" Margin="10" Background="CornflowerBlue" Visibility="Collapsed">
             
             <!-- 6*2 Grid with buttons, textboxes and combo boxes -->
             <Grid>
@@ -118,30 +124,34 @@
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
     
                 <!-- lblSituationIncidentTitle will display incident number -->
                 <Label Name="lblSituationIncidentTitle"  Content="New Incident" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
                        Margin="10" HorizontalAlignment="Center" FontSize="20"/>
-                <Label Content="Time" Grid.Row="1" Grid.Column="0" Margin="10,0,10,0"/>
-                <Label Content="Location" Grid.Row="2" Grid.Column="0" Margin="10,5,10,0"/>
-                <Label Content="Details" Grid.Row="3" Grid.Column="0" Margin="10,10,10,0"/>
+                <Label Content="Report Time" Grid.Row="1" Grid.Column="0" Margin="10,0,10,0" />
+                <Label Content="Arrive Scene" Name="lblArrivedScene" Grid.Row="2" Grid.Column="0" Margin="10,0,10,0" Visibility="Collapsed"/>
+                <Label Content="Leave Scene" Name="lblLeaveScene" Grid.Row="3" Grid.Column="0" Margin="10,0,10,0" Visibility="Collapsed"/>
+                <Label Content="Location" Grid.Row="4" Grid.Column="0" Margin="10,5,10,0"/>
+                <Label Content="Details" Grid.Row="5" Grid.Column="0" Margin="10,10,10,0"/>
 
                 <!-- Details box should wrap text and is fix in size to allow this-->
-                <TextBox Name="txtSituationDetails" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" TabIndex="3" 
-                         Margin="10,0,10,0" Height="100" Width="265" TextWrapping="Wrap"/>
+                <TextBox Name="txtSituationDetails" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" TabIndex="3" 
+                         Margin="10,0,10,0" Height="100" Width="280" TextWrapping="Wrap" MaxLength="500"/>
 
                 <!-- Combobox shows information from DB location table-->
-                <ComboBox Name="cboSituationLocation" Grid.Row="2" Grid.Column="1" Width="200" 
+                <ComboBox Name="cboSituationLocation" Grid.Row="4" Grid.Column="1" Width="200" 
                           TabIndex="2" Margin="0,5,10,0" DisplayMemberPath="LocationName">
                 </ComboBox>
 
                 <!-- Stackpanel for Ok and cancel buttons -->
-                <StackPanel Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center">
-                    <Button Name="btnSituationCancel" Content="Cancel" Grid.Row="5" Grid.Column="1" Height="25" Width="120"  
+                <StackPanel Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Name="btnSituationCancel" Content="Cancel" Height="25" Width="120"  
                             Margin="0,10,10,10" TabIndex="5" Background="LightCoral" Click="btnSituationCancel_Click" />
-                    <Button Name="btnSituationOk" Content="Ok" Grid.Row="5" Grid.Column="1" Height="25" Width="120" 
+                    <Button Name="btnSituationOk" Content="Ok" Height="25" Width="120" 
                             Margin="10,10,0,10" TabIndex="4" Background="LightGreen" Click="btnSituationOk_Click"/>
                 </StackPanel>
 
@@ -153,6 +163,22 @@
                     <ComboBox Name ="cboSituationTimeMin" Width="55" HorizontalContentAlignment="Center" TabIndex="1"/>
                     <Button Name="btnSituationNow" Content="Now" Width="55" Margin="20,0,0,0"
                             Background="Silver" TabIndex="6" Click="btnSituationNow_Click"/>
+                </StackPanel>
+                <StackPanel Name ="stkAtSceneTime"  Grid.Row="2" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left"
+                            Width="200" Visibility="Collapsed">
+                    <ComboBox Name ="cboAtSceneTimeHour" Width="55" HorizontalContentAlignment="Center" TabIndex="0" />
+                    <Label Content=":" Width="15" HorizontalContentAlignment="Center" />
+                    <ComboBox Name ="cboAtSceneTimeMin" Width="55" HorizontalContentAlignment="Center" TabIndex="1"/>
+                    <Button Name="btnAtSceneNow" Content="Now" Width="55" Margin="20,0,0,0"
+                            Background="Silver" TabIndex="6" Click="btnAtSceneNow_Click"/>
+                </StackPanel>
+                <StackPanel Name="stkLeaveSceneTime" Grid.Row="3" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left"
+                            Width="200" Visibility="Collapsed" >
+                    <ComboBox Name ="cboLeaveSceneTimeHour" Width="55" HorizontalContentAlignment="Center" TabIndex="0" />
+                    <Label Content=":" Width="15" HorizontalContentAlignment="Center" />
+                    <ComboBox Name ="cboLeaveSceneTimeMin" Width="55" HorizontalContentAlignment="Center" TabIndex="1"/>
+                    <Button Name="btnLeaveSceneNow" Content="Now" Width="55" Margin="20,0,0,0"
+                            Background="Silver" TabIndex="6" Click="btnLeaveSceneNow_Click"/>
                 </StackPanel>
             </Grid>
         </StackPanel>
@@ -219,9 +245,14 @@
                                 <Image Source="Images/Location.png" Stretch="Uniform" />
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem Header="Incident" Name="submenuIncident" DisplayMemberPath="IncidentNo" Click="submenuIncident_Click">
+                        <MenuItem Header="Assign Incident" Name="submenuIncident" DisplayMemberPath="IncidentNo" Click="submenuIncident_Click">
                             <MenuItem.Icon>
                                 <Image Source="Images/Incident.png" Stretch="Uniform" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Clear Incident" Name="submenuClearIncident" DisplayMemberPath="IncidentNo" Click="submenuClearIncident_Click">
+                            <MenuItem.Icon>
+                                <Image Source="Images/GreenIncident.png" Stretch="Uniform" />
                             </MenuItem.Icon>
                         </MenuItem>
                     </ContextMenu.Items>
@@ -261,7 +292,7 @@
 
                 <!-- Message box should wrap text and is fix in size to allow this-->
                 <TextBox Name="txtMessageText" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" TabIndex="5" 
-                         Margin="10,0,10,0" Height="100" Width="265" TextWrapping="Wrap"/>
+                         Margin="10,0,10,0" Height="100" Width="265" TextWrapping="Wrap" MaxLength="500"/>
 
                 <!-- Combobox shows information from DB status table-->
                 <ComboBox Name="cboMessageStatus" Grid.Row="2" Grid.Column="1" Width="200" TabIndex="2" Margin="0,5,10,0" 

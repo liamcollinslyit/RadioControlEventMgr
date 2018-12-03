@@ -27,8 +27,7 @@ namespace RadioControlEventMgrUI
         enum DBOperation
         {
             Add,
-            Edit,
-            Delete
+            Edit
         }
 
         RadioDBEntities db = new RadioDBEntities("metadata=res://*/RadioModel.csdl|res://*/RadioModel.ssdl|res://*/RadioModel.msl;provider=System.Data.SqlClient;provider connection string='data source=192.168.60.132" +
@@ -171,12 +170,21 @@ namespace RadioControlEventMgrUI
 
         private void UpdateUser(string username, string password, string forename, string surname, AccessLevel accessLevel)
         {
-            foreach (var user in db.Users.Where(t => t.UserId == selectedUser.UserId))
+            try
             {
-                user.Username = username;
-                user.Password = password;
-                user.Forename = forename;
-                user.Surname = surname;
+                foreach (var user in db.Users.Where(t => t.UserId == selectedUser.UserId))
+                {
+                    user.Username = username;
+                    user.Password = password;
+                    user.Forename = forename;
+                    user.Surname = surname;
+                }
+
+            }
+            catch (EntityException)
+            {
+
+                DBConnectionError();
             }
 
             int saveSuccess = SaveDBChanges();
