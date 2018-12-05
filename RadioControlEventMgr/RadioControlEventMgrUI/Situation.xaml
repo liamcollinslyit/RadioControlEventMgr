@@ -12,57 +12,83 @@
     <Grid>
         <!-- 2*2 Grid -->
         <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="7*"/>
+            <ColumnDefinition Width="3*"/>
         </Grid.ColumnDefinitions>
 
+        <Grid.Resources>
+            <Style TargetType="{x:Type GridViewColumnHeader}">
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="FontWeight" Value="DemiBold"/>
+                <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                <Setter Property="Padding" Value="8,0,0,0"/>
+                <Setter Property="Background" Value="Black"/>
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="IsHitTestVisible" Value="False" />
+            </Style>
+            <Style TargetType="{x:Type Label}" >
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="FontWeight" Value="DemiBold"/>
+            </Style>
+        </Grid.Resources>
+
+        <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal">
+            <Label Content="Incidents" FontSize="20" Foreground="Black" Margin="10,0" Width="100"/>
+            <Label Content="No. of Incidents" FontSize="15" Foreground="Black" Margin="50,0,0,0" VerticalAlignment="Center"/>
+            <TextBox Name="txtNoIncidents" Width="50" Height="25" VerticalAlignment="Center" Margin="10,0,0,0" IsReadOnly="True"  HorizontalAlignment="Center"/>
+            <Label Content="Open Incidents" FontSize="15" Foreground="Black" Margin="50,0,0,0" VerticalAlignment="Center"/>
+            <TextBox Name="txtOpenIncidents" Width="50" Height="25" VerticalAlignment="Center" Margin="10,0,0,0" IsReadOnly="True" HorizontalAlignment="Center"/>
+        </StackPanel>
+
         <!-- Listview for incdient information - 5 Columns and context menu -->
-        <ListView Name="lstSituationIncidentList" Grid.Row="0" Grid.Column="0" Margin="10" SelectionChanged="lstSituationIncidentList_SelectionChanged">
+        <ListView Name="lstSituationIncidentList" Grid.Row="1" Grid.Column="0" Margin="10" SelectionChanged="lstSituationIncidentList_SelectionChanged" Background="AliceBlue">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="IncidentNo" Width="150" DisplayMemberBinding="{Binding IncidentNo}">
+                    <GridViewColumn Header="IncidentNo" Width="150">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap"/>
+                                <TextBlock TextWrapping="Wrap" FontSize="13" Text="{Binding IncidentNo}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="Location" Width="150" DisplayMemberBinding="{Binding Location.LocationName}">
+                    <GridViewColumn Header="Location" Width="150">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap"/>
+                                <TextBlock TextWrapping="Wrap" FontSize="13" Text="{Binding Location.LocationName}" />
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="Reported At" Width="150" DisplayMemberBinding="{Binding ReportedTime}">
+                    <GridViewColumn Header="Reported At" Width="150">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap"/>
+                                <TextBlock TextWrapping="Wrap" FontSize="13" Text="{Binding ReportedTime}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="Arrive Scene" Width="150" DisplayMemberBinding="{Binding AtSceneTime}">
+                    <GridViewColumn Header="Arrive Scene" Width="150">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap"/>
+                                <TextBlock TextWrapping="Wrap" FontSize="13" Text="{Binding AtSceneTime}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="Leave Scene" Width="150" DisplayMemberBinding="{Binding LeaveSceneTime}">
+                    <GridViewColumn Header="Leave Scene" Width="150">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap"/>
+                                <TextBlock TextWrapping="Wrap" FontSize="13" Text="{Binding LeaveSceneTime}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="Description" Width="500" DisplayMemberBinding="{Binding Description}">
+                    <GridViewColumn Header="Description" Width="500">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap"/>
+                                <TextBlock TextWrapping="Wrap" FontSize="13" Text="{Binding Description}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
@@ -109,7 +135,7 @@
         </ListView>
 
         <!-- Stackpanel for entering incident information -->
-        <StackPanel Name="stkSituationIncident" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" 
+        <StackPanel Name="stkSituationIncident" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" 
                     Height="auto" MaxHeight="350" Width="auto" Margin="10" Background="CornflowerBlue" Visibility="Collapsed">
             
             <!-- 6*2 Grid with buttons, textboxes and combo boxes -->
@@ -132,7 +158,7 @@
                 <!-- lblSituationIncidentTitle will display incident number -->
                 <Label Name="lblSituationIncidentTitle"  Content="New Incident" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
                        Margin="10" HorizontalAlignment="Center" FontSize="20"/>
-                <Label Content="Report Time" Grid.Row="1" Grid.Column="0" Margin="10,0,10,0" />
+                <Label Content="Report Time" Grid.Row="1" Grid.Column="0" Margin="10,0,10,0"/>
                 <Label Content="Arrive Scene" Name="lblArrivedScene" Grid.Row="2" Grid.Column="0" Margin="10,0,10,0" Visibility="Collapsed"/>
                 <Label Content="Leave Scene" Name="lblLeaveScene" Grid.Row="3" Grid.Column="0" Margin="10,0,10,0" Visibility="Collapsed"/>
                 <Label Content="Location" Grid.Row="4" Grid.Column="0" Margin="10,5,10,0"/>
@@ -183,42 +209,50 @@
             </Grid>
         </StackPanel>
 
+        <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal">
+            <Label Content="Crew" FontSize="20" Foreground="Black" Margin="10,0"  Width="100" />
+            <Label Content="No. of Crew" FontSize="15" Foreground="Black" Margin="50,0,0,0" VerticalAlignment="Center"/>
+            <TextBox Name="txtCrewNo" Width="50" Height="25" VerticalAlignment="Center" Margin="10,0,0,0" IsReadOnly="True" HorizontalAlignment="Center"/>
+            <Label Content="Available Crew" FontSize="15" Foreground="Black" Margin="50,0,0,0" VerticalAlignment="Center"/>
+            <TextBox Name="txtAvailableCrew" Width="50" Height="25" VerticalAlignment="Center" Margin="10,0,0,0" IsReadOnly="True" HorizontalAlignment="Center"/>
+        </StackPanel>
+
         <!-- Listview for crew information - 5 Columns and context menu -->
-        <ListView Name="lstCrewList" Grid.Row="1" Grid.Column="0" Margin="10" SelectionChanged="lstCrewList_SelectionChanged">
+        <ListView Name="lstCrewList" Grid.Row="3" Grid.Column="0" Margin="10" Padding="5" SelectionChanged="lstCrewList_SelectionChanged" Background="AliceBlue" >
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="Call Sign" Width="150">
+                    <GridViewColumn Header="Call Sign" Width="250" >
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding CallSign}"/>
+                                <TextBlock TextWrapping="Wrap" FontSize="13" Text="{Binding CallSign}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="Type" Width="150">
+                    <GridViewColumn Header="Type" Width="250">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding CrewType.CrewTypeName}"/>
+                                <TextBlock TextWrapping="Wrap" FontSize="13" Text="{Binding CrewType.CrewTypeName}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="Status" Width="150">
+                    <GridViewColumn Header="Status" Width="250">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding Status.StatusName }"/>
+                                <TextBlock TextWrapping="Wrap" FontSize="13" Text="{Binding Status.StatusName }"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="Location" Width="150">
+                    <GridViewColumn Header="Location" Width="250">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding Location.LocationName}"/>
+                                <TextBlock TextWrapping="Wrap" FontSize="13" Text="{Binding Location.LocationName}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="Incident" Width="150">
+                    <GridViewColumn Header="Incident" Width="250">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding Incident.IncidentNo}"/>
+                                <TextBlock TextWrapping="Wrap" FontSize="13" Text="{Binding Incident.IncidentNo}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
@@ -261,7 +295,7 @@
         </ListView>
 
         <!-- Stackpanel for entering message information -->
-        <StackPanel Name="stkMessage" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" 
+        <StackPanel Name="stkMessage" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Center" 
                     Height="360" Width="auto" Margin="10" Background="CadetBlue" Visibility="Collapsed">
             
             <!-- 8*2 Grid -->
@@ -283,10 +317,10 @@
 
                 <!-- lblMessageTitle will diplay crew name -->
                 <Label Name="lblMessageTitle"  Content="Call sign" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
-                       Margin="10" HorizontalAlignment="Center" FontSize="20"/>
-                <Label Content="Time" Grid.Row="1" Grid.Column="0" Margin="10,0,10,0"/>
-                <Label Content="Status" Grid.Row="2" Grid.Column="0" Margin="10,5,10,0"/>
-                <Label Content="Location" Grid.Row="3" Grid.Column="0" Margin="10,5,10,0"/>
+                       Margin="10" HorizontalAlignment="Center" FontSize="20" Foreground="White"/>
+                <Label Content="Time" Grid.Row="1" Grid.Column="0" Margin="10,0,10,0" />
+                <Label Content="Status" Grid.Row="2" Grid.Column="0" Margin="10,5,10,0" />
+                <Label Content="Location" Grid.Row="3" Grid.Column="0" Margin="10,5,10,0" />
                 <Label Content="Incident" Grid.Row="4" Grid.Column="0" Margin="10,5,10,0"/>
                 <Label Content="Message" Grid.Row="5" Grid.Column="0" Margin="10,5,10,0"/>
 
@@ -296,7 +330,7 @@
 
                 <!-- Combobox shows information from DB status table-->
                 <ComboBox Name="cboMessageStatus" Grid.Row="2" Grid.Column="1" Width="200" TabIndex="2" Margin="0,5,10,0" 
-                          DisplayMemberPath="StatusName">
+                          DisplayMemberPath="StatusName" >
                 </ComboBox>
                 <!-- Combobox shows information from DB location table-->
                 <ComboBox Name="cboMessageLocation" Grid.Row="3" Grid.Column="1" Width="200" TabIndex="3" Margin="0,5,10,0"

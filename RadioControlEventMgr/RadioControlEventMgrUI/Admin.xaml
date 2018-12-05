@@ -10,8 +10,32 @@
       Title="Admin">
     <!-- XAML for admin page, user control and user logs -->
     <Grid>
+
+        <Grid.Resources>
+            <Style TargetType="{x:Type GridViewColumnHeader}">
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="FontWeight" Value="DemiBold"/>
+                <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                <Setter Property="Padding" Value="8,0,0,0"/>
+                <Setter Property="Background" Value="Black"/>
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="IsHitTestVisible" Value="False" />
+            </Style>
+            <Style TargetType="{x:Type Label}" >
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="FontWeight" Value="DemiBold"/>
+            </Style>
+        </Grid.Resources>
+
+
         <!-- Tab control for Users and Logs -->
         <TabControl Name="tabAdminOptions" Background="Transparent" >
+            <TabControl.Resources>
+                <Style TargetType="{x:Type TabItem}">
+                    <Setter Property="FontSize" Value="13"/>
+                </Style>
+            </TabControl.Resources>
+
             <!-- Users Tab, Listview for user details, context menu to open user stackpanel-->
             <TabItem Header="Users" >
                 <Grid>
@@ -22,41 +46,41 @@
                     </Grid.RowDefinitions>
 
                     <!-- List view with 5 columns -->
-                    <ListView Name="lstUserList" Grid.Row="0" SelectionChanged="lstUserList_SelectionChanged">
+                    <ListView Name="lstUserList" Grid.Row="0" SelectionChanged="lstUserList_SelectionChanged" Padding="5" Background="AliceBlue">
                         <ListView.View>
                             <GridView>
-                                <GridViewColumn Header="UserName" Width="150">
+                                <GridViewColumn Header="UserName" Width="200">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding Username}"/>
+                                            <TextBlock TextWrapping="Wrap" Text="{Binding Username}"/>
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
-                                <GridViewColumn Header="Password" Width="150">
+                                <GridViewColumn Header="Password" Width="200">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding Password}"/>
+                                            <TextBlock TextWrapping="Wrap" Text="{Binding Password}"/>
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
-                                <GridViewColumn Header="Surname" Width="150">
+                                <GridViewColumn Header="Surname" Width="200">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding Surname}"/>
+                                            <TextBlock TextWrapping="Wrap" Text="{Binding Surname}"/>
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
-                                <GridViewColumn Header="Forename" Width="150">
+                                <GridViewColumn Header="Forename" Width="200">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding Forename}"/>
+                                            <TextBlock TextWrapping="Wrap" Text="{Binding Forename}"/>
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
-                                <GridViewColumn Header="Access level" Width="150">
+                                <GridViewColumn Header="Access level" Width="200">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding AccessLevel.AccessLevelName}"/>
+                                            <TextBlock TextWrapping="Wrap" Text="{Binding AccessLevel.AccessLevelName}"/>
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
@@ -92,12 +116,12 @@
 
                     <!-- Stackpanel for adding/editing user details -->
                     <StackPanel Name="stkUserDetails" Grid.Row="1" HorizontalAlignment="Center" Margin="10,100" 
-                                Background="LightGray" Visibility="Collapsed" >
+                                Background="SteelBlue" Visibility="Collapsed" >
                         <Grid>
                             <!-- 6*2 Grid -->
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="95"/>
-                                <ColumnDefinition Width="210"/>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*"/>
@@ -144,27 +168,27 @@
 
             <!-- Tab for user log information, list view with 3 columns -->
             <TabItem Header="Logs">
-                <ListView Name="lstLogsList">
+                <ListView Name="lstLogsList" Padding="5" Background="AliceBlue">
                     <ListView.View>
                         <GridView>
                             <GridViewColumn Header="Date/Time" Width="200">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
-                                        <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding Date}"/>
+                                        <TextBlock TextWrapping="Wrap" Text="{Binding Date}"/>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-                            <GridViewColumn Header="Event" Width="800">
+                            <GridViewColumn Header="Event" Width="1000">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
-                                        <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding Event}"/>
+                                        <TextBlock TextWrapping="Wrap" Text="{Binding Event}"/>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
                             <GridViewColumn Header="User ID" Width="200">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
-                                        <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding User.Username}"/>
+                                        <TextBlock TextWrapping="Wrap" Text="{Binding User.Username}"/>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>

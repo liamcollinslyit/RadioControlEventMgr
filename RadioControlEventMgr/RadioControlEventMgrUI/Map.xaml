@@ -16,6 +16,12 @@
         <!-- Display offline image file-->
        
         <TabControl Name="TabMaps" Background="Transparent">
+            <TabControl.Resources>
+                <Style TargetType="{x:Type TabItem}">
+                    <Setter Property="FontSize" Value="13"/>
+                </Style>
+            </TabControl.Resources>
+
             <TabItem Header="Local">
                 <Image Name="imgMap" Source="Images/Map.jpg" Margin="20" Visibility="Visible"/>
             </TabItem>
