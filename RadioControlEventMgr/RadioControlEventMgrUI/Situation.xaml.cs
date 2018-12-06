@@ -34,9 +34,11 @@ namespace RadioControlEventMgrUI
                                  ";initial catalog=RadioDB;user id=radiouser;password=password;pooling=False;MultipleActiveResultSets=True;App=EntityFramework'");
 
         List<Incident> incidents = new List<Incident>();
+        List<Incident> activeIncidents = new List<Incident>();
         List<Crew> crews = new List<Crew>();
         List<Location> locations = new List<Location>();
         List<Status> statuses = new List<Status>();
+        List<Message> messages = new List<Message>();
 
         DBOperation dbOperation = new DBOperation();
         Incident selectedIncident = new Incident();
@@ -56,6 +58,7 @@ namespace RadioControlEventMgrUI
             RefreshCrewList();
             RefreshLocations();
             RefreshStatus();
+            RefreshMessagesList();
 
             loadTimeBoxes(cboSituationTimeHour, cboSituationTimeMin);
             loadTimeBoxes(cboAtSceneTimeHour, cboAtSceneTimeMin);
@@ -67,6 +70,7 @@ namespace RadioControlEventMgrUI
             AddStyleTrigger(incidentStyle, "AtSceneTime", null, Brushes.LightCoral);
             lstSituationIncidentList.Resources.Add(typeof(ListViewItem), incidentStyle);
 
+            AddStyleTrigger(crewStyle, "Status.StatusName", "Radio Check Failed", Brushes.LightSalmon);
             AddStyleTrigger(crewStyle, "Status.StatusName", "Available", Brushes.LightGreen);
             AddStyleTrigger(crewStyle, "Status.StatusName", "Unavailable", Brushes.LightCoral);
             lstCrewList.Resources.Add(typeof(ListViewItem), crewStyle);
@@ -85,6 +89,7 @@ namespace RadioControlEventMgrUI
             lblLeaveScene.Visibility = Visibility.Collapsed;
             stkAtSceneTime.Visibility = Visibility.Collapsed;
             stkLeaveSceneTime.Visibility = Visibility.Collapsed;
+            lstSituationMessages.Visibility = Visibility.Collapsed;
             stkSituationIncident.Visibility = Visibility.Visible;
             ClearSituationDetails();
             CreateLogEntry("User opened add incident panel", loggedInUser.UserId);
@@ -98,6 +103,7 @@ namespace RadioControlEventMgrUI
             stkAtSceneTime.Visibility = Visibility.Visible;
             stkLeaveSceneTime.Visibility = Visibility.Visible;
             stkSituationIncident.Visibility = Visibility.Visible;
+            lstSituationMessages.Visibility = Visibility.Collapsed;
             ClearSituationDetails();
             UpdateSituationDetails();
             CreateLogEntry("User opened edit incident panel", loggedInUser.UserId);
@@ -152,7 +158,7 @@ namespace RadioControlEventMgrUI
 
         private void submenuDeleteIncident_Click(object sender, RoutedEventArgs e)
         {
-            MessageBoxResult confirm = MessageBox.Show($"Are you sure you want to delete incident: {selectedIncident.IncidentID}", "Delete Incident", MessageBoxButton.YesNo,MessageBoxImage.Question);
+            MessageBoxResult confirm = MessageBox.Show($"Are you sure you want to delete incident: {selectedIncident.IncidentNo}", "Delete Incident", MessageBoxButton.YesNo,MessageBoxImage.Question);
 
             if (confirm == MessageBoxResult.Yes)
             {
@@ -187,6 +193,7 @@ namespace RadioControlEventMgrUI
         private void btnSituationCancel_Click(object sender, RoutedEventArgs e)
         {
             stkSituationIncident.Visibility = Visibility.Collapsed;
+            lstSituationMessages.Visibility = Visibility.Visible;
             CreateLogEntry("User closed add incident panel", loggedInUser.UserId);
         }
 
@@ -197,7 +204,7 @@ namespace RadioControlEventMgrUI
             {
                 TimeSpan reportTime = new TimeSpan(Convert.ToInt32(cboSituationTimeHour.SelectedValue), Convert.ToInt32(cboSituationTimeMin.SelectedValue), 0);
                 Location location = (Location)cboSituationLocation.SelectedItem;
-                string details = txtSituationDetails.Text;
+                string details = txtSituationDetails.Text.Trim() ;
 
                 if (dbOperation == DBOperation.Add)
                 {
@@ -244,6 +251,7 @@ namespace RadioControlEventMgrUI
 
                 RefreshIncidentList();
                 stkSituationIncident.Visibility = Visibility.Collapsed;
+                lstSituationMessages.Visibility = Visibility.Visible;
             }
         }
 
@@ -286,6 +294,7 @@ namespace RadioControlEventMgrUI
         private void submenuNewMessage_Click(object sender, RoutedEventArgs e)
         {
             stkMessage.Visibility = Visibility.Visible;
+            lstSituationMessages.Visibility = Visibility.Collapsed;
             SetTimeBoxNow(cboMessageTimeHour,cboMessageTimeMin);
             CreateLogEntry("User opened new message panel", loggedInUser.UserId);
         }
@@ -295,6 +304,7 @@ namespace RadioControlEventMgrUI
             MenuItem selectedItem = e.OriginalSource as MenuItem;
             Incident menuIncident = selectedItem.DataContext as Incident;
             UpdateCrew(selectedCrew.Status, selectedCrew.Location, menuIncident);
+            CreateMessageEntry(DateTime.Now, selectedCrew, selectedCrew.Incident, selectedCrew.Status, $"Assigned to incident - {selectedCrew.Incident.IncidentNo}");
         }
 
         private void submenuLocation_Click(object sender, RoutedEventArgs e)
@@ -302,6 +312,7 @@ namespace RadioControlEventMgrUI
             MenuItem selectedItem = e.OriginalSource as MenuItem;
             Location menuLocation = selectedItem.DataContext as Location;
             UpdateCrew(selectedCrew.Status, menuLocation, selectedCrew.Incident);
+            CreateMessageEntry(DateTime.Now, selectedCrew, selectedCrew.Incident, selectedCrew.Status, $"Changed to location - {selectedCrew.Location.LocationName}");
         }
 
         private void submenuStatus_Click(object sender, RoutedEventArgs e)
@@ -309,11 +320,13 @@ namespace RadioControlEventMgrUI
             MenuItem selectedItem = e.OriginalSource as MenuItem;
             Status menuStatus = selectedItem.DataContext as Status;
             UpdateCrew(menuStatus, selectedCrew.Location, selectedCrew.Incident);
+            CreateMessageEntry(DateTime.Now, selectedCrew, selectedCrew.Incident, selectedCrew.Status, $"Changed status to - {selectedCrew.Status.StatusName}");
         }
 
         private void submenuClearIncident_Click(object sender, RoutedEventArgs e)
         {
-            UpdateCrew(selectedCrew.Status, selectedCrew.Location, null);
+            CreateMessageEntry(DateTime.Now, selectedCrew, selectedCrew.Incident, selectedCrew.Status, $"Unassigned from incident - {selectedCrew.Incident.IncidentNo}");
+            UpdateCrew(selectedCrew.Status, selectedCrew.Location, null);          
         }
 
         // ---------------------------------------------------------------------------------------//
@@ -330,6 +343,7 @@ namespace RadioControlEventMgrUI
         private void btnMessageCancel_Click(object sender, RoutedEventArgs e)
         {
             stkMessage.Visibility = Visibility.Collapsed;
+            lstSituationMessages.Visibility = Visibility.Visible;
             CreateLogEntry("User closed new message panel", loggedInUser.UserId);
         }
 
@@ -342,12 +356,13 @@ namespace RadioControlEventMgrUI
             Location location = (Location)cboMessageLocation.SelectedItem;
             Status status = (Status)cboMessageStatus.SelectedItem;
             Incident incident = (Incident)cboMessageIncident.SelectedItem;
-            string text = txtMessageText.Text;
+            string text = txtMessageText.Text.Trim();
 
             CreateMessageEntry(dateTime, crew, incident, status, text);
             UpdateCrew(status, location, incident);
             txtMessageText.Text = "";
             stkMessage.Visibility = Visibility.Collapsed;
+            lstSituationMessages.Visibility = Visibility.Visible;
             RefreshCrewList();
         }
 
@@ -357,10 +372,8 @@ namespace RadioControlEventMgrUI
 
         private void RefreshIncidentList()
         {
-            lstSituationIncidentList.ItemsSource = incidents;
-            cboMessageIncident.ItemsSource = incidents;
-            submenuIncident.ItemsSource = incidents;
             incidents.Clear();
+            activeIncidents.Clear();
 
             try
             {
@@ -368,27 +381,9 @@ namespace RadioControlEventMgrUI
                 {
                     incidents.Add(incident);
                 }
-            }
-            catch (EntityException)
-            {
-
-                DBConnectionError();
-            }
-
-            lstSituationIncidentList.Items.Refresh();
-            cboMessageIncident.Items.Refresh();
-            submenuIncident.Items.Refresh();
-        }
-        private void RefreshCrewList()
-        {
-            lstCrewList.ItemsSource = crews;
-            crews.Clear();
-
-            try
-            {
-                foreach (var crew in db.Crews)
+                foreach (var incident in db.Incidents.Where(t=> t.LeaveSceneTime == null))
                 {
-                    crews.Add(crew);
+                    activeIncidents.Add(incident);
                 }
             }
             catch (EntityException)
@@ -397,15 +392,43 @@ namespace RadioControlEventMgrUI
                 DBConnectionError();
             }
 
- 
+            incidents = incidents.OrderBy(t => t.LeaveSceneTime.HasValue).ToList();
+
+            lstSituationIncidentList.ItemsSource = incidents;
+            cboMessageIncident.ItemsSource = activeIncidents;
+            submenuIncident.ItemsSource = activeIncidents;
+
+            lstSituationIncidentList.Items.Refresh();
+            cboMessageIncident.Items.Refresh();
+            submenuIncident.Items.Refresh();
+        }
+        private void RefreshCrewList()
+        {
+            crews.Clear();
+
+            try
+            {
+                foreach (var crew in db.Crews)
+                {
+                    crews.Add(crew);
+                    if (crew.StatusID < 3)
+                    {
+                        btnRadioCheck.Visibility = Visibility.Visible;
+                    }
+                }
+            }
+            catch (EntityException)
+            {
+
+                DBConnectionError();
+            }
+
+            lstCrewList.ItemsSource = crews;
             lstCrewList.Items.Refresh();
         }
 
         private void RefreshLocations()
         {
-            cboSituationLocation.ItemsSource = locations;
-            cboMessageLocation.ItemsSource = locations;
-            submenuLocation.ItemsSource = locations;
             locations.Clear();
 
             try
@@ -421,6 +444,10 @@ namespace RadioControlEventMgrUI
                 DBConnectionError();
             }
 
+            cboSituationLocation.ItemsSource = locations;
+            cboMessageLocation.ItemsSource = locations;
+            submenuLocation.ItemsSource = locations;
+
             cboSituationLocation.Items.Refresh();
             cboMessageLocation.Items.Refresh();
             submenuLocation.Items.Refresh();
@@ -428,13 +455,11 @@ namespace RadioControlEventMgrUI
 
         private void RefreshStatus()
         {
-            cboMessageStatus.ItemsSource = statuses;
-            submenuStatus.ItemsSource = statuses;
             statuses.Clear();
 
             try
             {
-                foreach (var status in db.Status)
+                foreach (var status in db.Status.Where(t=> t.StatusID >= 3))
                 {
                     statuses.Add(status);
                 }
@@ -444,9 +469,32 @@ namespace RadioControlEventMgrUI
 
                 DBConnectionError();
             }
- 
+
+            cboMessageStatus.ItemsSource = statuses;
+            submenuStatus.ItemsSource = statuses;
+
             cboMessageStatus.Items.Refresh();
             submenuStatus.Items.Refresh();
+        }
+
+        private void RefreshMessagesList()
+        {
+            try
+            {
+                messages.Clear();
+                foreach (var message in db.Messages)
+                {
+                    messages.Add(message);
+                }
+                messages = messages.OrderByDescending(t => t.Date).ToList();
+                lstSituationMessages.ItemsSource = messages;
+
+                lstSituationMessages.Items.Refresh();
+            }
+            catch (EntityException)
+            {
+                DBConnectionError();
+            }
         }
 
         private void SetTimeBoxNow(ComboBox hour, ComboBox min)
@@ -668,6 +716,7 @@ namespace RadioControlEventMgrUI
             message.MessageText = text;
             db.Entry(message).State = System.Data.Entity.EntityState.Added;
             SaveDBChanges();
+            RefreshMessagesList();
             CreateLogEntry($"User created a new message: {crew.CallSignID} at {message.Date} ", loggedInUser.UserId);
         }
         private void UpdateCrew(Status status, Location location, Incident incident)
@@ -741,7 +790,39 @@ namespace RadioControlEventMgrUI
             MessageBox.Show("Problem connecting to the SQL server, contact system administrator. Application will now close.", "Connection to Database", MessageBoxButton.OK, MessageBoxImage.Error);
             Environment.Exit(0);
         }
+
+        private void btnRadioCheck_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                foreach (var crew in db.Crews.Where(t=> t.StatusID < 3))
+                {
+
+                    MessageBoxResult result = MessageBox.Show($"Radio Check with {crew.CallSign}, OK ?", "Radio Check", MessageBoxButton.YesNoCancel, MessageBoxImage.Information);
+
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        crew.StatusID = 3;
+                    }
+                    if (result == MessageBoxResult.No)
+                    {
+                        crew.StatusID = 2;
+                    }
+                    if (result == MessageBoxResult.Cancel)
+                    {
+                        break;
+                    }
+
+                    btnRadioCheck.Visibility = Visibility.Collapsed;
+                }
+                SaveDBChanges();
+                RefreshCrewList();
+            }
+            catch (EntityException)
+            {
+                DBConnectionError();
+            }
+        }
     }
 }
-// Add save error/confirm messages hadling
-// add message updating to context menus
+

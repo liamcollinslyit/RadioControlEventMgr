@@ -62,13 +62,14 @@ namespace RadioControlEventMgrUI
         {
             try
             {
-                lstMessageList.ItemsSource = messages;
                 messages.Clear();
                 foreach (var message in db.Messages)
                 {
                     messages.Add(message);
                 }
-                messages = messages.OrderByDescending(t => t.CallSignID).ToList();
+                messages = messages.OrderByDescending(t => t.Date).ToList();
+                lstMessageList.ItemsSource = messages;
+
                 lstMessageList.Items.Refresh();
             }
             catch (EntityException)
@@ -81,12 +82,12 @@ namespace RadioControlEventMgrUI
         {
             try
             {
-                lstIncidentList.ItemsSource = incidents;
                 incidents.Clear();
                 foreach (var incident in db.Incidents)
                 {
                     incidents.Add(incident);
                 }
+                lstIncidentList.ItemsSource = incidents;
                 lstIncidentList.Items.Refresh();
             }
             catch (EntityException)
@@ -111,20 +112,32 @@ namespace RadioControlEventMgrUI
 
         private void UpdateIncidentMessages()
         {
-            lstIncidentMessages.ItemsSource = incidentMessage;
-            incidentMessage.Clear();
-            foreach (var message in db.Messages.Where(t => t.IncidentID == selectedIncident.IncidentID))
+            try
             {
-                incidentMessage.Add(message);
+                incidentMessage.Clear();
+
+                foreach (var message in db.Messages.Where(t => t.IncidentID == selectedIncident.IncidentID))
+                {
+                    incidentMessage.Add(message);
+                }
+
+                incidentMessage = incidentMessage.OrderBy(t => t.Date).ToList();
+
+                lstIncidentMessages.ItemsSource = incidentMessage;
+
+                lstIncidentMessages.Items.Refresh();
+
+                lblIncidentTitle.Content = selectedIncident.IncidentNo;
+                txtIncidentAt.Text = selectedIncident.AtSceneTime.ToString();
+                txtIncidentLeave.Text = selectedIncident.LeaveSceneTime.ToString();
+                txtIncidentLocation.Text = selectedIncident.Location.LocationName;
+                txtIncidentDescription.Text = selectedIncident.Description;
             }
-            lstIncidentMessages.Items.Refresh();
+            catch (EntityException)
+            {
 
-            lblIncidentTitle.Content = selectedIncident.IncidentNo;
-            txtIncidentAt.Text = selectedIncident.AtSceneTime.ToString();
-            txtIncidentLeave.Text = selectedIncident.LeaveSceneTime.ToString();
-            txtIncidentLocation.Text = selectedIncident.Location.LocationName;
-            txtIncidentDescription.Text = selectedIncident.Description;
-
+                DBConnectionError();
+            }
         }
 
         // ---------------------------------------------------------------------------------------//

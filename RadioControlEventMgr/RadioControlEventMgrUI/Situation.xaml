@@ -6,7 +6,7 @@
       xmlns:local="clr-namespace:RadioControlEventMgrUI"
       mc:Ignorable="d" 
       Loaded="Page_Loaded"
-      d:DesignHeight="700" d:DesignWidth="1200"
+      d:DesignHeight="1080" d:DesignWidth="1920"
       Title="Situation">
     <!-- XAML for situation page, entering message and incident information -->
     <Grid>
@@ -46,6 +46,10 @@
             <TextBox Name="txtOpenIncidents" Width="50" Height="25" VerticalAlignment="Center" Margin="10,0,0,0" IsReadOnly="True" HorizontalAlignment="Center"/>
         </StackPanel>
 
+        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
+            <Label Content="Messages"  Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" FontSize="20" Foreground="Black" Margin="10,0" Width="100"/>
+            <Button Name="btnRadioCheck" Content="Run Radio Check" Width="150" Height="25" Margin="100,0" Background="LightGreen" Visibility="Collapsed" Click="btnRadioCheck_Click"/>
+        </StackPanel>
         <!-- Listview for incdient information - 5 Columns and context menu -->
         <ListView Name="lstSituationIncidentList" Grid.Row="1" Grid.Column="0" Margin="10" SelectionChanged="lstSituationIncidentList_SelectionChanged" Background="AliceBlue">
             <ListView.View>
@@ -166,19 +170,19 @@
 
                 <!-- Details box should wrap text and is fix in size to allow this-->
                 <TextBox Name="txtSituationDetails" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" TabIndex="3" 
-                         Margin="10,0,10,0" Height="100" Width="280" TextWrapping="Wrap" MaxLength="500"/>
+                         Margin="10,0,10,0" Height="100" Width="280" TextWrapping="Wrap" MaxLength="500" ToolTip="Enter Incident Details"/>
 
                 <!-- Combobox shows information from DB location table-->
                 <ComboBox Name="cboSituationLocation" Grid.Row="4" Grid.Column="1" Width="200" 
-                          TabIndex="2" Margin="0,5,10,0" DisplayMemberPath="LocationName">
+                          TabIndex="2" Margin="0,5,10,0" DisplayMemberPath="LocationName" ToolTip="Select Incident Location">
                 </ComboBox>
 
                 <!-- Stackpanel for Ok and cancel buttons -->
                 <StackPanel Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center">
                     <Button Name="btnSituationCancel" Content="Cancel" Height="25" Width="120"  
-                            Margin="0,10,10,10" TabIndex="5" Background="LightCoral" Click="btnSituationCancel_Click" />
+                            Margin="0,10,10,10" TabIndex="5" Background="LightCoral" Click="btnSituationCancel_Click" ToolTip="Cancel Incident update" />
                     <Button Name="btnSituationOk" Content="Ok" Height="25" Width="120" 
-                            Margin="10,10,0,10" TabIndex="4" Background="LightGreen" Click="btnSituationOk_Click"/>
+                            Margin="10,10,0,10" TabIndex="4" Background="LightGreen" Click="btnSituationOk_Click" ToolTip="Change/Add Incident to database"/>
                 </StackPanel>
 
                 <!-- Stackpanel for time boxes, hour, minute and now button -->
@@ -326,27 +330,27 @@
 
                 <!-- Message box should wrap text and is fix in size to allow this-->
                 <TextBox Name="txtMessageText" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" TabIndex="5" 
-                         Margin="10,0,10,0" Height="100" Width="265" TextWrapping="Wrap" MaxLength="500"/>
+                         Margin="10,0,10,0" Height="100" Width="265" TextWrapping="Wrap" MaxLength="500" ToolTip="Enter Message Text"/>
 
                 <!-- Combobox shows information from DB status table-->
                 <ComboBox Name="cboMessageStatus" Grid.Row="2" Grid.Column="1" Width="200" TabIndex="2" Margin="0,5,10,0" 
-                          DisplayMemberPath="StatusName" >
+                          DisplayMemberPath="StatusName" ToolTip="Select Crew Member Status">
                 </ComboBox>
                 <!-- Combobox shows information from DB location table-->
                 <ComboBox Name="cboMessageLocation" Grid.Row="3" Grid.Column="1" Width="200" TabIndex="3" Margin="0,5,10,0"
-                          DisplayMemberPath="LocationName">
+                          DisplayMemberPath="LocationName" ToolTip="Select Crew Member Locaton">
                 </ComboBox>
                 <!-- Combobox shows information from DB incident table-->
                 <ComboBox Name="cboMessageIncident" Grid.Row="4" Grid.Column="1" Width="200" TabIndex="4" Margin="0,5,10,0"
-                          DisplayMemberPath="IncidentNo">
+                          DisplayMemberPath="IncidentNo" ToolTip="Select Message Incident Number">
                 </ComboBox>
 
                 <!-- Stackpanel for Ok and cancel buttons -->
                 <StackPanel Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center">
                     <Button Name="btnMessageCancel" Content="Cancel" Grid.Row="5" Grid.Column="1" Height="25" Width="120"  
-                            Margin="0,10,10,10" TabIndex="7" Background="LightCoral" Click="btnMessageCancel_Click" />
-                    <Button Name="btnMessageOk" Content="Ok" Grid.Row="5" Grid.Column="1" Height="25" Width="120" 
-                            Margin="10,10,0,10" TabIndex="6" Background="LightGreen" Click="btnMessageOk_Click"   />
+                            Margin="0,10,10,10" TabIndex="7" Background="LightCoral" Click="btnMessageCancel_Click" ToolTip="Cancel adding message" />
+                    <Button Name="btnMessageOk" Content="Ok" Grid.Row="5" Grid.Column="1" Width="120" 
+                            Margin="10,10,0,10" TabIndex="6" Background="LightGreen" Click="btnMessageOk_Click" ToolTip="Add message to database"  />
                 </StackPanel>
 
                 <!-- Stackpanel for time boxes, hour, minute and now button -->
@@ -360,5 +364,41 @@
                 </StackPanel>
             </Grid>
         </StackPanel>
+
+        <ListView Name="lstSituationMessages" Grid.Row="1" Grid.Column="1" Grid.RowSpan="3" Margin="10" Background="AliceBlue">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Date/Time" Width="100">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock TextWrapping="Wrap" Text="{Binding Date}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Call sign" Width="100">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock TextWrapping="Wrap" Text="{Binding Crew.CallSign}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Incident" Width="100">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock TextWrapping="Wrap" Text="{Binding Incident.IncidentNo}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Message Text" Width="225">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock TextWrapping="Wrap" Text="{Binding MessageText}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+
     </Grid>
 </Page>

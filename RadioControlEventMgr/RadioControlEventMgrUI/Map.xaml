@@ -22,11 +22,11 @@
                 </Style>
             </TabControl.Resources>
 
-            <TabItem Header="Local">
+            <TabItem Header="Local" ToolTip="Local Event Map">
                 <Image Name="imgMap" Source="Images/Map.jpg" Margin="20" Visibility="Visible"/>
             </TabItem>
             
-            <TabItem Header="Online" >
+            <TabItem Header="Online" ToolTip="Online Map (maps.google.ie)">
                 <WebBrowser Name="webMap" Source="https://www.google.ie/maps" Margin="20" Visibility="Visible"/>
             </TabItem>
         </TabControl>

@@ -36,7 +36,7 @@
             </TabControl.Resources>
             
             <!-- Message log tab, list view with 4 columns-->
-            <TabItem Header="Message Log">
+            <TabItem Header="Message Log" ToolTip="Log of Event messages">
                 <Grid>
                     <ListView Name="lstMessageList" Grid.Row="0" Margin="10" Padding="5" Background="AliceBlue">
                         <ListView.View>
@@ -83,7 +83,7 @@
             </TabItem>
             
             <!-- Incident log tab, list view with 5 columns, a context menu to open stack panel -->
-            <TabItem Header="Incident Log">
+            <TabItem Header="Incident Log" ToolTip="Log of Event Incidents">
                 <Grid>
                     <!-- 2*1 Grid -->
                     <Grid.RowDefinitions>

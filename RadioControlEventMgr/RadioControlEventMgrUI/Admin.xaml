@@ -37,7 +37,7 @@
             </TabControl.Resources>
 
             <!-- Users Tab, Listview for user details, context menu to open user stackpanel-->
-            <TabItem Header="Users" >
+            <TabItem Header="Users" ToolTip="Add, Edit, Delete System users" >
                 <Grid>
                     <!-- 2*1 grid -->
                     <Grid.RowDefinitions>
@@ -140,26 +140,26 @@
 
                             <TextBox Name="txtEditUsername" Grid.Row="0" Grid.Column="1" TabIndex="0" 
                                      Margin="0,10,10,0" VerticalContentAlignment="Center" MaxLength="30"
-                                     SelectionChanged="txtBox_SelectionChanged"/>
+                                     SelectionChanged="txtBox_SelectionChanged" ToolTip="Enter user's username"/>
                             <TextBox Name="txtEditPassword" Grid.Row="1" Grid.Column="1" TabIndex="1" 
                                      Margin="0,0,10,0" VerticalContentAlignment="Center" MaxLength="30"
-                                     SelectionChanged="txtBox_SelectionChanged"/>
+                                     SelectionChanged="txtBox_SelectionChanged" ToolTip="Enter user's password"/>
                             <TextBox Name="txtEditSurname" Grid.Row="2" Grid.Column="1" TabIndex="2" 
                                      Margin="0,0,10,0" VerticalContentAlignment="Center" MaxLength="30"
-                                     SelectionChanged="txtBox_SelectionChanged"/>
+                                     SelectionChanged="txtBox_SelectionChanged" ToolTip="Enter user's surname"/>
                             <TextBox Name="txtEditForename" Grid.Row="3" Grid.Column="1" TabIndex="3" 
                                      Margin="0,0,10,0" VerticalContentAlignment="Center" MaxLength="30"
-                                     SelectionChanged="txtBox_SelectionChanged"/>
+                                     SelectionChanged="txtBox_SelectionChanged" ToolTip="Enter user's forename"/>
 
                             <!-- Combobox to select user level of access from DB table -->
                             <ComboBox Name="cboEditUserAccess" Grid.Row="4" Grid.Column="1" Width="200" 
                                       TabIndex="4" Margin="0,0,10,0" DisplayMemberPath="AccessLevelName"
                                       Text="    --  Select Access Level  --" IsEditable="True" IsReadOnly="True" 
-                                      SelectionChanged="cboEditUserAccess_SelectionChanged"/>
+                                      SelectionChanged="cboEditUserAccess_SelectionChanged" ToolTip="Select users level of access"/>
 
                             <!-- Buttons to submit and close panel -->
                             <Button Name="btnEditUpdate" Content="Update" Grid.Row="5" Grid.Column="1" Height="25" 
-                                    Margin="0,10,10,10" TabIndex="5" Click="btnEditUpdate_Click"/>
+                                    Margin="0,10,10,10" TabIndex="5" Click="btnEditUpdate_Click" ToolTip="Update user information in Database"/>
 
                         </Grid>
                     </StackPanel>
@@ -167,7 +167,7 @@
             </TabItem>
 
             <!-- Tab for user log information, list view with 3 columns -->
-            <TabItem Header="Logs">
+            <TabItem Header="Logs" ToolTip="Log of user activity">
                 <ListView Name="lstLogsList" Padding="5" Background="AliceBlue">
                     <ListView.View>
                         <GridView>
@@ -195,6 +195,34 @@
                         </GridView>
                     </ListView.View>
                 </ListView>
+            </TabItem>
+
+            <TabItem Header="Event Data" ToolTip="Enter Event Data">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="500" Background="SteelBlue">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Content="Event Name" Grid.Row="0" Grid.Column="0" Margin="10"/>
+                        <TextBox Name="txtEventName" Grid.Row="0" Grid.Column="1" VerticalContentAlignment="Center" MaxLength="30" Margin="10" />
+                        <Label Content="Event Date"  Grid.Row="1" Grid.Column="0" Margin="10" />
+                        <DatePicker Name="dateEventDate" Grid.Row="1" Grid.Column="1" Margin="10" />
+                        <StackPanel Grid.Row="3" Grid.Column="2" Orientation="Horizontal" Margin="10">
+                            <Button Content="Build Event" Name="btnBuildEvent"  Grid.Row="4" Grid.Column="0" Click="btnBuildEvent_Click" 
+                                     Height="50" Width="150" Margin="15,0"/>
+                            <Button Content="Write to CSV" Name="btnWriteToCSV"  Grid.Row="4" Grid.Column="0" Click="btnWriteToCSV_Click" 
+                                     Height="50" Width="150"  Margin="15,0"/>
+                        </StackPanel>
+                        
+                    </Grid>
+                </StackPanel>
             </TabItem>
         </TabControl>
     </Grid>

@@ -27,19 +27,19 @@
         <!-- Left aligned stackpanel - Situation, Log and Map options   -->
         <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" >
             <Button Name="btnSituation" Content="Situation" Width="150" Height="50"  Margin="20" 
-                    FontWeight="DemiBold"  FontSize="16" Click="btnSituation_Click" Visibility="Collapsed"/>
+                    FontWeight="DemiBold"  FontSize="16" Click="btnSituation_Click" Visibility="Collapsed" ToolTip="Event Situation Screen"/>
             <Button Name="btnLogs" Content="Logs" Width="150" Height="50" Margin="20" 
-                    FontWeight="DemiBold" FontSize="16" Click="btnLogs_Click"/>
+                    FontWeight="DemiBold" FontSize="16" Click="btnLogs_Click" ToolTip="Event Logs Screen"/>
             <Button Name="btnMap" Content="Map" Width="150" Height="50"  Margin="20" 
-                    FontWeight="DemiBold" FontSize="16" Click="btnMap_Click" Visibility="Hidden"/>
+                    FontWeight="DemiBold" FontSize="16" Click="btnMap_Click" Visibility="Hidden" ToolTip="Event Map Screen"/>
         </StackPanel>
 
          <!-- Right aligned stackpanel - Admin and Exit -->
         <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Name="btnAdmin" Content="Admin" Width="150" Height="50" Margin="20" 
-                    FontWeight="DemiBold" FontSize="16" Click="btnAdmin_Click" Visibility="Hidden"/>
+                    FontWeight="DemiBold" FontSize="16" Click="btnAdmin_Click" Visibility="Hidden" ToolTip="System Admin Screen"/>
             <Button Name="btnExit" Content="Exit" Width="150" Height="50" Margin="20" 
-                    FontWeight="DemiBold" FontSize="16" Click="btnExit_Click"/>
+                    FontWeight="DemiBold" FontSize="16" Click="btnExit_Click" ToolTip="Exit Application"/>
         </StackPanel>
 
         <!-- Dock panel for with border and frame -->

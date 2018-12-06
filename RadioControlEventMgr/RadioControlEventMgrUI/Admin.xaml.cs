@@ -1,7 +1,9 @@
-﻿using RadioLibrary;
+﻿using Microsoft.Win32;
+using RadioLibrary;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity.Core;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -337,12 +339,12 @@ namespace RadioControlEventMgrUI
         {
             try
             {
-                lstUserList.ItemsSource = users;
                 users.Clear();
                 foreach (var user in db.Users.Where(t => t.UserId != 0))
                 {
                     users.Add(user);
                 }
+                lstUserList.ItemsSource = users;
                 lstUserList.Items.Refresh();
             }
             catch (EntityException)
@@ -355,12 +357,13 @@ namespace RadioControlEventMgrUI
         {
             try
             {
-                lstLogsList.ItemsSource = logs;
                 logs.Clear();
                 foreach (var log in db.Logs)
                 {
                     logs.Add(log);
                 }
+                logs = logs.OrderByDescending(t => t.Date).ToList();
+                lstLogsList.ItemsSource = logs;
                 lstUserList.Items.Refresh();
             }
             catch (EntityException)
@@ -430,5 +433,61 @@ namespace RadioControlEventMgrUI
         }
 
 
+        private void btnWriteToCSV_Click(object sender, RoutedEventArgs e)
+        {
+            if (txtEventName.Text == "" || dateEventDate.SelectedDate == null)
+            {
+                MessageBox.Show("Eventname and date must be entered before saving", "Save to File", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            else
+            {
+                SaveFileDialog saveDialog = new SaveFileDialog();
+                saveDialog.Filter = "CSV files (*.csv)| *.csv|txt files (*.txt)|*.txt|All files (*.*)|*.*";
+                saveDialog.FilterIndex = 1;
+                saveDialog.ShowDialog();
+
+                if (saveDialog.FileName != "")
+                {
+                    using (StreamWriter writetext = new StreamWriter(saveDialog.FileName))
+                    {
+                        writetext.WriteLine($"{txtEventName.Text.Trim()}: {dateEventDate.SelectedDate.Value.ToString("dd/MM/yyyy")}");
+                        writetext.WriteLine();
+                        writetext.WriteLine();
+                        writetext.WriteLine("Event Incidents");
+                        writetext.WriteLine("Incident No,Location,Reported Time,At Scene Time, Leave Scene Time,Description");
+                        foreach (var incident in db.Incidents)
+                        {
+                            string description = incident.Description.Replace(",", ";");
+                            writetext.WriteLine($"{incident.IncidentNo}, {incident.Location.LocationName}, {incident.ReportedTime}, {incident.AtSceneTime}, {incident.LeaveSceneTime}, {description}");
+                        }
+                        writetext.WriteLine();
+                        writetext.WriteLine();
+                        writetext.WriteLine("Event Messages");
+                        writetext.WriteLine("Date,Call Sign,Incident,Status,Message Text");
+                        foreach (var message in db.Messages)
+                        {
+                            string messageText = message.MessageText.Replace(",", ";");
+                            if (message.Incident == null)
+                            {
+                                writetext.WriteLine($"{message.Date}, {message.Crew.CallSign},, {message.Status.StatusName}, {messageText}");
+                            }
+                            else
+                            {
+                                writetext.WriteLine($"{message.Date}, {message.Crew.CallSign}, {message.Incident.IncidentNo}, {message.Status.StatusName}, {messageText}");
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("File Name must be entered", "Save to File", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
+        private void btnBuildEvent_Click(object sender, RoutedEventArgs e)
+        {
+            
+        }
     }
 }
