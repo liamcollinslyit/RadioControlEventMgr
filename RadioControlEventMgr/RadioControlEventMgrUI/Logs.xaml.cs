@@ -58,15 +58,35 @@ namespace RadioControlEventMgrUI
         // Refreshing Data In Tables And Combo Boxes
         // ---------------------------------------------------------------------------------------//
 
-        private void RefreshMessagesList()
+        private void RefreshMessagesList(string filter = null)
         {
             try
             {
+                int totalMessages = 0;
+
                 messages.Clear();
-                foreach (var message in db.Messages)
+                if (filter == null)
                 {
-                    messages.Add(message);
+                    foreach (var message in db.Messages)
+                    {
+                        messages.Add(message);
+                        totalMessages++;
+                    }
+
+                    tbxMessgesStats.Text = $"Displaying all {totalMessages} messages";
                 }
+                else
+                {
+                    foreach (var message in db.Messages.Where(t => t.Date.ToString().Contains(filter) || t.Crew.CallSign.Contains(filter) || t.Incident.IncidentNo.Contains(filter)
+                                                             || t.Status.StatusName.Contains(filter) || t.MessageText.Contains(filter)))
+
+                    {
+                        messages.Add(message);
+                        totalMessages++;
+                    }
+                    tbxMessgesStats.Text = $"Displaying {totalMessages} messages using filter \"{filter}\"";
+                }
+  
                 messages = messages.OrderByDescending(t => t.Date).ToList();
                 lstMessageList.ItemsSource = messages;
 
@@ -78,15 +98,40 @@ namespace RadioControlEventMgrUI
             }
         }
 
-        private void RefreshIncidentList()
+        private void RefreshIncidentList(string filter = null)
         {
             try
             {
+                int totalIncidents = 0;
+                int open = 0;
+                int closed = 0;
                 incidents.Clear();
-                foreach (var incident in db.Incidents)
+                if (filter == null)
                 {
-                    incidents.Add(incident);
+                    foreach (var incident in db.Incidents)
+                    {
+                        incidents.Add(incident);
+                        totalIncidents++;
+
+                        if (incident.LeaveSceneTime == null) open++;
+                        else closed++;
+                    }
+                    tbxIncidentStats.Text = $"Displaying all {totalIncidents} incidents. Open Incidents: {open}. Closed Incidents: {closed}.";
                 }
+                else
+                {
+                    foreach (var incident in db.Incidents.Where(t => t.IncidentNo.Contains(filter) || t.Location.LocationName.Contains(filter) || t.ReportedTime.ToString().Contains(filter) 
+                                                                || t.AtSceneTime.ToString().Contains(filter) || t.LeaveSceneTime.ToString().Contains(filter) || t.Description.Contains(filter)))
+                    {
+                        incidents.Add(incident);
+                        totalIncidents++;
+
+                        if (incident.LeaveSceneTime == null) open++;
+                        else closed++;
+                    }
+                    tbxIncidentStats.Text = $"Displaying {totalIncidents} messages using filter \"{filter}\". Open Incidents: {open}. Closed Incidents: {closed}.";
+                }
+
                 lstIncidentList.ItemsSource = incidents;
                 lstIncidentList.Items.Refresh();
             }
@@ -128,6 +173,7 @@ namespace RadioControlEventMgrUI
                 lstIncidentMessages.Items.Refresh();
 
                 lblIncidentTitle.Content = selectedIncident.IncidentNo;
+                txtIncidentReported.Text = selectedIncident.ReportedTime.ToString();
                 txtIncidentAt.Text = selectedIncident.AtSceneTime.ToString();
                 txtIncidentLeave.Text = selectedIncident.LeaveSceneTime.ToString();
                 txtIncidentLocation.Text = selectedIncident.Location.LocationName;
@@ -179,6 +225,27 @@ namespace RadioControlEventMgrUI
         {
             MessageBox.Show("Problem connecting to the SQL server, contact system administrator. Application will now close.", "Connection to Database", MessageBoxButton.OK, MessageBoxImage.Error);
             Environment.Exit(0);
+        }
+
+        private void btnFilterMessages_Click(object sender, RoutedEventArgs e)
+        {
+            RefreshMessagesList(txtFilterMessages.Text);
+
+        }
+
+        private void btnClearFilterMessages_Click(object sender, RoutedEventArgs e)
+        {
+            RefreshMessagesList();
+        }
+
+        private void btnFilterIncidents_Click(object sender, RoutedEventArgs e)
+        {
+            RefreshIncidentList(txtFilterIncidents.Text);
+        }
+
+        private void btnClearFilterIncidents_Click(object sender, RoutedEventArgs e)
+        {
+            RefreshIncidentList();
         }
     }
 }

@@ -372,6 +372,9 @@ namespace RadioControlEventMgrUI
 
         private void RefreshIncidentList()
         {
+            int incidentCount = 0;
+            int activeCount = 0;
+
             incidents.Clear();
             activeIncidents.Clear();
 
@@ -380,10 +383,12 @@ namespace RadioControlEventMgrUI
                 foreach (var incident in db.Incidents)
                 {
                     incidents.Add(incident);
+                    incidentCount++;
                 }
                 foreach (var incident in db.Incidents.Where(t=> t.LeaveSceneTime == null))
                 {
                     activeIncidents.Add(incident);
+                    activeCount++;
                 }
             }
             catch (EntityException)
@@ -391,6 +396,9 @@ namespace RadioControlEventMgrUI
 
                 DBConnectionError();
             }
+
+            txtNoIncidents.Text = incidentCount.ToString();
+            txtOpenIncidents.Text = activeCount.ToString();
 
             incidents = incidents.OrderBy(t => t.LeaveSceneTime.HasValue).ToList();
 
@@ -404,6 +412,8 @@ namespace RadioControlEventMgrUI
         }
         private void RefreshCrewList()
         {
+            int crewNum = 0;
+            int availableCrew = 0;
             crews.Clear();
 
             try
@@ -411,9 +421,14 @@ namespace RadioControlEventMgrUI
                 foreach (var crew in db.Crews)
                 {
                     crews.Add(crew);
+                    crewNum++;
                     if (crew.StatusID < 3)
                     {
                         btnRadioCheck.Visibility = Visibility.Visible;
+                    }
+                    if (crew.StatusID == 3)
+                    {
+                        availableCrew++;
                     }
                 }
             }
@@ -422,6 +437,9 @@ namespace RadioControlEventMgrUI
 
                 DBConnectionError();
             }
+
+            txtCrewNo.Text = crewNum.ToString();
+            txtAvailableCrew.Text = availableCrew.ToString();
 
             lstCrewList.ItemsSource = crews;
             lstCrewList.Items.Refresh();

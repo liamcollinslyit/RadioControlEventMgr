@@ -36,11 +36,20 @@ namespace RadioControlEventMgrUI
                                                  ";initial catalog=RadioDB;user id=radiouser;password=password;pooling=False;MultipleActiveResultSets=True;App=EntityFramework'");
 
         List<User> users = new List<User>();
+        List<Crew> crews = new List<Crew>();
+        List<CrewType> crewTypes = new List<CrewType>();
+        List<Location> locations = new List<Location>();
         List<Log> logs = new List<Log>();
         List<AccessLevel> accessLevels = new List<AccessLevel>();
 
         User selectedUser = new User();
-        DBOperation dbOperation = new DBOperation();
+        Crew selectedCrew = new Crew();
+        CrewType selectedCrewType = new CrewType();
+        Location selectedLocation = new Location();
+        DBOperation dbUserOperation = new DBOperation();
+        DBOperation dbCrewOperation = new DBOperation();
+        DBOperation dbCrewTypeOperation = new DBOperation();
+        DBOperation dbLocationOperation = new DBOperation();
 
         public Admin()
         {
@@ -52,6 +61,9 @@ namespace RadioControlEventMgrUI
             RefreshUserList();
             RefreshLogsList();
             RefreshAccessLevels();
+            RefreshCrew();
+            RefreshCrewTypes();
+            RefreshLocation();
         }
 
         // ---------------------------------------------------------------------------------------//
@@ -65,7 +77,7 @@ namespace RadioControlEventMgrUI
                 submenuEditUser.IsEnabled = true;
                 submenuDeleteUser.IsEnabled = true;
                 selectedUser = users.ElementAt(lstUserList.SelectedIndex);
-                if (dbOperation == DBOperation.Edit)
+                if (dbUserOperation == DBOperation.Edit)
                 {
                     UpdateUserDetails();
                 }
@@ -77,13 +89,71 @@ namespace RadioControlEventMgrUI
             }
         }
 
+        private void lstCrewList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (lstCrewList.SelectedIndex >= 0)
+            {
+                submenuEditCrew.IsEnabled = true;
+                submenuDeleteCrew.IsEnabled = true;
+                selectedCrew = crews.ElementAt(lstCrewList.SelectedIndex);
+                if (dbCrewOperation == DBOperation.Edit)
+                {
+                    UpdateCrewDetails();
+                }
+            }
+            else
+            {
+                submenuEditCrew.IsEnabled = false;
+                submenuDeleteCrew.IsEnabled = false;
+            }
+        }
+
+
+        private void lstTypesList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (lstTypesList.SelectedIndex >= 0)
+            {
+                submenuEditCrewType.IsEnabled = true;
+                submenuDeleteCrewType.IsEnabled = true;
+                selectedCrewType = crewTypes.ElementAt(lstTypesList.SelectedIndex);
+                if (dbCrewTypeOperation == DBOperation.Edit)
+                {
+                    UpdateCrewTypeDetails();
+                }
+            }
+            else
+            {
+                submenuEditCrewType.IsEnabled = false;
+                submenuDeleteCrewType.IsEnabled = false;
+            }
+        }
+
+        private void lstLocationList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (lstLocationList.SelectedIndex >= 0)
+            {
+                submenuEditLocation.IsEnabled = true;
+                submenuDeleteLocation.IsEnabled = true;
+                selectedLocation = locations.ElementAt(lstLocationList.SelectedIndex);
+                if (dbLocationOperation == DBOperation.Edit)
+                {
+                    UpdateLocationDetails();
+                }
+            }
+            else
+            {
+                submenuEditLocation.IsEnabled = false;
+                submenuDeleteLocation.IsEnabled = false;
+            }
+        }
+
         // ---------------------------------------------------------------------------------------//
         // User Context Click Events
         // ---------------------------------------------------------------------------------------//
 
         private void submenuAddNewUser_Click(object sender, RoutedEventArgs e)
         {
-            dbOperation = DBOperation.Add;
+            dbUserOperation = DBOperation.Add;
             ClearUserDetails();
             stkUserDetails.Visibility = Visibility.Visible;
             CreateLogEntry("User opened add user panel", loggedInUser.UserId);
@@ -91,7 +161,7 @@ namespace RadioControlEventMgrUI
 
         private void submenuEditUser_Click(object sender, RoutedEventArgs e)
         {
-            dbOperation = DBOperation.Edit;
+            dbUserOperation = DBOperation.Edit;
             UpdateUserDetails();
             stkUserDetails.Visibility = Visibility.Visible;
             CreateLogEntry("User opened edit user panel", loggedInUser.UserId);
@@ -131,11 +201,11 @@ namespace RadioControlEventMgrUI
 
             if (ValidateUserDetails())
             {
-                if (dbOperation == DBOperation.Add)
+                if (dbUserOperation == DBOperation.Add)
                 {
                     CreateUser(username, password, forename, surname, accessLevel);
                 }
-                if (dbOperation == DBOperation.Edit)
+                if (dbUserOperation == DBOperation.Edit)
                 {
                     UpdateUser(username, password, forename, surname, accessLevel);
                 }
@@ -247,7 +317,7 @@ namespace RadioControlEventMgrUI
             {
                 foreach (var user in db.Users.Where(t => t.Username == txtEditUsername.Text))
                 {
-                    if (dbOperation == DBOperation.Edit && selectedUser.UserId == user.UserId)
+                    if (dbUserOperation == DBOperation.Edit && selectedUser.UserId == user.UserId)
                     {
                         break;
                     }
@@ -280,7 +350,7 @@ namespace RadioControlEventMgrUI
                 selectedUser.Password == txtEditPassword.Text &&
                 selectedUser.Forename == txtEditForename.Text &&
                 selectedUser.Surname == txtEditSurname.Text &&
-                dbOperation == DBOperation.Edit)
+                dbUserOperation == DBOperation.Edit)
             {
                 btnEditUpdate.IsEnabled = false;
             }
@@ -294,7 +364,7 @@ namespace RadioControlEventMgrUI
         {
             AccessLevel accessLevel = (AccessLevel)cboEditUserAccess.SelectedItem;
 
-            if (selectedUser.AccessLevel == accessLevel && dbOperation == DBOperation.Edit)
+            if (selectedUser.AccessLevel == accessLevel && dbUserOperation == DBOperation.Edit)
             {
                 btnEditUpdate.IsEnabled = false;
             }
@@ -335,14 +405,39 @@ namespace RadioControlEventMgrUI
         // Refreshing Data In Tables And Combo Boxes
         // ---------------------------------------------------------------------------------------//
 
-        private void RefreshUserList()
+        private void RefreshUserList(string filter = null)
         {
             try
             {
+                int totalUsers = 0;
+                int level1 = 0;
+                int level2 = 0;
+                int level3 = 0;
+
                 users.Clear();
-                foreach (var user in db.Users.Where(t => t.UserId != 0))
+                if (filter == null)
                 {
-                    users.Add(user);
+                    foreach (var user in db.Users.Where(t => t.UserId != 0))
+                    {
+                        users.Add(user);
+                        totalUsers++;
+                        if (user.LevelID == 1) level1++;
+                        if (user.LevelID == 2) level2++;
+                        if (user.LevelID == 3) level3++;
+                    }
+                    tbxUsersStats.Text = $"Displaying all {totalUsers} users. View-Only: {level1}, Controller: {level2}, Superuser: {level3}";
+                }
+                else
+                {
+                    foreach (var user in db.Users.Where(t => t.UserId != 0 && ( t.Username.Contains(filter) || t.Password.Contains(filter) || t.Forename.Contains(filter) || t.Surname.Contains(filter) )))
+                    {
+                        users.Add(user);
+                        totalUsers++;
+                        if (user.LevelID == 1) level1++;
+                        if (user.LevelID == 2) level2++;
+                        if (user.LevelID == 3) level3++;
+                    }
+                    tbxUsersStats.Text = $"Displaying {totalUsers} users using filter \"{filter}\". View-Only: {level1}, Controller: {level2}, Superuser: {level3}";
                 }
                 lstUserList.ItemsSource = users;
                 lstUserList.Items.Refresh();
@@ -353,14 +448,29 @@ namespace RadioControlEventMgrUI
             }
         }
 
-        private void RefreshLogsList()
+        private void RefreshLogsList(string filter = null)
         {
             try
             {
+                int totalLogs = 0;
                 logs.Clear();
-                foreach (var log in db.Logs)
+                if (filter == null)
                 {
-                    logs.Add(log);
+                    foreach (var log in db.Logs)
+                    {
+                        logs.Add(log);
+                        totalLogs++;
+                    }
+                    tbxLogStats.Text = $"Displaying all {totalLogs} log messages.";
+                }
+                else
+                {
+                    foreach (var log in db.Logs.Where(t=> t.Date.ToString().Contains(filter) || t.Event.Contains(filter) || t.User.Username.Contains(filter)))
+                    {
+                        logs.Add(log);
+                        totalLogs++;
+                    }
+                    tbxLogStats.Text = $"Displaying {totalLogs} log messages using filter \"{filter}\".";
                 }
                 logs = logs.OrderByDescending(t => t.Date).ToList();
                 lstLogsList.ItemsSource = logs;
@@ -383,6 +493,71 @@ namespace RadioControlEventMgrUI
                     accessLevels.Add(accessLevel);
                 }
                 cboEditUserAccess.Items.Refresh();
+            }
+            catch (EntityException)
+            {
+                DBConnectionError();
+            }
+        }
+
+        private void RefreshCrew()
+        {
+            try
+            {
+                int crewNum = 0;
+                crews.Clear();
+                foreach (var crew in db.Crews)
+                {
+                    crews.Add(crew);
+                    crewNum++;
+                }
+                lblCrew.Content = $"Crew - {crewNum}";
+                lstCrewList.ItemsSource = crews;
+                lstCrewList.Items.Refresh();
+            }
+            catch (EntityException)
+            {
+                DBConnectionError();
+            }
+        }
+
+        private void RefreshCrewTypes()
+        {
+            try
+            {
+                int crewTypeNum = 0;
+                crewTypes.Clear();
+                foreach (var crewType in db.CrewTypes)
+                {
+                    crewTypes.Add(crewType);
+                    crewTypeNum++;
+                }
+                lblCrewType.Content = $"Crew Types - {crewTypeNum}";
+                cboCrewType.ItemsSource = crewTypes;
+                lstTypesList.ItemsSource = crewTypes;
+                lstTypesList.Items.Refresh();
+            }
+            catch (EntityException)
+            {
+                DBConnectionError();
+            }
+        }
+
+        private void RefreshLocation()
+        {
+            try
+            {
+                int locationNum = 0;
+                locations.Clear();
+                foreach (var location in db.Locations)
+                {
+                    locations.Add(location);
+                    locationNum++;
+                }
+                lblLocation.Content = $"Locations - {locationNum}";
+                cboCrewLocation.ItemsSource = locations;
+                lstLocationList.ItemsSource = locations;
+                lstLocationList.Items.Refresh();
             }
             catch (EntityException)
             {
@@ -487,7 +662,481 @@ namespace RadioControlEventMgrUI
 
         private void btnBuildEvent_Click(object sender, RoutedEventArgs e)
         {
-            
+            MessageBoxResult result = MessageBox.Show("This will reset event data and clear information from the database. Continue ?", "Build Event", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    CreateLogEntry($"User {loggedInUser.Username} built a new event", loggedInUser.UserId);
+
+                    foreach (Crew crew in db.Crews)
+                    {
+                        crew.StatusID = 1;
+                        crew.IncidentID = null;
+                    }
+
+                    SaveDBChanges();
+
+                    db.Database.ExecuteSqlCommand("TRUNCATE TABLE [RadioDB].[dbo].[Message]");
+                    db.Database.ExecuteSqlCommand("DELETE FROM [RadioDB].[dbo].[Incident]");
+                    db.Database.ExecuteSqlCommand("DBCC CHECKIDENT('[RadioDB].[dbo].[Incident]', RESEED, 0)");
+
+                    MessageBox.Show("Event built successfully", "Build Event", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                }
+                catch (EntityException)
+                {
+                    DBConnectionError();
+                }
+            }
+        }
+
+        private void btnCrewUpdate_Click(object sender, RoutedEventArgs e)
+        {
+
+            if (txtCallSign.Text.Length > 0 || cboCrewType.SelectedIndex >= 0 || cboCrewLocation.SelectedIndex >= 0)
+            {
+                string callSign = txtCallSign.Text.Trim();
+                CrewType crewType = (CrewType)cboCrewType.SelectedItem;
+                Location location = (Location)cboCrewLocation.SelectedItem;
+
+                if (dbCrewOperation == DBOperation.Add)
+                {
+                    CreateCrew(callSign, 1, crewType, location);
+                }
+                if (dbCrewOperation == DBOperation.Edit)
+                {
+                    UpdateCrew(callSign, crewType, location);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Call Sign, Crew Type and Crew Location must be selected", "Save to Database", MessageBoxButton.OK, MessageBoxImage.Error);
+                CreateLogEntry($"Error: Invalid crew details entered", loggedInUser.UserId);
+            }
+
+            txtCallSign.Text = "";
+            cboCrewType.SelectedIndex = -1;
+            cboCrewLocation.SelectedIndex = -1;
+            dbCrewOperation = DBOperation.Add;
+
+        }
+
+        private void CreateCrew(string callSign, int statusID, CrewType crewType, Location location)
+        {
+            Crew crew = new Crew();
+            crew.CallSign = callSign;
+            crew.StatusID = statusID;
+            crew.CrewTypeID = crewType.CrewTypeID;
+            crew.LocationID = location.LocationID;
+            db.Entry(crew).State = System.Data.Entity.EntityState.Added;
+
+            int saveSuccess = SaveDBChanges();
+            if (saveSuccess == 1)
+            {
+                CreateLogEntry($"Crew {crew.CallSign} successfully added to database", loggedInUser.UserId);
+                RefreshCrew();
+            }
+            else
+            {
+                MessageBox.Show("Problem creating crew record, please try again or contact system administrator", "User Administration", MessageBoxButton.OK, MessageBoxImage.Error);
+                CreateLogEntry($"Error: Problem creating crew {crew.CallSign}", loggedInUser.UserId);
+            }
+
+        }
+
+        private void UpdateCrew(string callSign, CrewType crewType, Location location)
+        {
+            try
+            {
+                foreach (var crew in db.Crews.Where(t => t.CallSignID == selectedCrew.CallSignID))
+                {
+                    crew.CallSign = callSign;
+                    crew.CrewTypeID = crewType.CrewTypeID;
+                    crew.LocationID = location.LocationID;
+                }
+            }
+            catch (EntityException)
+            {
+
+                DBConnectionError();
+            }
+
+            int saveSuccess = SaveDBChanges();
+            if (saveSuccess == 1)
+            {
+                CreateLogEntry($"User updated crew details: {selectedCrew.CallSign} with crew type {selectedCrew.CrewType.CrewTypeName} and Location {selectedCrew.Location.LocationName}", loggedInUser.UserId);
+                RefreshCrew();
+            }
+            else
+            {
+                MessageBox.Show("Problem updating crew record, please try again or contact system administrator", "User Administration", MessageBoxButton.OK, MessageBoxImage.Error);
+                CreateLogEntry($"Error: Problem updating crew {selectedCrew.CallSign}", loggedInUser.UserId);
+            }
+        }
+
+        private void UpdateCrewDetails()
+        {
+            txtCallSign.Text = selectedCrew.CallSign;
+            cboCrewType.SelectedItem = selectedCrew.CrewType;
+            cboCrewLocation.SelectedItem = selectedCrew.Location;
+        }
+
+        private void submenuAddNewCrew_Click(object sender, RoutedEventArgs e)
+        {
+            dbCrewOperation = DBOperation.Add;
+            btnCrewUpdate.IsEnabled = true;
+        }
+
+        private void submenuEditCrew_Click(object sender, RoutedEventArgs e)
+        {
+            dbCrewOperation = DBOperation.Edit;
+            btnCrewUpdate.IsEnabled = false;
+            UpdateCrewDetails();
+        }
+
+        private void submenuDeleteCrew_Click(object sender, RoutedEventArgs e)
+        {
+            db.Crews.RemoveRange(db.Crews.Where(t => t.CallSignID == selectedCrew.CallSignID));
+
+            int saveSuccess = SaveDBChanges();
+            if (saveSuccess == 1)
+            {
+                RefreshCrew();
+                CreateLogEntry($"Crew {selectedCrew.CallSign} successfully deleted from system ", loggedInUser.UserId);
+            }
+            else
+            {
+                MessageBox.Show($"Problem deleting crew {selectedCrew.CallSign}, please try again or contact system administrator", "User Administration", MessageBoxButton.OK, MessageBoxImage.Error);
+                CreateLogEntry($"Error: Problem deleting crew {selectedCrew.CallSign}", loggedInUser.UserId);
+            }
+
+            txtCallSign.Text = "";
+            cboCrewType.SelectedIndex = -1;
+            cboCrewLocation.SelectedIndex = -1;
+            dbCrewOperation = DBOperation.Add;
+        }
+
+
+
+        private void btnTypeUpdate_Click(object sender, RoutedEventArgs e)
+        {
+            if (txtTypeName.Text.Length > 0)
+            {
+                string typeName = txtTypeName.Text.Trim();
+
+                if (dbCrewOperation == DBOperation.Add)
+                {
+                    CreateCrewType(typeName);
+                }
+                if (dbCrewOperation == DBOperation.Edit)
+                {
+                    UpdateCrewType(typeName);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Crew type name must be entered", "Save to Database", MessageBoxButton.OK, MessageBoxImage.Error);
+                CreateLogEntry($"Error: Invalid crew type details entered", loggedInUser.UserId);
+            }
+
+            txtTypeName.Text = "";
+            dbCrewOperation = DBOperation.Add;
+        }
+
+        private void CreateCrewType(string typeName)
+        {
+            CrewType crewType = new CrewType();
+            crewType.CrewTypeName = typeName;
+            db.Entry(crewType).State = System.Data.Entity.EntityState.Added;
+
+            int saveSuccess = SaveDBChanges();
+            if (saveSuccess == 1)
+            {
+                CreateLogEntry($"Crew type {crewType.CrewTypeName} successfully added to database", loggedInUser.UserId);
+                RefreshCrewTypes();
+            }
+            else
+            {
+                MessageBox.Show("Problem creating crew type record, please try again or contact system administrator", "User Administration", MessageBoxButton.OK, MessageBoxImage.Error);
+                CreateLogEntry($"Error: Problem creating crew {crewType.CrewTypeName}", loggedInUser.UserId);
+            }
+        }
+
+        private void UpdateCrewType(string typeName)
+        {
+            try
+            {
+                foreach (var crewType in db.CrewTypes.Where(t => t.CrewTypeID == selectedCrewType.CrewTypeID))
+                {
+                    crewType.CrewTypeName = typeName;
+                }
+            }
+            catch (EntityException)
+            {
+
+                DBConnectionError();
+            }
+
+            int saveSuccess = SaveDBChanges();
+            if (saveSuccess == 1)
+            {
+                CreateLogEntry($"User updated crew type details: {selectedCrewType.CrewTypeName} ", loggedInUser.UserId);
+                RefreshCrewTypes();
+            }
+            else
+            {
+                MessageBox.Show("Problem updating crew type record, please try again or contact system administrator", "User Administration", MessageBoxButton.OK, MessageBoxImage.Error);
+                CreateLogEntry($"Error: Problem updating crew type {selectedCrewType.CrewTypeName}", loggedInUser.UserId);
+            }
+        }
+
+        private void UpdateCrewTypeDetails()
+        {
+            txtTypeName.Text = selectedCrewType.CrewTypeName;
+        }
+
+        private void submenuAddCrewType_Click(object sender, RoutedEventArgs e)
+        {
+            dbCrewTypeOperation = DBOperation.Add;
+            btnTypeUpdate.IsEnabled = true;
+        }
+
+        private void submenuEditCrewType_Click(object sender, RoutedEventArgs e)
+        {
+            dbCrewTypeOperation = DBOperation.Edit;
+            btnTypeUpdate.IsEnabled = false;
+            UpdateCrewTypeDetails();
+        }
+
+        private void submenuDeleteCrewType_Click(object sender, RoutedEventArgs e)
+        {
+            db.CrewTypes.RemoveRange(db.CrewTypes.Where(t => t.CrewTypeID == selectedCrewType.CrewTypeID));
+
+            int saveSuccess = SaveDBChanges();
+            if (saveSuccess == 1)
+            {
+                RefreshCrewTypes();
+                CreateLogEntry($"Crew type {selectedCrewType.CrewTypeName} successfully deleted from system ", loggedInUser.UserId);
+            }
+            else
+            {
+                MessageBox.Show($"Problem deleting crew type {selectedCrewType.CrewTypeName}, please try again or contact system administrator", "User Administration", MessageBoxButton.OK, MessageBoxImage.Error);
+                CreateLogEntry($"Error: Problem deleting crew {selectedCrewType.CrewTypeName}", loggedInUser.UserId);
+            }
+
+            txtTypeName.Text = "";
+            dbCrewTypeOperation = DBOperation.Add;
+        }
+
+        private void btnLocationUpdate_Click(object sender, RoutedEventArgs e)
+        {
+            if (txtLocationName.Text.Length > 0)
+            {
+                string locationName = txtLocationName.Text.Trim();
+
+                if (dbLocationOperation == DBOperation.Add)
+                {
+                    CreateLocation(locationName);
+                }
+                if (dbLocationOperation == DBOperation.Edit)
+                {
+                    UpdateLocation(locationName);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Location name must be entered", "Save to Database", MessageBoxButton.OK, MessageBoxImage.Error);
+                CreateLogEntry($"Error: Invalid location details entered", loggedInUser.UserId);
+            }
+
+            txtLocationName.Text = "";          
+            dbLocationOperation = DBOperation.Add;
+        }
+
+        private void CreateLocation(string locationName)
+        {
+            Location location = new Location();
+            location.LocationName = locationName;
+            db.Entry(location).State = System.Data.Entity.EntityState.Added;
+
+            int saveSuccess = SaveDBChanges();
+            if (saveSuccess == 1)
+            {
+                CreateLogEntry($"Location {location.LocationName} successfully added to database", loggedInUser.UserId);
+                RefreshLocation();
+            }
+            else
+            {
+                MessageBox.Show("Problem creating location record, please try again or contact system administrator", "User Administration", MessageBoxButton.OK, MessageBoxImage.Error);
+                CreateLogEntry($"Error: Problem creating crew {location.LocationName}", loggedInUser.UserId);
+            }
+
+        }
+
+        private void UpdateLocation(string locationName)
+        {
+            try
+            {
+                foreach (var location in db.Locations.Where(t => t.LocationID == selectedLocation.LocationID))
+                {
+                    location.LocationName = locationName;
+                }
+            }
+            catch (EntityException)
+            {
+
+                DBConnectionError();
+            }
+
+            int saveSuccess = SaveDBChanges();
+            if (saveSuccess == 1)
+            {
+                CreateLogEntry($"User updated location name: {selectedLocation.LocationName} ", loggedInUser.UserId);
+                RefreshLocation();
+            }
+            else
+            {
+                MessageBox.Show("Problem updating location record, please try again or contact system administrator", "User Administration", MessageBoxButton.OK, MessageBoxImage.Error);
+                CreateLogEntry($"Error: Problem updating location {selectedLocation.LocationName}", loggedInUser.UserId);
+            }
+        }
+
+        private void UpdateLocationDetails()
+        {
+            txtLocationName.Text = selectedLocation.LocationName;
+        }
+
+        private void submenuAddNewLocation_Click(object sender, RoutedEventArgs e)
+        {
+            dbLocationOperation = DBOperation.Add;
+            btnLocationUpdate.IsEnabled = true;
+        }
+
+        private void submenuEditLocation_Click(object sender, RoutedEventArgs e)
+        {
+            dbLocationOperation = DBOperation.Edit;
+            btnLocationUpdate.IsEnabled = false;
+            UpdateLocationDetails();
+        }
+
+        private void submenuDeleteLocation_Click(object sender, RoutedEventArgs e)
+        {
+            db.Locations.RemoveRange(db.Locations.Where(t => t.LocationID == selectedLocation.LocationID));
+
+            int saveSuccess = SaveDBChanges();
+            if (saveSuccess == 1)
+            {
+                RefreshLocation();
+                CreateLogEntry($"Location {selectedLocation.LocationName} successfully deleted from system ", loggedInUser.UserId);
+            }
+            else
+            {
+                MessageBox.Show($"Problem deleting location {selectedLocation.LocationName}, please try again or contact system administrator", "User Administration", MessageBoxButton.OK, MessageBoxImage.Error);
+                CreateLogEntry($"Error: Problem deleting location {selectedLocation.LocationName}", loggedInUser.UserId);
+            }
+
+            txtLocationName.Text = "";
+            dbLocationOperation = DBOperation.Add;
+        }
+
+        private void txtCallSign_SelectionChanged(object sender, RoutedEventArgs e)
+        {
+            if (txtCallSign.Text == selectedCrew.CallSign && dbCrewOperation == DBOperation.Edit)
+            {
+                btnCrewUpdate.IsEnabled = false;
+            }
+            else
+            {
+                btnCrewUpdate.IsEnabled = true;
+            }
+        }
+
+        private void cboCrewType_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cboCrewType.SelectedItem == selectedCrew.CrewType && dbCrewOperation == DBOperation.Edit)
+            {
+                btnCrewUpdate.IsEnabled = false;
+            }
+            else
+            {
+                btnCrewUpdate.IsEnabled = true;
+            }
+        }
+
+        private void cboCrewLocation_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cboCrewLocation.SelectedItem == selectedCrew.Location && dbCrewOperation == DBOperation.Edit)
+            {
+                btnCrewUpdate.IsEnabled = false;
+            }
+            else
+            {
+                btnCrewUpdate.IsEnabled = true;
+            }
+        }
+
+        private void txtTypeName_SelectionChanged(object sender, RoutedEventArgs e)
+        {
+            if (txtTypeName.Text == selectedCrewType.CrewTypeName && dbCrewTypeOperation == DBOperation.Edit)
+            {
+                btnTypeUpdate.IsEnabled = false;
+            }
+            else
+            {
+                btnTypeUpdate.IsEnabled = true;
+            }
+        }
+
+        private void txtLocationName_SelectionChanged(object sender, RoutedEventArgs e)
+        {
+            if (txtLocationName.Text == selectedLocation.LocationName && dbLocationOperation == DBOperation.Edit)
+            {
+                btnLocationUpdate.IsEnabled = false;
+            }
+            else
+            {
+                btnLocationUpdate.IsEnabled = true;
+            }
+        }
+
+        private void btnFilterLogs_Click(object sender, RoutedEventArgs e)
+        {
+            RefreshLogsList(txtFilterLogs.Text);
+        }
+
+        private void btnClearFilterLogs_Click(object sender, RoutedEventArgs e)
+        {
+            RefreshLogsList();
+        }
+
+        private void btnClearAdminLogs_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBoxResult result = MessageBox.Show("This will clear all system lof informaion from the database. Continue ?", "Clear Log", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    db.Database.ExecuteSqlCommand("TRUNCATE TABLE[RadioDB].[dbo].[Log]");
+                    CreateLogEntry($"User {loggedInUser.Username} cleared the log table in the database", loggedInUser.UserId);
+                    RefreshLogsList();
+                }
+                catch (EntityException)
+                {
+                    DBConnectionError();
+                }
+            }
+        }
+
+        private void btnFilterUsers_Click(object sender, RoutedEventArgs e)
+        {
+            RefreshUserList(txtFilterUsers.Text);
+        }
+
+        private void btnClearFilterUsers_Click(object sender, RoutedEventArgs e)
+        {
+            RefreshUserList();
         }
     }
 }

@@ -36,17 +36,248 @@
                 </Style>
             </TabControl.Resources>
 
+            <TabItem Header="Event" ToolTip="Enter Event Data">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+
+                    <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="7" HorizontalAlignment="Center" VerticalAlignment="Center" Width="500" Background="SteelBlue" Margin="50">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Label Content="Event Name" Grid.Row="0" Grid.Column="0" Margin="10"/>
+                            <TextBox Name="txtEventName" Grid.Row="0" Grid.Column="1" VerticalContentAlignment="Center" MaxLength="30" Margin="10" />
+                            <Label Content="Event Date"  Grid.Row="1" Grid.Column="0" Margin="10" />
+                            <DatePicker Name="dateEventDate" Grid.Row="1" Grid.Column="1" Margin="10" />
+                            <StackPanel Grid.Row="3" Grid.Column="2" Orientation="Horizontal" Margin="10">
+                                <Button Content="Build Event" Name="btnBuildEvent"  Grid.Row="4" Grid.Column="0" Click="btnBuildEvent_Click" 
+                                     Height="50" Width="150" Margin="15,0"/>
+                                <Button Content="Write to CSV" Name="btnWriteToCSV"  Grid.Row="4" Grid.Column="0" Click="btnWriteToCSV_Click" 
+                                     Height="50" Width="150"  Margin="15,0"/>
+                            </StackPanel>
+
+                        </Grid>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
+                        <Label Name="lblCrew" HorizontalAlignment="Left" FontSize="20" Foreground="Black" Margin="10,0"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="2" Grid.Column="1" Background="SteelBlue" Orientation="Horizontal" Width="auto" Margin="10,0">
+                        <Label Content="Call Sign:"  Margin="5,5,0,5" />
+                        <TextBox Name="txtCallSign" Width="60" MaxLength="20"  Margin="0,5" SelectionChanged="txtCallSign_SelectionChanged" 
+                                 HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                        <Label Content="Crew Type:"  Margin="5,5,0,5"/>
+                        <ComboBox Name="cboCrewType" Width="100" Margin="0,5" 
+                                  DisplayMemberPath="CrewTypeName" SelectionChanged="cboCrewType_SelectionChanged"/>
+                        <Label Content="Location:"  Margin="5,5,0,5"/>
+                        <ComboBox Name="cboCrewLocation" Width="100" Margin="0,5" 
+                                  DisplayMemberPath="LocationName" SelectionChanged="cboCrewLocation_SelectionChanged"   />
+                        <Button Name="btnCrewUpdate" Content="Update" Margin="5" Padding="5" Click="btnCrewUpdate_Click"/>
+                    </StackPanel>
+
+                    <ListView Name="lstCrewList" Grid.Row="3" Grid.Column="1" Margin="10" Padding="5" Background="AliceBlue" SelectionChanged="lstCrewList_SelectionChanged" >
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Call Sign" Width="175" >
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock TextWrapping="Wrap" FontSize="13" Text="{Binding CallSign}"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="Type" Width="175">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock TextWrapping="Wrap" FontSize="13" Text="{Binding CrewType.CrewTypeName}"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="Location" Width="175">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock TextWrapping="Wrap" FontSize="13" Text="{Binding Location.LocationName}"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+
+                        <!-- Context menu for opening message stack panel -->
+                        <ListView.ContextMenu>
+                            <ContextMenu Name="mnuEditCrew" IsEnabled="True">
+                                <ContextMenu.Items>
+                                    <MenuItem Header="Add new crew" Name="submenuAddNewCrew" IsEnabled="True" 
+                                               Click="submenuAddNewCrew_Click">
+                                        <MenuItem.Icon>
+                                            <Image Source="Images/add.png" Stretch="Uniform" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem Header="Edit selected crew" Name="submenuEditCrew" IsEnabled="False" 
+                                              Click="submenuEditCrew_Click">
+                                        <MenuItem.Icon>
+                                            <Image Source="Images/edit.png" Stretch="Uniform"  />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem Header="Delete selected crew" Name="submenuDeleteCrew" IsEnabled="False" 
+                                              Click="submenuDeleteCrew_Click">
+                                        <MenuItem.Icon>
+                                            <Image Source="Images/delete.png" Stretch="Uniform"  />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                </ContextMenu.Items>
+                            </ContextMenu>
+                        </ListView.ContextMenu>
+                    </ListView>
+
+                    <StackPanel Grid.Row="1" Grid.Column="3" Orientation="Horizontal">
+                        <Label Name="lblCrewType"  Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" FontSize="20" Foreground="Black" Margin="10,0"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="2" Grid.Column="3" Background="SteelBlue" Orientation="Horizontal" Width="auto" Margin="10,0">
+                        <Label Content="Crew Type:"  Margin="5,5,0,5"/>
+                        <TextBox Name="txtTypeName" Width="80" MaxLength="30"  Margin="0,5" SelectionChanged="txtTypeName_SelectionChanged" 
+                                 HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                        <Button Name="btnTypeUpdate" Content="Update" Margin="5" Padding="5" Click="btnTypeUpdate_Click"/>
+                    </StackPanel>
+
+                    <ListView Name="lstTypesList" Grid.Row="3" Grid.Column="3" Margin="10" Padding="5"  Background="AliceBlue" SelectionChanged="lstTypesList_SelectionChanged" >
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Type" Width="200" >
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock TextWrapping="Wrap" FontSize="13" Text="{Binding CrewTypeName}"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+
+                        <ListView.ContextMenu>
+                            <ContextMenu Name="mnuEditCrewType" IsEnabled="True">
+                                <ContextMenu.Items>
+                                    <MenuItem Header="Add new crew type" Name="submenuAddCrewType" IsEnabled="True" 
+                                              Click="submenuAddCrewType_Click">
+                                        <MenuItem.Icon>
+                                            <Image Source="Images/add.png" Stretch="Uniform" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem Header="Edit selected crew type" Name="submenuEditCrewType" IsEnabled="False" 
+                                              Click="submenuEditCrewType_Click">
+                                        <MenuItem.Icon>
+                                            <Image Source="Images/edit.png" Stretch="Uniform"  />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem Header="Delete selected crew type" Name="submenuDeleteCrewType" IsEnabled="False" 
+                                              Click="submenuDeleteCrewType_Click">
+                                        <MenuItem.Icon>
+                                            <Image Source="Images/delete.png" Stretch="Uniform"  />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                </ContextMenu.Items>
+                            </ContextMenu>
+                        </ListView.ContextMenu>
+                    </ListView>
+
+                    <StackPanel Grid.Row="1" Grid.Column="5" Orientation="Horizontal">
+                        <Label Name="lblLocation"  Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" FontSize="20" Foreground="Black" Margin="10,0"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="2" Grid.Column="5" Background="SteelBlue" Orientation="Horizontal" Width="auto" Margin="10,0">
+                        <Label Content="Location Name:"  Margin="5,5,0,5"/>
+                        <TextBox Name="txtLocationName" Width="100" MaxLength="50"  Margin="0,5" SelectionChanged="txtLocationName_SelectionChanged"
+                                 HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                        <Button Name="btnLocationUpdate" Content="Update" Margin="5" Padding="5" Click="btnLocationUpdate_Click"/>
+                    </StackPanel>
+
+                    <ListView Name="lstLocationList" Grid.Row="3" Grid.Column="5" Margin="10" Padding="5" Background="AliceBlue" SelectionChanged="lstLocationList_SelectionChanged" >
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Location Name" Width="250">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock TextWrapping="Wrap" FontSize="13" Text="{Binding LocationName}"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+
+                        <!-- Context menu for opening message stack panel -->
+                        <ListView.ContextMenu>
+                            <ContextMenu Name="mnuEditLocation" IsEnabled="True">
+                                <ContextMenu.Items>
+                                    <MenuItem Header="Add new location" Name="submenuAddNewLocation" IsEnabled="True" 
+                                              Click="submenuAddNewLocation_Click">
+                                        <MenuItem.Icon>
+                                            <Image Source="Images/add.png" Stretch="Uniform" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem Header="Edit selected location" Name="submenuEditLocation" IsEnabled="False" 
+                                              Click="submenuEditLocation_Click">
+                                        <MenuItem.Icon>
+                                            <Image Source="Images/edit.png" Stretch="Uniform"  />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem Header="Delete selected location" Name="submenuDeleteLocation" IsEnabled="False" 
+                                              Click="submenuDeleteLocation_Click">
+                                        <MenuItem.Icon>
+                                            <Image Source="Images/delete.png" Stretch="Uniform"  />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                </ContextMenu.Items>
+                            </ContextMenu>
+                        </ListView.ContextMenu>
+                    </ListView>
+
+                </Grid>
+            </TabItem>
+
             <!-- Users Tab, Listview for user details, context menu to open user stackpanel-->
             <TabItem Header="Users" ToolTip="Add, Edit, Delete System users" >
                 <Grid>
                     <!-- 2*1 grid -->
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
 
+
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Background="LightGray">
+                        <Label Content="Filter Text:"  Margin="10,0,0,0" Foreground="Black"/>
+                        <TextBox Name="txtFilterUsers" Width="200" MaxLength="30" Height="25"  Margin="0,0,10,0" VerticalContentAlignment="Center"/>
+                        <Button Name="btnFilterUsers" Content="Filter" Width="75" Margin="10,0"  Height="25" Click="btnFilterUsers_Click"/>
+                        <Button Name="btnClearFilterUsers" Content="Clear" Width="75" Margin="10,0"  Height="25" Click="btnClearFilterUsers_Click"/>
+                        <TextBlock Name="tbxUsersStats" Width="auto" Margin="10,0" TextAlignment="Center" VerticalAlignment="Center"/>
+                    </StackPanel>
+
                     <!-- List view with 5 columns -->
-                    <ListView Name="lstUserList" Grid.Row="0" SelectionChanged="lstUserList_SelectionChanged" Padding="5" Background="AliceBlue">
+                    <ListView Name="lstUserList" Grid.Row="1" SelectionChanged="lstUserList_SelectionChanged" Padding="5" Background="AliceBlue">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Header="UserName" Width="200">
@@ -115,7 +346,7 @@
                     </ListView>
 
                     <!-- Stackpanel for adding/editing user details -->
-                    <StackPanel Name="stkUserDetails" Grid.Row="1" HorizontalAlignment="Center" Margin="10,100" 
+                    <StackPanel Name="stkUserDetails" Grid.Row="2" HorizontalAlignment="Center" Margin="10,100" 
                                 Background="SteelBlue" Visibility="Collapsed" >
                         <Grid>
                             <!-- 6*2 Grid -->
@@ -168,62 +399,61 @@
 
             <!-- Tab for user log information, list view with 3 columns -->
             <TabItem Header="Logs" ToolTip="Log of user activity">
-                <ListView Name="lstLogsList" Padding="5" Background="AliceBlue">
-                    <ListView.View>
-                        <GridView>
-                            <GridViewColumn Header="Date/Time" Width="200">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBlock TextWrapping="Wrap" Text="{Binding Date}"/>
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-                            <GridViewColumn Header="Event" Width="1000">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBlock TextWrapping="Wrap" Text="{Binding Event}"/>
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-                            <GridViewColumn Header="User ID" Width="200">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBlock TextWrapping="Wrap" Text="{Binding User.Username}"/>
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-                        </GridView>
-                    </ListView.View>
-                </ListView>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Background="LightGray">
+                        <Label Content="Filter Text:"  Margin="10,0,0,0" Foreground="Black"/>
+                        <TextBox Name="txtFilterLogs" Width="200" MaxLength="30" Height="25"  Margin="0,0,10,0" VerticalContentAlignment="Center"/>
+                        <Button Name="btnFilterLogs" Content="Filter" Width="75" Margin="10,0"  Height="25" Click="btnFilterLogs_Click"/>
+                        <Button Name="btnClearFilterLogs" Content="Clear" Width="75" Margin="10,0"  Height="25" Click="btnClearFilterLogs_Click"/>
+                        <TextBlock Name="tbxLogStats" Width="auto" Margin="10,0" TextAlignment="Center" VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Background="LightGray">
+                        <Button Name="btnClearAdminLogs" Content="Clear Log"  Width="75" Margin="10,0"  Height="25" Click="btnClearAdminLogs_Click"/>
+                    </StackPanel>
+
+
+
+                    <ListView Name="lstLogsList" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Padding="5" Background="AliceBlue">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Date/Time" Width="200">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock TextWrapping="Wrap" Text="{Binding Date}"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="Event" Width="1000">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock TextWrapping="Wrap" Text="{Binding Event}"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="Username" Width="200">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock TextWrapping="Wrap" Text="{Binding User.Username}"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </Grid>
             </TabItem>
 
-            <TabItem Header="Event Data" ToolTip="Enter Event Data">
-                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="500" Background="SteelBlue">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="auto"/>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <Label Content="Event Name" Grid.Row="0" Grid.Column="0" Margin="10"/>
-                        <TextBox Name="txtEventName" Grid.Row="0" Grid.Column="1" VerticalContentAlignment="Center" MaxLength="30" Margin="10" />
-                        <Label Content="Event Date"  Grid.Row="1" Grid.Column="0" Margin="10" />
-                        <DatePicker Name="dateEventDate" Grid.Row="1" Grid.Column="1" Margin="10" />
-                        <StackPanel Grid.Row="3" Grid.Column="2" Orientation="Horizontal" Margin="10">
-                            <Button Content="Build Event" Name="btnBuildEvent"  Grid.Row="4" Grid.Column="0" Click="btnBuildEvent_Click" 
-                                     Height="50" Width="150" Margin="15,0"/>
-                            <Button Content="Write to CSV" Name="btnWriteToCSV"  Grid.Row="4" Grid.Column="0" Click="btnWriteToCSV_Click" 
-                                     Height="50" Width="150"  Margin="15,0"/>
-                        </StackPanel>
-                        
-                    </Grid>
-                </StackPanel>
-            </TabItem>
+
         </TabControl>
     </Grid>
 </Page>

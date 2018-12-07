@@ -41,9 +41,9 @@
         <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal">
             <Label Content="Incidents" FontSize="20" Foreground="Black" Margin="10,0" Width="100"/>
             <Label Content="No. of Incidents" FontSize="15" Foreground="Black" Margin="50,0,0,0" VerticalAlignment="Center"/>
-            <TextBox Name="txtNoIncidents" Width="50" Height="25" VerticalAlignment="Center" Margin="10,0,0,0" IsReadOnly="True"  HorizontalAlignment="Center"/>
+            <TextBox Name="txtNoIncidents" Width="50" Height="25" Margin="10,0,0,0" IsReadOnly="True" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
             <Label Content="Open Incidents" FontSize="15" Foreground="Black" Margin="50,0,0,0" VerticalAlignment="Center"/>
-            <TextBox Name="txtOpenIncidents" Width="50" Height="25" VerticalAlignment="Center" Margin="10,0,0,0" IsReadOnly="True" HorizontalAlignment="Center"/>
+            <TextBox Name="txtOpenIncidents" Width="50" Height="25" Margin="10,0,0,0" IsReadOnly="True" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
         </StackPanel>
 
         <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
@@ -216,9 +216,9 @@
         <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal">
             <Label Content="Crew" FontSize="20" Foreground="Black" Margin="10,0"  Width="100" />
             <Label Content="No. of Crew" FontSize="15" Foreground="Black" Margin="50,0,0,0" VerticalAlignment="Center"/>
-            <TextBox Name="txtCrewNo" Width="50" Height="25" VerticalAlignment="Center" Margin="10,0,0,0" IsReadOnly="True" HorizontalAlignment="Center"/>
-            <Label Content="Available Crew" FontSize="15" Foreground="Black" Margin="50,0,0,0" VerticalAlignment="Center"/>
-            <TextBox Name="txtAvailableCrew" Width="50" Height="25" VerticalAlignment="Center" Margin="10,0,0,0" IsReadOnly="True" HorizontalAlignment="Center"/>
+            <TextBox Name="txtCrewNo" Width="50" Height="25" Margin="10,0,0,0" IsReadOnly="True" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+            <Label Content="Available Crew" FontSize="15" Foreground="Black" Margin="50,0,0,0" VerticalAlignment="Center" />
+            <TextBox Name="txtAvailableCrew" Width="50" Height="25" Margin="10,0,0,0" IsReadOnly="True" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
         </StackPanel>
 
         <!-- Listview for crew information - 5 Columns and context menu -->
