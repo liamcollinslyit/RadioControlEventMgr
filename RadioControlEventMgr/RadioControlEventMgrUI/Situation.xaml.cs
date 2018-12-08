@@ -421,14 +421,18 @@ namespace RadioControlEventMgrUI
                 foreach (var crew in db.Crews)
                 {
                     crews.Add(crew);
-                    crewNum++;
+
+                    if (crew.CallSignID > 0)
+                    {
+                        crewNum++;
+                    }                  
                     if (crew.StatusID < 3)
                     {
                         btnRadioCheck.Visibility = Visibility.Visible;
                     }
-                    if (crew.StatusID == 3)
+                    if (crew.StatusID == 3 && crew.CallSignID > 0)
                     {
-                        availableCrew++;
+                        availableCrew++;                   
                     }
                 }
             }
@@ -451,7 +455,7 @@ namespace RadioControlEventMgrUI
 
             try
             {
-                foreach (var location in db.Locations)
+                foreach (var location in db.Locations.Where(t=>t.LocationID > 0))
                 {
                     locations.Add(location);
                 }
@@ -564,12 +568,29 @@ namespace RadioControlEventMgrUI
 
         private void lstCrewList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (lstCrewList.SelectedIndex >= 0)
+
+            submenuNewMessage.IsEnabled = false;
+            submenuLocation.IsEnabled = false;
+            submenuStatus.IsEnabled = false;
+            submenuIncident.IsEnabled = false;
+            submenuClearIncident.IsEnabled = false;
+
+            if (lstCrewList.SelectedIndex == 0)
             {
                 submenuNewMessage.IsEnabled = true;
-                selectedCrew = crews.ElementAt(lstCrewList.SelectedIndex);
-                UpdateCrewDetails();
+                submenuStatus.IsEnabled = true;
+
             }
+            if (lstCrewList.SelectedIndex >= 1)
+            {
+                submenuNewMessage.IsEnabled = true;
+                submenuLocation.IsEnabled = true;
+                submenuStatus.IsEnabled = true;
+                submenuIncident.IsEnabled = true;
+                submenuClearIncident.IsEnabled = true;
+            }
+            selectedCrew = crews.ElementAt(lstCrewList.SelectedIndex);
+            UpdateCrewDetails();
 
         }
 
@@ -815,7 +836,6 @@ namespace RadioControlEventMgrUI
             {
                 foreach (var crew in db.Crews.Where(t=> t.StatusID < 3))
                 {
-
                     MessageBoxResult result = MessageBox.Show($"Radio Check with {crew.CallSign}, OK ?", "Radio Check", MessageBoxButton.YesNoCancel, MessageBoxImage.Information);
 
                     if (result == MessageBoxResult.Yes)
@@ -833,6 +853,7 @@ namespace RadioControlEventMgrUI
 
                     btnRadioCheck.Visibility = Visibility.Collapsed;
                 }
+
                 SaveDBChanges();
                 RefreshCrewList();
             }

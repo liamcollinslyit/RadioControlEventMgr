@@ -506,7 +506,7 @@ namespace RadioControlEventMgrUI
             {
                 int crewNum = 0;
                 crews.Clear();
-                foreach (var crew in db.Crews)
+                foreach (var crew in db.Crews.Where(t=> t.CallSignID > 0))
                 {
                     crews.Add(crew);
                     crewNum++;
@@ -527,7 +527,7 @@ namespace RadioControlEventMgrUI
             {
                 int crewTypeNum = 0;
                 crewTypes.Clear();
-                foreach (var crewType in db.CrewTypes)
+                foreach (var crewType in db.CrewTypes.Where(t => t.CrewTypeID > 0))
                 {
                     crewTypes.Add(crewType);
                     crewTypeNum++;
@@ -549,7 +549,7 @@ namespace RadioControlEventMgrUI
             {
                 int locationNum = 0;
                 locations.Clear();
-                foreach (var location in db.Locations)
+                foreach (var location in db.Locations.Where(t=> t.LocationID>0))
                 {
                     locations.Add(location);
                     locationNum++;
@@ -1108,6 +1108,7 @@ namespace RadioControlEventMgrUI
         private void btnClearFilterLogs_Click(object sender, RoutedEventArgs e)
         {
             RefreshLogsList();
+            tbxLogStats.Text = "";
         }
 
         private void btnClearAdminLogs_Click(object sender, RoutedEventArgs e)
@@ -1118,8 +1119,7 @@ namespace RadioControlEventMgrUI
             {
                 try
                 {
-                    db.Database.ExecuteSqlCommand("TRUNCATE TABLE[RadioDB].[dbo].[Log]");
-                    CreateLogEntry($"User {loggedInUser.Username} cleared the log table in the database", loggedInUser.UserId);
+                    db.Database.ExecuteSqlCommand("TRUNCATE TABLE[RadioDB].[dbo].[Log]");         
                     RefreshLogsList();
                 }
                 catch (EntityException)
@@ -1137,6 +1137,7 @@ namespace RadioControlEventMgrUI
         private void btnClearFilterUsers_Click(object sender, RoutedEventArgs e)
         {
             RefreshUserList();
+            tbxUsersStats.Text = "";
         }
     }
 }

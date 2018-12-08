@@ -273,22 +273,22 @@
                                 <Image Source="Images/add.png" Stretch="Uniform" />
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem Header="Status" Name="submenuStatus" DisplayMemberPath="StatusName" Click="submenuStatus_Click">
+                        <MenuItem Header="Status" Name="submenuStatus"  IsEnabled="False"  DisplayMemberPath="StatusName" Click="submenuStatus_Click">
                             <MenuItem.Icon>
                                 <Image Source="Images/Status.png" Stretch="Uniform" />
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem Header="Location" Name="submenuLocation" DisplayMemberPath="LocationName" Click="submenuLocation_Click">
+                        <MenuItem Header="Location" Name="submenuLocation"  IsEnabled="False"  DisplayMemberPath="LocationName" Click="submenuLocation_Click">
                             <MenuItem.Icon>
                                 <Image Source="Images/Location.png" Stretch="Uniform" />
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem Header="Assign Incident" Name="submenuIncident" DisplayMemberPath="IncidentNo" Click="submenuIncident_Click">
+                        <MenuItem Header="Assign Incident" Name="submenuIncident"  IsEnabled="False"  DisplayMemberPath="IncidentNo" Click="submenuIncident_Click">
                             <MenuItem.Icon>
                                 <Image Source="Images/Incident.png" Stretch="Uniform" />
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem Header="Clear Incident" Name="submenuClearIncident" DisplayMemberPath="IncidentNo" Click="submenuClearIncident_Click">
+                        <MenuItem Header="Clear Incident" Name="submenuClearIncident"  IsEnabled="False" DisplayMemberPath="IncidentNo" Click="submenuClearIncident_Click">
                             <MenuItem.Icon>
                                 <Image Source="Images/GreenIncident.png" Stretch="Uniform" />
                             </MenuItem.Icon>
@@ -368,28 +368,28 @@
         <ListView Name="lstSituationMessages" Grid.Row="1" Grid.Column="1" Grid.RowSpan="3" Margin="10" Background="AliceBlue">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="Date/Time" Width="100">
+                    <GridViewColumn Header="Date/Time" Width="90">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock TextWrapping="Wrap" Text="{Binding Date}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="Call sign" Width="100">
+                    <GridViewColumn Header="Call sign" Width="90">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock TextWrapping="Wrap" Text="{Binding Crew.CallSign}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="Incident" Width="100">
+                    <GridViewColumn Header="Incident" Width="90">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock TextWrapping="Wrap" Text="{Binding Incident.IncidentNo}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="Message Text" Width="225">
+                    <GridViewColumn Header="Message Text" Width="240">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock TextWrapping="Wrap" Text="{Binding MessageText}"/>

@@ -236,6 +236,7 @@ namespace RadioControlEventMgrUI
         private void btnClearFilterMessages_Click(object sender, RoutedEventArgs e)
         {
             RefreshMessagesList();
+            tbxMessgesStats.Text = "";
         }
 
         private void btnFilterIncidents_Click(object sender, RoutedEventArgs e)
@@ -246,6 +247,7 @@ namespace RadioControlEventMgrUI
         private void btnClearFilterIncidents_Click(object sender, RoutedEventArgs e)
         {
             RefreshIncidentList();
+            tbxIncidentStats.Text = "";
         }
     }
 }
