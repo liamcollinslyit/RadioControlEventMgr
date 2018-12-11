@@ -20,21 +20,25 @@ using System.Windows.Shapes;
 namespace RadioControlEventMgrUI
 {
     /// <summary>
-    /// Interaction logic for Admin.xaml
+    /// Interaction logic for admin screen - Event Data, System Users and System Logs
     /// </summary>
     public partial class Admin : Page
     {
+        // Currently logged in user, passed from dashboard
         public User loggedInUser = new User();
 
+        // Enum for current operation of stackpanel's, controlled by context menu
         enum DBOperation
         {
             Add,
             Edit
         }
 
+        //Db Connection string
         RadioDBEntities db = new RadioDBEntities("metadata=res://*/RadioModel.csdl|res://*/RadioModel.ssdl|res://*/RadioModel.msl;provider=System.Data.SqlClient;provider connection string='data source=192.168.60.132" +
                                                  ";initial catalog=RadioDB;user id=radiouser;password=password;pooling=False;MultipleActiveResultSets=True;App=EntityFramework'");
-
+        
+        // List for storing information read from DB
         List<User> users = new List<User>();
         List<Crew> crews = new List<Crew>();
         List<CrewType> crewTypes = new List<CrewType>();
@@ -42,10 +46,13 @@ namespace RadioControlEventMgrUI
         List<Log> logs = new List<Log>();
         List<AccessLevel> accessLevels = new List<AccessLevel>();
 
+        // Variables for selected list item 
         User selectedUser = new User();
         Crew selectedCrew = new Crew();
         CrewType selectedCrewType = new CrewType();
         Location selectedLocation = new Location();
+
+        // DB Operation for each type of stackpanel
         DBOperation dbUserOperation = new DBOperation();
         DBOperation dbCrewOperation = new DBOperation();
         DBOperation dbCrewTypeOperation = new DBOperation();
@@ -56,6 +63,7 @@ namespace RadioControlEventMgrUI
             InitializeComponent();
         }
 
+        // When page is loaded, get info from DB
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             RefreshUserList();
@@ -70,6 +78,7 @@ namespace RadioControlEventMgrUI
         // List box Selection Change
         // ---------------------------------------------------------------------------------------//
 
+        // User selection changed, set selected user and enable context menu options
         private void lstUserList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {            
             if (lstUserList.SelectedIndex >= 0)
@@ -77,6 +86,8 @@ namespace RadioControlEventMgrUI
                 submenuEditUser.IsEnabled = true;
                 submenuDeleteUser.IsEnabled = true;
                 selectedUser = users.ElementAt(lstUserList.SelectedIndex);
+
+                // If current operation is edit then show user details in panel
                 if (dbUserOperation == DBOperation.Edit)
                 {
                     UpdateUserDetails();
@@ -89,6 +100,7 @@ namespace RadioControlEventMgrUI
             }
         }
 
+        // Crew selection changed, set selected Crew and enable context menu options
         private void lstCrewList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (lstCrewList.SelectedIndex >= 0)
@@ -96,6 +108,8 @@ namespace RadioControlEventMgrUI
                 submenuEditCrew.IsEnabled = true;
                 submenuDeleteCrew.IsEnabled = true;
                 selectedCrew = crews.ElementAt(lstCrewList.SelectedIndex);
+
+                // If current operation is edit then show crew details in panel
                 if (dbCrewOperation == DBOperation.Edit)
                 {
                     UpdateCrewDetails();
@@ -108,7 +122,7 @@ namespace RadioControlEventMgrUI
             }
         }
 
-
+        // Crew Type selection changed, set selected Crew Type and enable context menu options
         private void lstTypesList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (lstTypesList.SelectedIndex >= 0)
@@ -116,6 +130,8 @@ namespace RadioControlEventMgrUI
                 submenuEditCrewType.IsEnabled = true;
                 submenuDeleteCrewType.IsEnabled = true;
                 selectedCrewType = crewTypes.ElementAt(lstTypesList.SelectedIndex);
+
+
                 if (dbCrewTypeOperation == DBOperation.Edit)
                 {
                     UpdateCrewTypeDetails();
@@ -128,6 +144,7 @@ namespace RadioControlEventMgrUI
             }
         }
 
+        // Location selection changed, set selected location and enable context menu options
         private void lstLocationList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (lstLocationList.SelectedIndex >= 0)
@@ -135,6 +152,8 @@ namespace RadioControlEventMgrUI
                 submenuEditLocation.IsEnabled = true;
                 submenuDeleteLocation.IsEnabled = true;
                 selectedLocation = locations.ElementAt(lstLocationList.SelectedIndex);
+
+                // If current operation is edit then show location details in panel
                 if (dbLocationOperation == DBOperation.Edit)
                 {
                     UpdateLocationDetails();
@@ -151,6 +170,7 @@ namespace RadioControlEventMgrUI
         // User Context Click Events
         // ---------------------------------------------------------------------------------------//
 
+        // Add user click event - add user to DB, clear + hide panel and note in system log
         private void submenuAddNewUser_Click(object sender, RoutedEventArgs e)
         {
             dbUserOperation = DBOperation.Add;
@@ -159,6 +179,7 @@ namespace RadioControlEventMgrUI
             CreateLogEntry("User opened add user panel", loggedInUser.UserId);
         }
 
+        // Edit user click event - Edit user in DB, clear + hide panel and note in system log
         private void submenuEditUser_Click(object sender, RoutedEventArgs e)
         {
             dbUserOperation = DBOperation.Edit;
@@ -167,6 +188,7 @@ namespace RadioControlEventMgrUI
             CreateLogEntry("User opened edit user panel", loggedInUser.UserId);
         }
 
+        // Delecte user click event - Delete user from DB, clear panel, notify user of success/failure and note in system log
         private void submenuDeleteUser_Click(object sender, RoutedEventArgs e)
         {
             db.Users.RemoveRange(db.Users.Where(t => t.UserId == selectedUser.UserId));
@@ -191,6 +213,7 @@ namespace RadioControlEventMgrUI
         // User Details Panel Click Events
         // ---------------------------------------------------------------------------------------//
 
+        // Update button click event - validate details then perform the selected operation
         private void btnEditUpdate_Click(object sender, RoutedEventArgs e)
         {
             string username = txtEditUsername.Text.Trim();
@@ -212,9 +235,10 @@ namespace RadioControlEventMgrUI
             }            
         }
 
-
+        // Function to create user in the DB with given data and note in system logs.
         private void CreateUser(string username, string password, string forename, string surname, AccessLevel accessLevel)
         {
+            // Create new user with supplied details and add to DB
             User user = new User();
             user.Username = username;
             user.Password = password;
@@ -223,6 +247,7 @@ namespace RadioControlEventMgrUI
             user.LevelID = accessLevel.LevelID;
             db.Entry(user).State = System.Data.Entity.EntityState.Added;
 
+            // If save is successful/failed show message and note to system log
             int saveSuccess = SaveDBChanges();
             if (saveSuccess == 1)
             {
@@ -235,15 +260,15 @@ namespace RadioControlEventMgrUI
             {
                 MessageBox.Show("Problem creating user record, please try again or contact system administrator", "User Administration", MessageBoxButton.OK, MessageBoxImage.Error);
                 CreateLogEntry($"Error:  Problem creating user {user.Username}", loggedInUser.UserId);
-
             }
-
         }
 
+        // Function to update the selected user with supplied details in DB and note in system logs.
         private void UpdateUser(string username, string password, string forename, string surname, AccessLevel accessLevel)
         {
             try
             {
+                // Find the selected user in the DB and change to supplied details
                 foreach (var user in db.Users.Where(t => t.UserId == selectedUser.UserId))
                 {
                     user.Username = username;
@@ -251,7 +276,6 @@ namespace RadioControlEventMgrUI
                     user.Forename = forename;
                     user.Surname = surname;
                 }
-
             }
             catch (EntityException)
             {
@@ -259,6 +283,7 @@ namespace RadioControlEventMgrUI
                 DBConnectionError();
             }
 
+            // If save is successful/failed show message and note to system log
             int saveSuccess = SaveDBChanges();
             if (saveSuccess == 1)
             {
@@ -278,6 +303,7 @@ namespace RadioControlEventMgrUI
         // User Details Validations And Changed Validation
         // ---------------------------------------------------------------------------------------//
 
+        // Validate user details supplied in the panel, if invlaid show usful error message for each item and color text box red.
         private bool ValidateUserDetails()
         {
             bool valid = true;
@@ -315,6 +341,7 @@ namespace RadioControlEventMgrUI
 
             try
             {
+                // Check if username already exist in DB (If editing, break if matches selected user)
                 foreach (var user in db.Users.Where(t => t.Username == txtEditUsername.Text))
                 {
                     if (dbUserOperation == DBOperation.Edit && selectedUser.UserId == user.UserId)
@@ -331,6 +358,7 @@ namespace RadioControlEventMgrUI
                 DBConnectionError();
             }
 
+            // If invlaid show the cumulative error message
             if (!valid)
             {
                 MessageBox.Show(errorMessage, "User Detail's Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
@@ -340,6 +368,8 @@ namespace RadioControlEventMgrUI
             return valid;
         }
 
+        // User panel textbox change - reset color to white
+        // Check entered details are different then selected user details in the DB and if so enable update button
         private void txtBox_SelectionChanged(object sender, RoutedEventArgs e)
         {
             TextBox textBox = sender as TextBox;
@@ -360,6 +390,7 @@ namespace RadioControlEventMgrUI
             }
         }
 
+        // Check selected details are different then selected user details in the DB and if so enable update button
         private void cboEditUserAccess_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             AccessLevel accessLevel = (AccessLevel)cboEditUserAccess.SelectedItem;
@@ -378,6 +409,7 @@ namespace RadioControlEventMgrUI
         // Clearing and Setting User details
         // ---------------------------------------------------------------------------------------//
 
+        // Clear User details in panel
         private void ClearUserDetails()
         {
             txtEditUsername.Text = "";
@@ -392,6 +424,7 @@ namespace RadioControlEventMgrUI
             stkUserDetails.Visibility = Visibility.Collapsed;
         }
 
+        // Update user details in panel
         private void UpdateUserDetails()
         {
             txtEditUsername.Text = selectedUser.Username;
@@ -405,6 +438,7 @@ namespace RadioControlEventMgrUI
         // Refreshing Data In Tables And Combo Boxes
         // ---------------------------------------------------------------------------------------//
 
+        // Refresh User details list from DB, filter if required and set information message in filter panel
         private void RefreshUserList(string filter = null)
         {
             try
@@ -417,6 +451,7 @@ namespace RadioControlEventMgrUI
                 users.Clear();
                 if (filter == null)
                 {
+                    // Dont read INVLAID_USER at ID 0
                     foreach (var user in db.Users.Where(t => t.UserId != 0))
                     {
                         users.Add(user);
@@ -429,6 +464,7 @@ namespace RadioControlEventMgrUI
                 }
                 else
                 {
+                    // return list of user that have filter text in any field
                     foreach (var user in db.Users.Where(t => t.UserId != 0 && ( t.Username.Contains(filter) || t.Password.Contains(filter) || t.Forename.Contains(filter) || t.Surname.Contains(filter) )))
                     {
                         users.Add(user);
@@ -448,6 +484,7 @@ namespace RadioControlEventMgrUI
             }
         }
 
+        // Refresh Log details list from DB, filter if required and set information message in filter panel
         private void RefreshLogsList(string filter = null)
         {
             try
@@ -465,6 +502,7 @@ namespace RadioControlEventMgrUI
                 }
                 else
                 {
+                    // return list of log messages that have filter text in any field
                     foreach (var log in db.Logs.Where(t=> t.Date.ToString().Contains(filter) || t.Event.Contains(filter) || t.User.Username.Contains(filter)))
                     {
                         logs.Add(log);
@@ -482,6 +520,7 @@ namespace RadioControlEventMgrUI
             }
         }
 
+        // Refresh access level details list from DB
         private void RefreshAccessLevels()
         {
             try
@@ -500,12 +539,14 @@ namespace RadioControlEventMgrUI
             }
         }
 
+        // Refresh crew details list from DB and set crew label with number
         private void RefreshCrew()
         {
             try
             {
                 int crewNum = 0;
                 crews.Clear();
+                // Dont read Control at ID 0
                 foreach (var crew in db.Crews.Where(t=> t.CallSignID > 0))
                 {
                     crews.Add(crew);
@@ -521,12 +562,14 @@ namespace RadioControlEventMgrUI
             }
         }
 
+        // Refresh crew types details list from DB and set crew types label with number
         private void RefreshCrewTypes()
         {
             try
             {
                 int crewTypeNum = 0;
                 crewTypes.Clear();
+                // Dont read Control at ID 0
                 foreach (var crewType in db.CrewTypes.Where(t => t.CrewTypeID > 0))
                 {
                     crewTypes.Add(crewType);
@@ -543,12 +586,14 @@ namespace RadioControlEventMgrUI
             }
         }
 
+        // Refresh location details list from DB and set location label with number
         private void RefreshLocation()
         {
             try
             {
                 int locationNum = 0;
                 locations.Clear();
+                // Dont read Control at ID 0
                 foreach (var location in db.Locations.Where(t=> t.LocationID>0))
                 {
                     locations.Add(location);
@@ -566,123 +611,48 @@ namespace RadioControlEventMgrUI
         }
 
         // ---------------------------------------------------------------------------------------//
-        // Log Messages And DB Updates With Error Control
+        // Filter + Clear  and Clear Logs Button Click Events
         // ---------------------------------------------------------------------------------------//
 
-        /// <summary>
-        /// Create an entry in the log database
-        /// </summary>
-        /// <param name="eventDescription"></param>
-        /// Description of the event
-        /// <param name="userID"></param>
-        /// User ID of event generator
-        public void CreateLogEntry(string eventDescription, int userID)
+        // Applied filter to users list using entered text
+        private void btnFilterUsers_Click(object sender, RoutedEventArgs e)
         {
-            Log log = new Log();
-            log.Date = DateTime.Now;
-            log.Event = eventDescription;
-            log.UserID = userID;
-            db.Entry(log).State = System.Data.Entity.EntityState.Added;
-            SaveDBChanges();
+            RefreshUserList(txtFilterUsers.Text);
+        }
+
+        // Remove filter from users list and clear text box
+        private void btnClearFilterUsers_Click(object sender, RoutedEventArgs e)
+        {
+            RefreshUserList();
+            tbxUsersStats.Text = "";
+        }
+
+        // Applied filter to system logs list using entered text
+        private void btnFilterLogs_Click(object sender, RoutedEventArgs e)
+        {
+            RefreshLogsList(txtFilterLogs.Text);
+        }
+
+        // Remove filter from system logs list and clear text box
+        private void btnClearFilterLogs_Click(object sender, RoutedEventArgs e)
+        {
             RefreshLogsList();
+            tbxLogStats.Text = "";
         }
 
-        public int SaveDBChanges()
+        // Clear log message from database for clean start
+        private void btnClearAdminLogs_Click(object sender, RoutedEventArgs e)
         {
-            int success = 0;
-            try
-            {
-                success = db.SaveChanges();
-            }
-            catch (EntityException)
-            {
-                DBConnectionError();
-            }
-            return success;
-        }
-
-        public void DBConnectionError()
-        {
-            MessageBox.Show("Problem connecting to the SQL server, contact system administrator. Application will now close.", "Connection to Database", MessageBoxButton.OK, MessageBoxImage.Error);
-            Environment.Exit(0);
-        }
-
-
-        private void btnWriteToCSV_Click(object sender, RoutedEventArgs e)
-        {
-            if (txtEventName.Text == "" || dateEventDate.SelectedDate == null)
-            {
-                MessageBox.Show("Eventname and date must be entered before saving", "Save to File", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            else
-            {
-                SaveFileDialog saveDialog = new SaveFileDialog();
-                saveDialog.Filter = "CSV files (*.csv)| *.csv|txt files (*.txt)|*.txt|All files (*.*)|*.*";
-                saveDialog.FilterIndex = 1;
-                saveDialog.ShowDialog();
-
-                if (saveDialog.FileName != "")
-                {
-                    using (StreamWriter writetext = new StreamWriter(saveDialog.FileName))
-                    {
-                        writetext.WriteLine($"{txtEventName.Text.Trim()}: {dateEventDate.SelectedDate.Value.ToString("dd/MM/yyyy")}");
-                        writetext.WriteLine();
-                        writetext.WriteLine();
-                        writetext.WriteLine("Event Incidents");
-                        writetext.WriteLine("Incident No,Location,Reported Time,At Scene Time, Leave Scene Time,Description");
-                        foreach (var incident in db.Incidents)
-                        {
-                            string description = incident.Description.Replace(",", ";");
-                            writetext.WriteLine($"{incident.IncidentNo}, {incident.Location.LocationName}, {incident.ReportedTime}, {incident.AtSceneTime}, {incident.LeaveSceneTime}, {description}");
-                        }
-                        writetext.WriteLine();
-                        writetext.WriteLine();
-                        writetext.WriteLine("Event Messages");
-                        writetext.WriteLine("Date,Call Sign,Incident,Status,Message Text");
-                        foreach (var message in db.Messages)
-                        {
-                            string messageText = message.MessageText.Replace(",", ";");
-                            if (message.Incident == null)
-                            {
-                                writetext.WriteLine($"{message.Date}, {message.Crew.CallSign},, {message.Status.StatusName}, {messageText}");
-                            }
-                            else
-                            {
-                                writetext.WriteLine($"{message.Date}, {message.Crew.CallSign}, {message.Incident.IncidentNo}, {message.Status.StatusName}, {messageText}");
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    MessageBox.Show("File Name must be entered", "Save to File", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-            }
-        }
-
-        private void btnBuildEvent_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBoxResult result = MessageBox.Show("This will reset event data and clear information from the database. Continue ?", "Build Event", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            // User confirm proceed
+            MessageBoxResult result = MessageBox.Show("This will clear all system lof informaion from the database. Continue ?", "Clear Log", MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
             if (result == MessageBoxResult.Yes)
             {
                 try
                 {
-                    CreateLogEntry($"User {loggedInUser.Username} built a new event", loggedInUser.UserId);
-
-                    foreach (Crew crew in db.Crews)
-                    {
-                        crew.StatusID = 1;
-                        crew.IncidentID = null;
-                    }
-
-                    SaveDBChanges();
-
-                    db.Database.ExecuteSqlCommand("TRUNCATE TABLE [RadioDB].[dbo].[Message]");
-                    db.Database.ExecuteSqlCommand("DELETE FROM [RadioDB].[dbo].[Incident]");
-                    db.Database.ExecuteSqlCommand("DBCC CHECKIDENT('[RadioDB].[dbo].[Incident]', RESEED, 0)");
-
-                    MessageBox.Show("Event built successfully", "Build Event", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    // Truncate table using SQL command
+                    db.Database.ExecuteSqlCommand("TRUNCATE TABLE[RadioDB].[dbo].[Log]");
+                    RefreshLogsList();
                 }
                 catch (EntityException)
                 {
@@ -691,15 +661,135 @@ namespace RadioControlEventMgrUI
             }
         }
 
+        // ---------------------------------------------------------------------------------------//
+        // Event Tab Context Click Events
+        // ---------------------------------------------------------------------------------------//
+
+        // Add crew click event - set DB operation to add and enable update
+        private void submenuAddNewCrew_Click(object sender, RoutedEventArgs e)
+        {
+            dbCrewOperation = DBOperation.Add;
+            btnCrewUpdate.IsEnabled = true;
+        }
+
+        // Edit crew click event - set DB operation to add and enable update
+        private void submenuEditCrew_Click(object sender, RoutedEventArgs e)
+        {
+            dbCrewOperation = DBOperation.Edit;
+            btnCrewUpdate.IsEnabled = false;
+            UpdateCrewDetails();
+        }
+
+        // Delete crew click event - Delete crew from DB, clear panel and note in system log
+        private void submenuDeleteCrew_Click(object sender, RoutedEventArgs e)
+        {
+            db.Crews.RemoveRange(db.Crews.Where(t => t.CallSignID == selectedCrew.CallSignID));
+
+            int saveSuccess = SaveDBChanges();
+            if (saveSuccess == 1)
+            {
+                RefreshCrew();
+                CreateLogEntry($"Crew {selectedCrew.CallSign} successfully deleted from system ", loggedInUser.UserId);
+            }
+            else
+            {
+                // If error saving display error message
+                MessageBox.Show($"Problem deleting crew {selectedCrew.CallSign}, please try again or contact system administrator", "User Administration", MessageBoxButton.OK, MessageBoxImage.Error);
+                CreateLogEntry($"Error: Problem deleting crew {selectedCrew.CallSign}", loggedInUser.UserId);
+            }
+
+            txtCallSign.Text = "";
+            cboCrewType.SelectedIndex = -1;
+            cboCrewLocation.SelectedIndex = -1;
+            dbCrewOperation = DBOperation.Add;
+        }
+
+        // Add crew type click event - set DB operation to add and enable update
+        private void submenuAddCrewType_Click(object sender, RoutedEventArgs e)
+        {
+            dbCrewTypeOperation = DBOperation.Add;
+            btnTypeUpdate.IsEnabled = true;
+        }
+
+        // Edit crew type click event - set DB operation to add and enable update
+        private void submenuEditCrewType_Click(object sender, RoutedEventArgs e)
+        {
+            dbCrewTypeOperation = DBOperation.Edit;
+            btnTypeUpdate.IsEnabled = false;
+            UpdateCrewTypeDetails();
+        }
+
+        // Delete crew type click event - Delete crew from DB, clear panel and note in system log
+        private void submenuDeleteCrewType_Click(object sender, RoutedEventArgs e)
+        {
+            db.CrewTypes.RemoveRange(db.CrewTypes.Where(t => t.CrewTypeID == selectedCrewType.CrewTypeID));
+
+            int saveSuccess = SaveDBChanges();
+            if (saveSuccess == 1)
+            {
+                RefreshCrewTypes();
+                CreateLogEntry($"Crew type {selectedCrewType.CrewTypeName} successfully deleted from system ", loggedInUser.UserId);
+            }
+            else
+            {
+                // If error saving display error message
+                MessageBox.Show($"Problem deleting crew type {selectedCrewType.CrewTypeName}, please try again or contact system administrator", "User Administration", MessageBoxButton.OK, MessageBoxImage.Error);
+                CreateLogEntry($"Error: Problem deleting crew {selectedCrewType.CrewTypeName}", loggedInUser.UserId);
+            }
+
+            txtTypeName.Text = "";
+            dbCrewTypeOperation = DBOperation.Add;
+        }
+
+        // Add location click event - set DB operation to add and enable update
+        private void submenuAddNewLocation_Click(object sender, RoutedEventArgs e)
+        {
+            dbLocationOperation = DBOperation.Add;
+            btnLocationUpdate.IsEnabled = true;
+        }
+
+        // Edit location click event - set DB operation to add and enable update
+        private void submenuEditLocation_Click(object sender, RoutedEventArgs e)
+        {
+            dbLocationOperation = DBOperation.Edit;
+            btnLocationUpdate.IsEnabled = false;
+            UpdateLocationDetails();
+        }
+
+        // Delete location click event - Delete crew from DB, clear panel and note in system log
+        private void submenuDeleteLocation_Click(object sender, RoutedEventArgs e)
+        {
+            db.Locations.RemoveRange(db.Locations.Where(t => t.LocationID == selectedLocation.LocationID));
+
+            int saveSuccess = SaveDBChanges();
+            if (saveSuccess == 1)
+            {
+                RefreshLocation();
+                CreateLogEntry($"Location {selectedLocation.LocationName} successfully deleted from system ", loggedInUser.UserId);
+            }
+            else
+            {
+                // If error saving display error message
+                MessageBox.Show($"Problem deleting location {selectedLocation.LocationName}, please try again or contact system administrator", "User Administration", MessageBoxButton.OK, MessageBoxImage.Error);
+                CreateLogEntry($"Error: Problem deleting location {selectedLocation.LocationName}", loggedInUser.UserId);
+            }
+
+            txtLocationName.Text = "";
+            dbLocationOperation = DBOperation.Add;
+        }
+
+        // ---------------------------------------------------------------------------------------//
+        // Event Tab Panel Click Events
+        // ---------------------------------------------------------------------------------------//
+
+        // Update crew button click event - validate details are entered, perform the selected operation and clear panel
         private void btnCrewUpdate_Click(object sender, RoutedEventArgs e)
         {
-
             if (txtCallSign.Text.Length > 0 || cboCrewType.SelectedIndex >= 0 || cboCrewLocation.SelectedIndex >= 0)
             {
                 string callSign = txtCallSign.Text.Trim();
                 CrewType crewType = (CrewType)cboCrewType.SelectedItem;
                 Location location = (Location)cboCrewLocation.SelectedItem;
-
                 if (dbCrewOperation == DBOperation.Add)
                 {
                     CreateCrew(callSign, 1, crewType, location);
@@ -711,6 +801,7 @@ namespace RadioControlEventMgrUI
             }
             else
             {
+                // If details are missing then show error message and note in system log
                 MessageBox.Show("Call Sign, Crew Type and Crew Location must be selected", "Save to Database", MessageBoxButton.OK, MessageBoxImage.Error);
                 CreateLogEntry($"Error: Invalid crew details entered", loggedInUser.UserId);
             }
@@ -722,8 +813,10 @@ namespace RadioControlEventMgrUI
 
         }
 
+        // Function to create crew in the DB with given data and note in system logs.
         private void CreateCrew(string callSign, int statusID, CrewType crewType, Location location)
         {
+            // Create new crew with supplied details and add to DB          
             Crew crew = new Crew();
             crew.CallSign = callSign;
             crew.StatusID = statusID;
@@ -738,17 +831,19 @@ namespace RadioControlEventMgrUI
                 RefreshCrew();
             }
             else
-            {
+            { 
+                // If save is successful/failed show message and note to system log
                 MessageBox.Show("Problem creating crew record, please try again or contact system administrator", "User Administration", MessageBoxButton.OK, MessageBoxImage.Error);
                 CreateLogEntry($"Error: Problem creating crew {crew.CallSign}", loggedInUser.UserId);
             }
-
         }
 
+        // Function to update the selected crew with supplied details in DB and note in system logs.
         private void UpdateCrew(string callSign, CrewType crewType, Location location)
         {
             try
             {
+                // Find the selected crew in the DB and change to supplied details
                 foreach (var crew in db.Crews.Where(t => t.CallSignID == selectedCrew.CallSignID))
                 {
                     crew.CallSign = callSign;
@@ -770,61 +865,18 @@ namespace RadioControlEventMgrUI
             }
             else
             {
+                // If save is successful/failed show message and note to system log
                 MessageBox.Show("Problem updating crew record, please try again or contact system administrator", "User Administration", MessageBoxButton.OK, MessageBoxImage.Error);
                 CreateLogEntry($"Error: Problem updating crew {selectedCrew.CallSign}", loggedInUser.UserId);
             }
         }
 
-        private void UpdateCrewDetails()
-        {
-            txtCallSign.Text = selectedCrew.CallSign;
-            cboCrewType.SelectedItem = selectedCrew.CrewType;
-            cboCrewLocation.SelectedItem = selectedCrew.Location;
-        }
-
-        private void submenuAddNewCrew_Click(object sender, RoutedEventArgs e)
-        {
-            dbCrewOperation = DBOperation.Add;
-            btnCrewUpdate.IsEnabled = true;
-        }
-
-        private void submenuEditCrew_Click(object sender, RoutedEventArgs e)
-        {
-            dbCrewOperation = DBOperation.Edit;
-            btnCrewUpdate.IsEnabled = false;
-            UpdateCrewDetails();
-        }
-
-        private void submenuDeleteCrew_Click(object sender, RoutedEventArgs e)
-        {
-            db.Crews.RemoveRange(db.Crews.Where(t => t.CallSignID == selectedCrew.CallSignID));
-
-            int saveSuccess = SaveDBChanges();
-            if (saveSuccess == 1)
-            {
-                RefreshCrew();
-                CreateLogEntry($"Crew {selectedCrew.CallSign} successfully deleted from system ", loggedInUser.UserId);
-            }
-            else
-            {
-                MessageBox.Show($"Problem deleting crew {selectedCrew.CallSign}, please try again or contact system administrator", "User Administration", MessageBoxButton.OK, MessageBoxImage.Error);
-                CreateLogEntry($"Error: Problem deleting crew {selectedCrew.CallSign}", loggedInUser.UserId);
-            }
-
-            txtCallSign.Text = "";
-            cboCrewType.SelectedIndex = -1;
-            cboCrewLocation.SelectedIndex = -1;
-            dbCrewOperation = DBOperation.Add;
-        }
-
-
-
+        // Update crew type button click event - validate details are entered, perform the selected operation and clear panel
         private void btnTypeUpdate_Click(object sender, RoutedEventArgs e)
         {
             if (txtTypeName.Text.Length > 0)
             {
                 string typeName = txtTypeName.Text.Trim();
-
                 if (dbCrewOperation == DBOperation.Add)
                 {
                     CreateCrewType(typeName);
@@ -836,6 +888,7 @@ namespace RadioControlEventMgrUI
             }
             else
             {
+                // If details are missing then show error message and note in system log
                 MessageBox.Show("Crew type name must be entered", "Save to Database", MessageBoxButton.OK, MessageBoxImage.Error);
                 CreateLogEntry($"Error: Invalid crew type details entered", loggedInUser.UserId);
             }
@@ -844,8 +897,10 @@ namespace RadioControlEventMgrUI
             dbCrewOperation = DBOperation.Add;
         }
 
+        // Function to create crew type in the DB with given data and note in system logs.
         private void CreateCrewType(string typeName)
         {
+            // Create new crew type with supplied details and add to DB          
             CrewType crewType = new CrewType();
             crewType.CrewTypeName = typeName;
             db.Entry(crewType).State = System.Data.Entity.EntityState.Added;
@@ -858,15 +913,18 @@ namespace RadioControlEventMgrUI
             }
             else
             {
+                // If save is successful/failed show message and note to system log
                 MessageBox.Show("Problem creating crew type record, please try again or contact system administrator", "User Administration", MessageBoxButton.OK, MessageBoxImage.Error);
                 CreateLogEntry($"Error: Problem creating crew {crewType.CrewTypeName}", loggedInUser.UserId);
             }
         }
 
+        // Function to update the selected crew type with supplied details in DB and note in system logs.
         private void UpdateCrewType(string typeName)
         {
             try
             {
+                // Find the selected crew type in the DB and change to supplied details
                 foreach (var crewType in db.CrewTypes.Where(t => t.CrewTypeID == selectedCrewType.CrewTypeID))
                 {
                     crewType.CrewTypeName = typeName;
@@ -886,55 +944,18 @@ namespace RadioControlEventMgrUI
             }
             else
             {
+                // If save is successful/failed show message and note to system log
                 MessageBox.Show("Problem updating crew type record, please try again or contact system administrator", "User Administration", MessageBoxButton.OK, MessageBoxImage.Error);
                 CreateLogEntry($"Error: Problem updating crew type {selectedCrewType.CrewTypeName}", loggedInUser.UserId);
             }
         }
 
-        private void UpdateCrewTypeDetails()
-        {
-            txtTypeName.Text = selectedCrewType.CrewTypeName;
-        }
-
-        private void submenuAddCrewType_Click(object sender, RoutedEventArgs e)
-        {
-            dbCrewTypeOperation = DBOperation.Add;
-            btnTypeUpdate.IsEnabled = true;
-        }
-
-        private void submenuEditCrewType_Click(object sender, RoutedEventArgs e)
-        {
-            dbCrewTypeOperation = DBOperation.Edit;
-            btnTypeUpdate.IsEnabled = false;
-            UpdateCrewTypeDetails();
-        }
-
-        private void submenuDeleteCrewType_Click(object sender, RoutedEventArgs e)
-        {
-            db.CrewTypes.RemoveRange(db.CrewTypes.Where(t => t.CrewTypeID == selectedCrewType.CrewTypeID));
-
-            int saveSuccess = SaveDBChanges();
-            if (saveSuccess == 1)
-            {
-                RefreshCrewTypes();
-                CreateLogEntry($"Crew type {selectedCrewType.CrewTypeName} successfully deleted from system ", loggedInUser.UserId);
-            }
-            else
-            {
-                MessageBox.Show($"Problem deleting crew type {selectedCrewType.CrewTypeName}, please try again or contact system administrator", "User Administration", MessageBoxButton.OK, MessageBoxImage.Error);
-                CreateLogEntry($"Error: Problem deleting crew {selectedCrewType.CrewTypeName}", loggedInUser.UserId);
-            }
-
-            txtTypeName.Text = "";
-            dbCrewTypeOperation = DBOperation.Add;
-        }
-
+        // Update location click event - validate details are entered, perform the selected operation and clear panel
         private void btnLocationUpdate_Click(object sender, RoutedEventArgs e)
         {
             if (txtLocationName.Text.Length > 0)
             {
                 string locationName = txtLocationName.Text.Trim();
-
                 if (dbLocationOperation == DBOperation.Add)
                 {
                     CreateLocation(locationName);
@@ -946,16 +967,19 @@ namespace RadioControlEventMgrUI
             }
             else
             {
+                // If details are missing then show error message and note in system log
                 MessageBox.Show("Location name must be entered", "Save to Database", MessageBoxButton.OK, MessageBoxImage.Error);
                 CreateLogEntry($"Error: Invalid location details entered", loggedInUser.UserId);
             }
 
-            txtLocationName.Text = "";          
+            txtLocationName.Text = "";
             dbLocationOperation = DBOperation.Add;
         }
 
+        // Function to create location in the DB with given data and note in system logs.
         private void CreateLocation(string locationName)
         {
+            // Create new location with supplied details and add to DB     
             Location location = new Location();
             location.LocationName = locationName;
             db.Entry(location).State = System.Data.Entity.EntityState.Added;
@@ -968,16 +992,18 @@ namespace RadioControlEventMgrUI
             }
             else
             {
+                // If save is successful/failed show message and note to system log
                 MessageBox.Show("Problem creating location record, please try again or contact system administrator", "User Administration", MessageBoxButton.OK, MessageBoxImage.Error);
                 CreateLogEntry($"Error: Problem creating crew {location.LocationName}", loggedInUser.UserId);
             }
-
         }
 
+        // Function to update the selected location with supplied details in DB and note in system logs.
         private void UpdateLocation(string locationName)
         {
             try
             {
+                // Find the selected location in the DB and change to supplied details
                 foreach (var location in db.Locations.Where(t => t.LocationID == selectedLocation.LocationID))
                 {
                     location.LocationName = locationName;
@@ -997,49 +1023,41 @@ namespace RadioControlEventMgrUI
             }
             else
             {
+                // If save is successful/failed show message and note to system log
                 MessageBox.Show("Problem updating location record, please try again or contact system administrator", "User Administration", MessageBoxButton.OK, MessageBoxImage.Error);
                 CreateLogEntry($"Error: Problem updating location {selectedLocation.LocationName}", loggedInUser.UserId);
             }
         }
 
+        // ---------------------------------------------------------------------------------------//
+        // Event Tab Panel Update Events
+        // ---------------------------------------------------------------------------------------//
+
+        // Update crew details in panel
+        private void UpdateCrewDetails()
+        {
+            txtCallSign.Text = selectedCrew.CallSign;
+            cboCrewType.SelectedItem = selectedCrew.CrewType;
+            cboCrewLocation.SelectedItem = selectedCrew.Location;
+        }
+
+        // Update crew type details in panel
+        private void UpdateCrewTypeDetails()
+        {
+            txtTypeName.Text = selectedCrewType.CrewTypeName;
+        }
+
+        // Update location details in panel
         private void UpdateLocationDetails()
         {
             txtLocationName.Text = selectedLocation.LocationName;
         }
 
-        private void submenuAddNewLocation_Click(object sender, RoutedEventArgs e)
-        {
-            dbLocationOperation = DBOperation.Add;
-            btnLocationUpdate.IsEnabled = true;
-        }
+        // ---------------------------------------------------------------------------------------//
+        // Event Tab Panel Selection Changed Events (Only enable update button if change required)
+        // ---------------------------------------------------------------------------------------//
 
-        private void submenuEditLocation_Click(object sender, RoutedEventArgs e)
-        {
-            dbLocationOperation = DBOperation.Edit;
-            btnLocationUpdate.IsEnabled = false;
-            UpdateLocationDetails();
-        }
-
-        private void submenuDeleteLocation_Click(object sender, RoutedEventArgs e)
-        {
-            db.Locations.RemoveRange(db.Locations.Where(t => t.LocationID == selectedLocation.LocationID));
-
-            int saveSuccess = SaveDBChanges();
-            if (saveSuccess == 1)
-            {
-                RefreshLocation();
-                CreateLogEntry($"Location {selectedLocation.LocationName} successfully deleted from system ", loggedInUser.UserId);
-            }
-            else
-            {
-                MessageBox.Show($"Problem deleting location {selectedLocation.LocationName}, please try again or contact system administrator", "User Administration", MessageBoxButton.OK, MessageBoxImage.Error);
-                CreateLogEntry($"Error: Problem deleting location {selectedLocation.LocationName}", loggedInUser.UserId);
-            }
-
-            txtLocationName.Text = "";
-            dbLocationOperation = DBOperation.Add;
-        }
-
+        // Crew panel call sign changed - If edit & different then selected crew's call sign in the DB then enable update button
         private void txtCallSign_SelectionChanged(object sender, RoutedEventArgs e)
         {
             if (txtCallSign.Text == selectedCrew.CallSign && dbCrewOperation == DBOperation.Edit)
@@ -1052,6 +1070,7 @@ namespace RadioControlEventMgrUI
             }
         }
 
+        // Crew panel crew type changed - If edit & different then selected crew's type in the DB then enable update button
         private void cboCrewType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (cboCrewType.SelectedItem == selectedCrew.CrewType && dbCrewOperation == DBOperation.Edit)
@@ -1064,6 +1083,7 @@ namespace RadioControlEventMgrUI
             }
         }
 
+        // Crew panel location changed - If edit & different then selected crew's location in the DB then enable update button
         private void cboCrewLocation_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (cboCrewLocation.SelectedItem == selectedCrew.Location && dbCrewOperation == DBOperation.Edit)
@@ -1076,6 +1096,7 @@ namespace RadioControlEventMgrUI
             }
         }
 
+        // Crew Type panel type name changed - If edit & different then selected crew type name in the DB then enable update button
         private void txtTypeName_SelectionChanged(object sender, RoutedEventArgs e)
         {
             if (txtTypeName.Text == selectedCrewType.CrewTypeName && dbCrewTypeOperation == DBOperation.Edit)
@@ -1088,6 +1109,7 @@ namespace RadioControlEventMgrUI
             }
         }
 
+        // Location panel location name changed - If edit & different then selected location name in the DB then enable update button
         private void txtLocationName_SelectionChanged(object sender, RoutedEventArgs e)
         {
             if (txtLocationName.Text == selectedLocation.LocationName && dbLocationOperation == DBOperation.Edit)
@@ -1100,27 +1122,38 @@ namespace RadioControlEventMgrUI
             }
         }
 
-        private void btnFilterLogs_Click(object sender, RoutedEventArgs e)
-        {
-            RefreshLogsList(txtFilterLogs.Text);
-        }
+        // ---------------------------------------------------------------------------------------//
+        // Event Tab Build and Save Click Events
+        // ---------------------------------------------------------------------------------------//
 
-        private void btnClearFilterLogs_Click(object sender, RoutedEventArgs e)
+        // Build Event Click - Erase Message and Incident tables, and set all crew status to "unknown"
+        private void btnBuildEvent_Click(object sender, RoutedEventArgs e)
         {
-            RefreshLogsList();
-            tbxLogStats.Text = "";
-        }
-
-        private void btnClearAdminLogs_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBoxResult result = MessageBox.Show("This will clear all system lof informaion from the database. Continue ?", "Clear Log", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            // User confirm proceed
+            MessageBoxResult result = MessageBox.Show("This will reset event data and clear information from the database. Continue ?", "Build Event", MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
             if (result == MessageBoxResult.Yes)
             {
                 try
                 {
-                    db.Database.ExecuteSqlCommand("TRUNCATE TABLE[RadioDB].[dbo].[Log]");         
-                    RefreshLogsList();
+                    // Create system Log entry
+                    CreateLogEntry($"User {loggedInUser.Username} built a new event", loggedInUser.UserId);
+
+                    // Chnage all crew status to "unknown" -> ID = 1
+                    foreach (Crew crew in db.Crews)
+                    {
+                        crew.StatusID = 1;
+                        crew.IncidentID = null;
+                    }
+                    SaveDBChanges();
+
+                    // Truncate messages table and Delete + RESEED Incident table using sql commands 
+                    db.Database.ExecuteSqlCommand("TRUNCATE TABLE [RadioDB].[dbo].[Message]");
+                    db.Database.ExecuteSqlCommand("DELETE FROM [RadioDB].[dbo].[Incident]");
+                    db.Database.ExecuteSqlCommand("DBCC CHECKIDENT('[RadioDB].[dbo].[Incident]', RESEED, 0)");
+
+                    // Display success message to user
+                    MessageBox.Show("Event built successfully", "Build Event", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 }
                 catch (EntityException)
                 {
@@ -1129,15 +1162,108 @@ namespace RadioControlEventMgrUI
             }
         }
 
-        private void btnFilterUsers_Click(object sender, RoutedEventArgs e)
+        // Write button click - Using save dialog write formatted event data to file.
+        private void btnWriteToCSV_Click(object sender, RoutedEventArgs e)
         {
-            RefreshUserList(txtFilterUsers.Text);
+            // Check that a user has supplied an event name and date
+            if (txtEventName.Text == "" || dateEventDate.SelectedDate == null)
+            {
+                // If not entered display error
+                MessageBox.Show("Eventname and date must be entered before saving", "Save to File", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            else
+            {
+                // create new save dialog with types CSV, TXT and all, show to user.
+                SaveFileDialog saveDialog = new SaveFileDialog();
+                saveDialog.Filter = "CSV files (*.csv)| *.csv|txt files (*.txt)|*.txt|All files (*.*)|*.*";
+                saveDialog.FilterIndex = 1;
+                saveDialog.ShowDialog();
+
+                // If user enters a save location and name, write to file
+                if (saveDialog.FileName != "")
+                {
+                    using (StreamWriter writetext = new StreamWriter(saveDialog.FileName))
+                    {
+                        writetext.WriteLine($"{txtEventName.Text.Trim()}: {dateEventDate.SelectedDate.Value.ToString("dd/MM/yyyy")}"); // Event Name: dd/MM/yyyy
+                        writetext.WriteLine();
+                        writetext.WriteLine();
+
+                        writetext.WriteLine("Event Incidents"); // Event Incidents
+                        writetext.WriteLine("Incident No,Location,Reported Time,At Scene Time,Leave Scene Time,Description"); //Header: Incident No,Location,Reported Time,At Scene Time,Leave Scene Time,Description
+
+                        // For each incident in DB write in format - IncidentNo, Location, ReportedTime, AtSceneTime, LeaveSceneTime, Description ("," replaced with ";" to avoid CSV issues)
+                        foreach (var incident in db.Incidents)
+                        {
+                            string description = incident.Description.Replace(",", ";");
+                            writetext.WriteLine($"{incident.IncidentNo}, {incident.Location.LocationName}, {incident.ReportedTime}, {incident.AtSceneTime}, {incident.LeaveSceneTime}, {description}");
+                        }
+                        writetext.WriteLine();
+                        writetext.WriteLine();
+
+                        writetext.WriteLine("Event Messages"); // Event Messages
+                        writetext.WriteLine("Date,Call Sign,Incident,Status,Message Text"); //Header: Date,Call Sign,Incident,Status,Message Text
+
+                        // For each message in DB write in format - Date, CallSign, Incident, Status, MessageText ("," replaced with ";" to avoid CSV issues)
+                        foreach (var message in db.Messages)
+                        {
+                            string messageText = message.MessageText.Replace(",", ";");
+
+                            //If message has an incident print otherwise blank
+                            if (message.Incident == null)
+                            {
+                                writetext.WriteLine($"{message.Date}, {message.Crew.CallSign},, {message.Status.StatusName}, {messageText}");
+                            }
+                            else
+                            {
+                                writetext.WriteLine($"{message.Date}, {message.Crew.CallSign}, {message.Incident.IncidentNo}, {message.Status.StatusName}, {messageText}");
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    // If Event name and date not entered show error
+                    MessageBox.Show("File Name must be entered", "Save to File", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+     
+        // ---------------------------------------------------------------------------------------//
+        // Log Messages And DB Updates With Error Control
+        // ---------------------------------------------------------------------------------------//
+
+        // Funtion to create new log and write to DB with supplied Description and userID
+        public void CreateLogEntry(string eventDescription, int userID)
+        {
+            Log log = new Log();
+            log.Date = DateTime.Now;
+            log.Event = eventDescription;
+            log.UserID = userID;
+            db.Entry(log).State = System.Data.Entity.EntityState.Added;
+            SaveDBChanges();
+            RefreshLogsList();
         }
 
-        private void btnClearFilterUsers_Click(object sender, RoutedEventArgs e)
+        // Error controled function to save to database. Return success/failure.
+        public int SaveDBChanges()
         {
-            RefreshUserList();
-            tbxUsersStats.Text = "";
+            int success = 0;
+            try
+            {
+                success = db.SaveChanges();
+            }
+            catch (EntityException)
+            {
+                DBConnectionError();
+            }
+            return success;
+        }
+
+        // Display error message and close application should DB connection fail
+        public void DBConnectionError()
+        {
+            MessageBox.Show("Problem connecting to the SQL server, contact system administrator. Application will now close.", "Connection to Database", MessageBoxButton.OK, MessageBoxImage.Error);
+            Environment.Exit(0);
         }
     }
 }

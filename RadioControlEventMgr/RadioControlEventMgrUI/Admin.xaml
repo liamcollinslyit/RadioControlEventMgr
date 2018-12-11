@@ -8,10 +8,10 @@
       Loaded="Page_Loaded"
       d:DesignHeight="700" d:DesignWidth="1200"
       Title="Admin">
-    <!-- XAML for admin page, user control and user logs -->
+    <!-- XAML for admin screen - Event data, user control and system logs -->
     <Grid>
-
         <Grid.Resources>
+            <!-- List view header style - Black background with bold white text, not editabl e-->
             <Style TargetType="{x:Type GridViewColumnHeader}">
                 <Setter Property="FontSize" Value="13"/>
                 <Setter Property="FontWeight" Value="DemiBold"/>
@@ -21,23 +21,33 @@
                 <Setter Property="Foreground" Value="White"/>
                 <Setter Property="IsHitTestVisible" Value="False" />
             </Style>
+            <!-- Label Style - Bold white text -->
             <Style TargetType="{x:Type Label}" >
                 <Setter Property="Foreground" Value="White"/>
                 <Setter Property="FontWeight" Value="DemiBold"/>
             </Style>
         </Grid.Resources>
 
-
-        <!-- Tab control for Users and Logs -->
+        <!-- Tab control for screen -->
         <TabControl Name="tabAdminOptions" Background="Transparent" >
+           <!-- Tab header style - Font size 13 -->
             <TabControl.Resources>
                 <Style TargetType="{x:Type TabItem}">
                     <Setter Property="FontSize" Value="13"/>
                 </Style>
             </TabControl.Resources>
 
+            <!-- Tab 1 - Event Tab for event data -->
             <TabItem Header="Event" ToolTip="Enter Event Data">
+               
+                <!-- Grid - 3 Rows, 7 Columns -->
                 <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="auto"/>
@@ -47,61 +57,96 @@
                         <ColumnDefinition Width="auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
 
-
-                    <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="7" HorizontalAlignment="Center" VerticalAlignment="Center" Width="500" Background="SteelBlue" Margin="50">
+                    
+                    <!-- Row 0 - StackPanel for Event functions - Building and Saving -->
+                    <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="7" HorizontalAlignment="Center" VerticalAlignment="Center" 
+                                Width="500" Margin="50" Background="SteelBlue">
                         <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="auto"/>
-                            </Grid.RowDefinitions>
+                            <!-- StackPanel Grid - Columns 2, Rows 3 -->
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
 
-                            <Label Content="Event Name" Grid.Row="0" Grid.Column="0" Margin="10"/>
-                            <TextBox Name="txtEventName" Grid.Row="0" Grid.Column="1" VerticalContentAlignment="Center" MaxLength="30" Margin="10" />
-                            <Label Content="Event Date"  Grid.Row="1" Grid.Column="0" Margin="10" />
-                            <DatePicker Name="dateEventDate" Grid.Row="1" Grid.Column="1" Margin="10" />
-                            <StackPanel Grid.Row="3" Grid.Column="2" Orientation="Horizontal" Margin="10">
-                                <Button Content="Build Event" Name="btnBuildEvent"  Grid.Row="4" Grid.Column="0" Click="btnBuildEvent_Click" 
-                                     Height="50" Width="150" Margin="15,0"/>
-                                <Button Content="Write to CSV" Name="btnWriteToCSV"  Grid.Row="4" Grid.Column="0" Click="btnWriteToCSV_Click" 
-                                     Height="50" Width="150"  Margin="15,0"/>
+                            <!-- StackPanel Row 0 - Event Name -->
+                            <Label  Grid.Row="0" Grid.Column="0" Content="Event Name" Margin="10"/>
+                            <TextBox Grid.Row="0" Grid.Column="1"  Name="txtEventName" VerticalContentAlignment="Center" Margin="10" MaxLength="30" />
+
+                            <!-- StackPanel Row 1 - Event Date (datepicker) -->
+                            <Label Grid.Row="1" Grid.Column="0" Content="Event Date" Margin="10" />
+                            <DatePicker Grid.Row="1" Grid.Column="1" Name="dateEventDate" Margin="10" />
+
+                            <!-- StackPanel Row 2 - Event Buttons -->
+                            <StackPanel Grid.Row="2" Grid.Column="2" Orientation="Horizontal" Margin="10">
+                                <Button Content="Build Event" Name="btnBuildEvent" Height="50" Width="150" 
+                                        Margin="15,0" Click="btnBuildEvent_Click" />
+                                <Button Content="Write to file" Name="btnWriteToCSV" Height="50" Width="150"  
+                                        Margin="15,0" Click="btnWriteToCSV_Click"/>
                             </StackPanel>
-
                         </Grid>
                     </StackPanel>
 
+                    <!-- Row 1 - Column Labels (set in code behind) -->
                     <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
                         <Label Name="lblCrew" HorizontalAlignment="Left" FontSize="20" Foreground="Black" Margin="10,0"/>
                     </StackPanel>
 
+                    <StackPanel Grid.Row="1" Grid.Column="3" Orientation="Horizontal">
+                        <Label Name="lblCrewType" HorizontalAlignment="Left" FontSize="20" Foreground="Black" Margin="10,0"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="1" Grid.Column="5" Orientation="Horizontal">
+                        <Label Name="lblLocation" HorizontalAlignment="Left" FontSize="20" Foreground="Black" Margin="10,0"/>
+                    </StackPanel>
+
+                    <!-- Row 2 - Data edit panels -->
+                    <!-- Crew StackPanel -->
                     <StackPanel Grid.Row="2" Grid.Column="1" Background="SteelBlue" Orientation="Horizontal" Width="auto" Margin="10,0">
                         <Label Content="Call Sign:"  Margin="5,5,0,5" />
-                        <TextBox Name="txtCallSign" Width="60" MaxLength="20"  Margin="0,5" SelectionChanged="txtCallSign_SelectionChanged" 
-                                 HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                        <TextBox Name="txtCallSign" Width="60" MaxLength="20" Margin="0,5" HorizontalContentAlignment="Center" 
+                                 VerticalContentAlignment="Center" SelectionChanged="txtCallSign_SelectionChanged"/>
+                        
                         <Label Content="Crew Type:"  Margin="5,5,0,5"/>
-                        <ComboBox Name="cboCrewType" Width="100" Margin="0,5" 
-                                  DisplayMemberPath="CrewTypeName" SelectionChanged="cboCrewType_SelectionChanged"/>
+                        <ComboBox Name="cboCrewType" Width="100" Margin="0,5" DisplayMemberPath="CrewTypeName" 
+                                  SelectionChanged="cboCrewType_SelectionChanged"/>
+                        
                         <Label Content="Location:"  Margin="5,5,0,5"/>
-                        <ComboBox Name="cboCrewLocation" Width="100" Margin="0,5" 
-                                  DisplayMemberPath="LocationName" SelectionChanged="cboCrewLocation_SelectionChanged"   />
+                        <ComboBox Name="cboCrewLocation" Width="100" Margin="0,5" DisplayMemberPath="LocationName" 
+                                  SelectionChanged="cboCrewLocation_SelectionChanged"   />
+                        
                         <Button Name="btnCrewUpdate" Content="Update" Margin="5" Padding="5" Click="btnCrewUpdate_Click"/>
                     </StackPanel>
 
-                    <ListView Name="lstCrewList" Grid.Row="3" Grid.Column="1" Margin="10" Padding="5" Background="AliceBlue" SelectionChanged="lstCrewList_SelectionChanged" >
+                    <!-- Crew Type - StackPanel -->
+                    <StackPanel Grid.Row="2" Grid.Column="3" Background="SteelBlue" Orientation="Horizontal" Width="auto" Margin="10,0">
+                        <Label Content="Crew Type:"  Margin="5,5,0,5"/>
+                        <TextBox Name="txtTypeName" Width="80" MaxLength="30"  Margin="0,5" HorizontalContentAlignment="Center" 
+                                 VerticalContentAlignment="Center" SelectionChanged="txtTypeName_SelectionChanged"/>
+                        <Button Name="btnTypeUpdate" Content="Update" Margin="5" Padding="5" Click="btnTypeUpdate_Click"/>
+                    </StackPanel>
+
+                    <!-- Location - StackPanel -->
+                    <StackPanel Grid.Row="2" Grid.Column="5" Background="SteelBlue" Orientation="Horizontal" Width="auto" Margin="10,0">
+                        <Label Content="Location Name:"  Margin="5,5,0,5"/>
+                        <TextBox Name="txtLocationName" Width="100" MaxLength="50"  Margin="0,5" HorizontalContentAlignment="Center" 
+                                 VerticalContentAlignment="Center" SelectionChanged="txtLocationName_SelectionChanged"/>
+                        <Button Name="btnLocationUpdate" Content="Update" Margin="5" Padding="5" Click="btnLocationUpdate_Click"/>
+                    </StackPanel>
+
+                    <!-- Row 3 - Data list views -->
+                    
+                    <!-- Column 1 - Crew List -->
+                    <ListView Name="lstCrewList" Grid.Row="3" Grid.Column="1" Margin="10" Padding="5" Background="AliceBlue" 
+                              SelectionChanged="lstCrewList_SelectionChanged" >
                         <ListView.View>
                             <GridView>
+                                <!-- Grid View for Call sign, Type and Location -->
                                 <GridViewColumn Header="Call Sign" Width="175" >
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
@@ -126,7 +171,7 @@
                             </GridView>
                         </ListView.View>
 
-                        <!-- Context menu for opening message stack panel -->
+                        <!-- Context menu for adding, editing and deleting crew -->
                         <ListView.ContextMenu>
                             <ContextMenu Name="mnuEditCrew" IsEnabled="True">
                                 <ContextMenu.Items>
@@ -152,21 +197,12 @@
                             </ContextMenu>
                         </ListView.ContextMenu>
                     </ListView>
-
-                    <StackPanel Grid.Row="1" Grid.Column="3" Orientation="Horizontal">
-                        <Label Name="lblCrewType"  Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" FontSize="20" Foreground="Black" Margin="10,0"/>
-                    </StackPanel>
-
-                    <StackPanel Grid.Row="2" Grid.Column="3" Background="SteelBlue" Orientation="Horizontal" Width="auto" Margin="10,0">
-                        <Label Content="Crew Type:"  Margin="5,5,0,5"/>
-                        <TextBox Name="txtTypeName" Width="80" MaxLength="30"  Margin="0,5" SelectionChanged="txtTypeName_SelectionChanged" 
-                                 HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                        <Button Name="btnTypeUpdate" Content="Update" Margin="5" Padding="5" Click="btnTypeUpdate_Click"/>
-                    </StackPanel>
-
+                    
+                    <!-- Column 3 - Crew Type List -->
                     <ListView Name="lstTypesList" Grid.Row="3" Grid.Column="3" Margin="10" Padding="5"  Background="AliceBlue" SelectionChanged="lstTypesList_SelectionChanged" >
                         <ListView.View>
                             <GridView>
+                                <!-- Grid View for Crew Type name -->
                                 <GridViewColumn Header="Type" Width="200" >
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
@@ -177,6 +213,7 @@
                             </GridView>
                         </ListView.View>
 
+                        <!-- Context menu for adding, editing and deleting crew type -->
                         <ListView.ContextMenu>
                             <ContextMenu Name="mnuEditCrewType" IsEnabled="True">
                                 <ContextMenu.Items>
@@ -203,20 +240,11 @@
                         </ListView.ContextMenu>
                     </ListView>
 
-                    <StackPanel Grid.Row="1" Grid.Column="5" Orientation="Horizontal">
-                        <Label Name="lblLocation"  Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" FontSize="20" Foreground="Black" Margin="10,0"/>
-                    </StackPanel>
-
-                    <StackPanel Grid.Row="2" Grid.Column="5" Background="SteelBlue" Orientation="Horizontal" Width="auto" Margin="10,0">
-                        <Label Content="Location Name:"  Margin="5,5,0,5"/>
-                        <TextBox Name="txtLocationName" Width="100" MaxLength="50"  Margin="0,5" SelectionChanged="txtLocationName_SelectionChanged"
-                                 HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                        <Button Name="btnLocationUpdate" Content="Update" Margin="5" Padding="5" Click="btnLocationUpdate_Click"/>
-                    </StackPanel>
-
+                    <!-- Column 5 - Location List -->
                     <ListView Name="lstLocationList" Grid.Row="3" Grid.Column="5" Margin="10" Padding="5" Background="AliceBlue" SelectionChanged="lstLocationList_SelectionChanged" >
                         <ListView.View>
                             <GridView>
+                                <!-- Grid View for Location name -->
                                 <GridViewColumn Header="Location Name" Width="250">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
@@ -227,7 +255,7 @@
                             </GridView>
                         </ListView.View>
 
-                        <!-- Context menu for opening message stack panel -->
+                        <!-- Context menu for adding, editing and deleting Locations -->
                         <ListView.ContextMenu>
                             <ContextMenu Name="mnuEditLocation" IsEnabled="True">
                                 <ContextMenu.Items>
@@ -253,33 +281,35 @@
                             </ContextMenu>
                         </ListView.ContextMenu>
                     </ListView>
-
                 </Grid>
             </TabItem>
 
-            <!-- Users Tab, Listview for user details, context menu to open user stackpanel-->
+            <!-- Tab 2 - System user details, add, edit and delete -->
             <TabItem Header="Users" ToolTip="Add, Edit, Delete System users" >
                 <Grid>
-                    <!-- 2*1 grid -->
+                    <!-- Grid - 3 Rows -->
                     <Grid.RowDefinitions>
                         <RowDefinition Height="auto"/>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
 
-
+                    <!-- Row 0 - Filter Panel and List Stats -->
                     <StackPanel Grid.Row="0" Orientation="Horizontal" Background="LightGray">
                         <Label Content="Filter Text:"  Margin="10,0,0,0" Foreground="Black"/>
                         <TextBox Name="txtFilterUsers" Width="200" MaxLength="30" Height="25"  Margin="0,0,10,0" VerticalContentAlignment="Center"/>
+                        
                         <Button Name="btnFilterUsers" Content="Filter" Width="75" Margin="10,0"  Height="25" Click="btnFilterUsers_Click"/>
                         <Button Name="btnClearFilterUsers" Content="Clear" Width="75" Margin="10,0"  Height="25" Click="btnClearFilterUsers_Click"/>
+                       
                         <TextBlock Name="tbxUsersStats" Width="auto" Margin="10,0" TextAlignment="Center" VerticalAlignment="Center"/>
                     </StackPanel>
 
-                    <!-- List view with 5 columns -->
-                    <ListView Name="lstUserList" Grid.Row="1" SelectionChanged="lstUserList_SelectionChanged" Padding="5" Background="AliceBlue">
+                    <!-- Row 1 - List of user details -->
+                    <ListView Grid.Row="1" Name="lstUserList" Padding="5" Background="AliceBlue" SelectionChanged="lstUserList_SelectionChanged">
                         <ListView.View>
                             <GridView>
+                                <!-- Grid View for Username, password, Surname, forename and access level name -->
                                 <GridViewColumn Header="UserName" Width="200">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
@@ -345,15 +375,11 @@
                         </ListView.ContextMenu>
                     </ListView>
 
-                    <!-- Stackpanel for adding/editing user details -->
-                    <StackPanel Name="stkUserDetails" Grid.Row="2" HorizontalAlignment="Center" Margin="10,100" 
+                    <!-- Row 2 - Stackpanel for adding/editing user details -->
+                    <StackPanel Grid.Row="2" Name="stkUserDetails" HorizontalAlignment="Center" Margin="10,100" 
                                 Background="SteelBlue" Visibility="Collapsed" >
                         <Grid>
-                            <!-- 6*2 Grid -->
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="auto"/>
-                            </Grid.ColumnDefinitions>
+                            <!-- StackPanel Grid - 6 Rows, 2 Columns -->
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="auto"/>
@@ -362,58 +388,68 @@
                                 <RowDefinition Height="auto"/>
                                 <RowDefinition Height="auto"/>
                             </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
 
-                            <Label Content="Username" Grid.Row="0" Grid.Column="0" Margin="10,10,10,0"/>
+                            <!-- Row 0 - Username -->
+                            <Label  Grid.Row="0" Grid.Column="0" Content="Username" Margin="10,10,10,0"/>
+                            <TextBox Grid.Row="0" Grid.Column="1" Name="txtEditUsername"  TabIndex="0" Margin="0,10,10,0" MaxLength="30"
+                                     VerticalContentAlignment="Center" SelectionChanged="txtBox_SelectionChanged" ToolTip="Enter user's username"/>
+                            
+                            <!-- Row 1 - Password -->
                             <Label Content="Password" Grid.Row="1" Grid.Column="0" Margin="10,0,10,0"/>
+                            <TextBox Name="txtEditPassword" Grid.Row="1" Grid.Column="1" TabIndex="1" Margin="0,0,10,0" MaxLength="30"
+                                     VerticalContentAlignment="Center" SelectionChanged="txtBox_SelectionChanged" ToolTip="Enter user's password"/>
+                            
+                            <!-- Row 2 - Surname -->
                             <Label Content="Surname" Grid.Row="2" Grid.Column="0" Margin="10,0,10,0"/>
+                            <TextBox Name="txtEditSurname" Grid.Row="2" Grid.Column="1" TabIndex="2" Margin="0,0,10,0" MaxLength="30"
+                                     VerticalContentAlignment="Center" SelectionChanged="txtBox_SelectionChanged" ToolTip="Enter user's surname"/>
+                            
+                            <!-- Row 3 - Forname -->
                             <Label Content="Forename" Grid.Row="3" Grid.Column="0" Margin="10,0,10,0"/>
+                            <TextBox Name="txtEditForename" Grid.Row="3" Grid.Column="1" TabIndex="3" Margin="0,0,10,0" MaxLength="30"
+                                     VerticalContentAlignment="Center" SelectionChanged="txtBox_SelectionChanged" ToolTip="Enter user's forename"/>
+
+                            <!-- Row 4 - Access Level -->
                             <Label Content="Access Level" Grid.Row="4" Grid.Column="0" Margin="10,0,10,0"/>
-
-                            <TextBox Name="txtEditUsername" Grid.Row="0" Grid.Column="1" TabIndex="0" 
-                                     Margin="0,10,10,0" VerticalContentAlignment="Center" MaxLength="30"
-                                     SelectionChanged="txtBox_SelectionChanged" ToolTip="Enter user's username"/>
-                            <TextBox Name="txtEditPassword" Grid.Row="1" Grid.Column="1" TabIndex="1" 
-                                     Margin="0,0,10,0" VerticalContentAlignment="Center" MaxLength="30"
-                                     SelectionChanged="txtBox_SelectionChanged" ToolTip="Enter user's password"/>
-                            <TextBox Name="txtEditSurname" Grid.Row="2" Grid.Column="1" TabIndex="2" 
-                                     Margin="0,0,10,0" VerticalContentAlignment="Center" MaxLength="30"
-                                     SelectionChanged="txtBox_SelectionChanged" ToolTip="Enter user's surname"/>
-                            <TextBox Name="txtEditForename" Grid.Row="3" Grid.Column="1" TabIndex="3" 
-                                     Margin="0,0,10,0" VerticalContentAlignment="Center" MaxLength="30"
-                                     SelectionChanged="txtBox_SelectionChanged" ToolTip="Enter user's forename"/>
-
+                                                  
                             <!-- Combobox to select user level of access from DB table -->
-                            <ComboBox Name="cboEditUserAccess" Grid.Row="4" Grid.Column="1" Width="200" 
-                                      TabIndex="4" Margin="0,0,10,0" DisplayMemberPath="AccessLevelName"
-                                      Text="    --  Select Access Level  --" IsEditable="True" IsReadOnly="True" 
+                            <ComboBox Name="cboEditUserAccess" Grid.Row="4" Grid.Column="1" Width="200" TabIndex="4" Margin="0,0,10,0"
+                                       DisplayMemberPath="AccessLevelName" Text="    --  Select Access Level  --" IsEditable="True" IsReadOnly="True"                                      
                                       SelectionChanged="cboEditUserAccess_SelectionChanged" ToolTip="Select users level of access"/>
 
-                            <!-- Buttons to submit and close panel -->
+                            <!-- Row 5 - Button to submit and close panel -->
                             <Button Name="btnEditUpdate" Content="Update" Grid.Row="5" Grid.Column="1" Height="25" 
                                     Margin="0,10,10,10" TabIndex="5" Click="btnEditUpdate_Click" ToolTip="Update user information in Database"/>
-
                         </Grid>
                     </StackPanel>
                 </Grid>
             </TabItem>
 
-            <!-- Tab for user log information, list view with 3 columns -->
+            <!-- Tab 3 - System log information -->
             <TabItem Header="Logs" ToolTip="Log of user activity">
                 <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="auto"/>
-                    </Grid.ColumnDefinitions>
+                    <!-- Grid - 2 Rows. 2 Columns -->
                     <Grid.RowDefinitions>
                         <RowDefinition Height="auto"/>
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
 
+                    <!-- Row 0 - Filter Panel and List Stats -->
                     <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Background="LightGray">
                         <Label Content="Filter Text:"  Margin="10,0,0,0" Foreground="Black"/>
                         <TextBox Name="txtFilterLogs" Width="200" MaxLength="30" Height="25"  Margin="0,0,10,0" VerticalContentAlignment="Center"/>
+
                         <Button Name="btnFilterLogs" Content="Filter" Width="75" Margin="10,0"  Height="25" Click="btnFilterLogs_Click"/>
                         <Button Name="btnClearFilterLogs" Content="Clear" Width="75" Margin="10,0"  Height="25" Click="btnClearFilterLogs_Click"/>
+
                         <TextBlock Name="tbxLogStats" Width="auto" Margin="10,0" TextAlignment="Center" VerticalAlignment="Center"/>
                     </StackPanel>
 
@@ -421,11 +457,11 @@
                         <Button Name="btnClearAdminLogs" Content="Clear Log"  Width="75" Margin="10,0"  Height="25" Click="btnClearAdminLogs_Click"/>
                     </StackPanel>
 
-
-
+                    <!-- Row 1 - List of system log details -->
                     <ListView Name="lstLogsList" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Padding="5" Background="AliceBlue">
                         <ListView.View>
                             <GridView>
+                                <!-- Grid View for Date/Time, Event and Username -->
                                 <GridViewColumn Header="Date/Time" Width="200">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
@@ -452,8 +488,6 @@
                     </ListView>
                 </Grid>
             </TabItem>
-
-
         </TabControl>
     </Grid>
 </Page>
