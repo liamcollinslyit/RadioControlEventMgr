@@ -17,20 +17,24 @@ using System.Windows.Shapes;
 
 namespace RadioControlEventMgrUI
 {
-
-    // C# code for Logs page
-
+    /// <summary>
+    /// Interaction logic for Logs screen - Message and Incident Logs
+    /// </summary>
     public partial class Logs : Page
     {
+        // Currently logged in user, passed from dashboard
         public User loggedInUser = new User();
 
+        // DB Connection string
         RadioDBEntities db = new RadioDBEntities("metadata=res://*/RadioModel.csdl|res://*/RadioModel.ssdl|res://*/RadioModel.msl;provider=System.Data.SqlClient;provider connection string='data source=192.168.60.132" +
                                          ";initial catalog=RadioDB;user id=radiouser;password=password;pooling=False;MultipleActiveResultSets=True;App=EntityFramework'");
 
+        // List for storing information read from DB
         List<Message> messages = new List<Message>();
         List<Message> incidentMessage = new List<Message>();
         List<Incident> incidents = new List<Incident>();
 
+        // Variables for selected list item 
         Incident selectedIncident = new Incident();
 
         public Logs()
@@ -38,6 +42,7 @@ namespace RadioControlEventMgrUI
             InitializeComponent();
         }
 
+        // When page is loaded, get info from DB
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             RefreshIncidentList();
@@ -45,10 +50,25 @@ namespace RadioControlEventMgrUI
         }
 
         // ---------------------------------------------------------------------------------------//
-        // Incident Log Click Events
+        // List box Selection Change and Incident Messages Panel
         // ---------------------------------------------------------------------------------------//
 
-        // Context menu - Open incident button - show incident details stackpanel
+        // User selection changed, set selected user and enable context menu options
+        private void lstIncidentList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (lstIncidentList.SelectedIndex >= 0)
+            {
+                selectedIncident = incidents.ElementAt(lstIncidentList.SelectedIndex);
+                submenuOpenIncident.IsEnabled = true;
+                RefreshIncidentMessages();
+            }
+        }
+
+        // ---------------------------------------------------------------------------------------//
+        // Incident Log Context Click Events
+        // ---------------------------------------------------------------------------------------//
+
+        // Open incident button - show incident details stackpanel
         private void submenuOpenIncident_Click(object sender, RoutedEventArgs e)
         {
             stkIncident.Visibility = Visibility.Visible;
@@ -58,6 +78,7 @@ namespace RadioControlEventMgrUI
         // Refreshing Data In Tables And Combo Boxes
         // ---------------------------------------------------------------------------------------//
 
+        // Refresh Message details list from DB, filter if required and set information message in filter panel
         private void RefreshMessagesList(string filter = null)
         {
             try
@@ -72,24 +93,22 @@ namespace RadioControlEventMgrUI
                         messages.Add(message);
                         totalMessages++;
                     }
-
                     tbxMessgesStats.Text = $"Displaying all {totalMessages} messages";
                 }
                 else
                 {
+                    // return list of user that have filter text in any field
                     foreach (var message in db.Messages.Where(t => t.Date.ToString().Contains(filter) || t.Crew.CallSign.Contains(filter) || t.Incident.IncidentNo.Contains(filter)
                                                              || t.Status.StatusName.Contains(filter) || t.MessageText.Contains(filter)))
-
                     {
                         messages.Add(message);
                         totalMessages++;
                     }
                     tbxMessgesStats.Text = $"Displaying {totalMessages} messages using filter \"{filter}\"";
                 }
-  
+                // Order by date descending
                 messages = messages.OrderByDescending(t => t.Date).ToList();
                 lstMessageList.ItemsSource = messages;
-
                 lstMessageList.Items.Refresh();
             }
             catch (EntityException)
@@ -98,6 +117,7 @@ namespace RadioControlEventMgrUI
             }
         }
 
+        // Refresh Incident details list from DB, filter if required and set information message in filter panel
         private void RefreshIncidentList(string filter = null)
         {
             try
@@ -105,6 +125,7 @@ namespace RadioControlEventMgrUI
                 int totalIncidents = 0;
                 int open = 0;
                 int closed = 0;
+
                 incidents.Clear();
                 if (filter == null)
                 {
@@ -113,6 +134,7 @@ namespace RadioControlEventMgrUI
                         incidents.Add(incident);
                         totalIncidents++;
 
+                        // increment open/closed if incident has a leave scene time
                         if (incident.LeaveSceneTime == null) open++;
                         else closed++;
                     }
@@ -120,12 +142,14 @@ namespace RadioControlEventMgrUI
                 }
                 else
                 {
+                    // return list of user that have filter text in any field
                     foreach (var incident in db.Incidents.Where(t => t.IncidentNo.Contains(filter) || t.Location.LocationName.Contains(filter) || t.ReportedTime.ToString().Contains(filter) 
                                                                 || t.AtSceneTime.ToString().Contains(filter) || t.LeaveSceneTime.ToString().Contains(filter) || t.Description.Contains(filter)))
                     {
                         incidents.Add(incident);
                         totalIncidents++;
 
+                        // increment open/closed if incident has a leave scene time
                         if (incident.LeaveSceneTime == null) open++;
                         else closed++;
                     }
@@ -141,21 +165,8 @@ namespace RadioControlEventMgrUI
             }
         }
 
-        // ---------------------------------------------------------------------------------------//
-        // List box Selection Change and Incident Messages Panel
-        // ---------------------------------------------------------------------------------------//
-
-        private void lstIncidentList_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (lstIncidentList.SelectedIndex >= 0)
-            {
-                selectedIncident = incidents.ElementAt(lstIncidentList.SelectedIndex);
-                submenuOpenIncident.IsEnabled = true;
-                UpdateIncidentMessages();
-            }
-        }
-
-        private void UpdateIncidentMessages()
+        // Refresh Incident message details list from DB
+        private void RefreshIncidentMessages()
         {
             try
             {
@@ -166,12 +177,12 @@ namespace RadioControlEventMgrUI
                     incidentMessage.Add(message);
                 }
 
+                // Order by date descending
                 incidentMessage = incidentMessage.OrderBy(t => t.Date).ToList();
-
                 lstIncidentMessages.ItemsSource = incidentMessage;
-
                 lstIncidentMessages.Items.Refresh();
 
+                // Set Incident panel textboxes with incident data
                 lblIncidentTitle.Content = selectedIncident.IncidentNo;
                 txtIncidentReported.Text = selectedIncident.ReportedTime.ToString();
                 txtIncidentAt.Text = selectedIncident.AtSceneTime.ToString();
@@ -187,16 +198,41 @@ namespace RadioControlEventMgrUI
         }
 
         // ---------------------------------------------------------------------------------------//
+        // Filter + Clear Button Click Events
+        // ---------------------------------------------------------------------------------------//
+
+        // Applied filter to messages list using entered text
+        private void btnFilterMessages_Click(object sender, RoutedEventArgs e)
+        {
+            RefreshMessagesList(txtFilterMessages.Text);
+
+        }
+
+        // Remove filter from messages list and clear text box
+        private void btnClearFilterMessages_Click(object sender, RoutedEventArgs e)
+        {
+            RefreshMessagesList();
+            tbxMessgesStats.Text = "";
+        }
+
+        // Applied filter to incidents list using entered text
+        private void btnFilterIncidents_Click(object sender, RoutedEventArgs e)
+        {
+            RefreshIncidentList(txtFilterIncidents.Text);
+        }
+
+        // Remove filter from incidents list and clear text box
+        private void btnClearFilterIncidents_Click(object sender, RoutedEventArgs e)
+        {
+            RefreshIncidentList();
+            tbxIncidentStats.Text = "";
+        }
+
+        // ---------------------------------------------------------------------------------------//
         // Log Messages And DB Updates With Error Control
         // ---------------------------------------------------------------------------------------//
 
-        /// <summary>
-        /// Create an entry in the log database
-        /// </summary>
-        /// <param name="eventDescription"></param>
-        /// Description of the event
-        /// <param name="userID"></param>
-        /// User ID of event generator
+        // Funtion to create new log and write to DB with supplied Description and userID
         public void CreateLogEntry(string eventDescription, int userID)
         {
             Log log = new Log();
@@ -207,6 +243,7 @@ namespace RadioControlEventMgrUI
             SaveDBChanges();
         }
 
+        // Error controled function to save to database. Return success/failure
         public int SaveDBChanges()
         {
             int success = 0;
@@ -221,33 +258,11 @@ namespace RadioControlEventMgrUI
             return success;
         }
 
+        // Display error message and close application should DB connection fail
         public void DBConnectionError()
         {
             MessageBox.Show("Problem connecting to the SQL server, contact system administrator. Application will now close.", "Connection to Database", MessageBoxButton.OK, MessageBoxImage.Error);
             Environment.Exit(0);
-        }
-
-        private void btnFilterMessages_Click(object sender, RoutedEventArgs e)
-        {
-            RefreshMessagesList(txtFilterMessages.Text);
-
-        }
-
-        private void btnClearFilterMessages_Click(object sender, RoutedEventArgs e)
-        {
-            RefreshMessagesList();
-            tbxMessgesStats.Text = "";
-        }
-
-        private void btnFilterIncidents_Click(object sender, RoutedEventArgs e)
-        {
-            RefreshIncidentList(txtFilterIncidents.Text);
-        }
-
-        private void btnClearFilterIncidents_Click(object sender, RoutedEventArgs e)
-        {
-            RefreshIncidentList();
-            tbxIncidentStats.Text = "";
         }
     }
 }

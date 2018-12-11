@@ -7,29 +7,27 @@
       mc:Ignorable="d" 
       d:DesignHeight="700" d:DesignWidth="1200"
       Title="Map">
-    <!-- XAML for map page, viewing online/offline map -->
+    <!-- XAML for map screen - viewing online/offline map -->
     <Grid>
-        <!-- Context menu for switching between online/offline map-->  
 
-        <!-- Display google map in web browser -->
-      
-        <!-- Display offline image file-->
-       
+        <!-- Tab control for screen -->
         <TabControl Name="TabMaps" Background="Transparent">
+            <!-- Tab header style - Font size 13 -->
             <TabControl.Resources>
                 <Style TargetType="{x:Type TabItem}">
                     <Setter Property="FontSize" Value="13"/>
                 </Style>
             </TabControl.Resources>
 
+            <!-- Tab 1 - Local Map Tab - displays image from file -->
             <TabItem Header="Local" ToolTip="Local Event Map">
                 <Image Name="imgMap" Source="Images/Map.jpg" Margin="20" Visibility="Visible"/>
             </TabItem>
-            
+
+            <!-- Tab 2 - Online map tab - displays online map using web browser (maps.google.ie) -->
             <TabItem Header="Online" ToolTip="Online Map (maps.google.ie)">
                 <WebBrowser Name="webMap" Source="https://www.google.ie/maps" Margin="20" Visibility="Visible"/>
             </TabItem>
         </TabControl>
-        
     </Grid>
 </Page>

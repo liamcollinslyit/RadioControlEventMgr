@@ -11,36 +11,39 @@
         Title="Login" 
         Height="210" MaxHeight="210" MinHeight="210" 
         Width="500" MaxWidth="500" MinWidth="500">
-        <!-- Start window in centre screen with fixed size 210*500-->    
         <!-- XAML for Login Screen -->
+        <!-- Start window in centre screen with fixed size 210*500-->
     <Grid>
-        <!-- 4*3 Grid -->
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+        <!-- Grid - 4 Rows, 3 Columns -->
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
 
-        <!-- lblLoginHeading will also be used to display error for faield logon -->
-        <Label Name="lblLoginHeading" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Margin="10"
-               HorizontalAlignment="Center" FontSize="20" FontWeight="DemiBold"
-               Content="Please login to access application" />
-        <Label Grid.Row="1" Grid.Column="0" Content="Username" Margin="10" FontWeight="DemiBold" />
-        <Label Grid.Row="2" Grid.Column="0" Content="Password" Margin="10" FontWeight="DemiBold"/>
-
+        <!-- Row 0 - Header, will also be used to display error for failed logon -->
+        <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Name="lblLoginHeading" Margin="10" FontSize="20"
+               HorizontalAlignment="Center" FontWeight="DemiBold" Content="Please login to access application" />
+         
+        <!-- Row 1 - Username -->
+        <Label Grid.Row="1" Grid.Column="0" Content="Username" Margin="10" FontWeight="DemiBold"/>
         <TextBox Name="tbxUsername" Grid.Row="1" Grid.Column="1" Height="25" Margin="10" 
                  ToolTip="Please enter your username" TabIndex="0" VerticalContentAlignment="Center" 
-                 MaxLength="30" TextChanged="tbxUsername_TextChanged"/>
+                 MaxLength="30" Width="180" TextChanged="tbxUsername_TextChanged"/>
+
+        <!-- Row 2 - Password -->
+        <Label Grid.Row="2" Grid.Column="0" Content="Password" Margin="10" FontWeight="DemiBold"/>
         <PasswordBox Name="tbxPassword" Grid.Row="2" Grid.Column="1" Height="25" Margin="10"
                      ToolTip="Please enter your password" TabIndex="1" VerticalContentAlignment="Center" 
-                     MaxLength="30" PasswordChanged="tbxPassword_PasswordChanged"   />
+                     MaxLength="30" Width="180" PasswordChanged="tbxPassword_PasswordChanged"   />
 
+        <!-- Row 3 - StackPanel Buttons - Exit and Enter-->
         <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Name="btnLoginExit" Content="Exit" Height="25" Width="80" Margin="10" 
                     ToolTip="Press to login with credentials" TabIndex="3" Click="btnLoginExit_Click"/>
@@ -48,10 +51,9 @@
                     ToolTip="Press to exit the application" TabIndex="2" Click="btnLoginEnter_Click"/>
         </StackPanel>
 
-       <!-- Logo is flipped veritcally -->
-        <Image Grid.Column="2" Grid.Row="0" Grid.RowSpan="4" Margin="10"
-              Source="Images/logo.png" Stretch="Uniform" 
-              RenderTransformOrigin="0.5,0.5">
+       <!-- Column 2 - Logo (Flipped Vertically) -->
+        <Image Grid.Row="0" Grid.Column="2" Grid.RowSpan="4" Margin="10" Source="Images/logo.png"
+              Stretch="Uniform" RenderTransformOrigin="0.5,0.5">
             <Image.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform ScaleY="1" ScaleX="-1"/>

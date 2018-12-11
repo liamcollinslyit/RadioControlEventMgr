@@ -17,22 +17,26 @@ using System.Windows.Shapes;
 
 namespace RadioControlEventMgrUI
 {
-
-    // C# code for Situation page
-
+    /// <summary>
+    /// Interaction logic for Situation screen - Entering/Viewing crew, message and incident information
+    /// </summary>
     public partial class Situation : Page
     {
+        // Currently logged in user, passed from dashboard
         public User loggedInUser = new User();
 
+        // Enum for current operation of stackpanel's, controlled by context menu
         enum DBOperation
         {
             Add,
             Edit
         }
 
+        // DB Connection string
         RadioDBEntities db = new RadioDBEntities("metadata=res://*/RadioModel.csdl|res://*/RadioModel.ssdl|res://*/RadioModel.msl;provider=System.Data.SqlClient;provider connection string='data source=192.168.60.132" +
                                  ";initial catalog=RadioDB;user id=radiouser;password=password;pooling=False;MultipleActiveResultSets=True;App=EntityFramework'");
 
+        // List for storing information read from DB
         List<Incident> incidents = new List<Incident>();
         List<Incident> activeIncidents = new List<Incident>();
         List<Crew> crews = new List<Crew>();
@@ -40,10 +44,14 @@ namespace RadioControlEventMgrUI
         List<Status> statuses = new List<Status>();
         List<Message> messages = new List<Message>();
 
-        DBOperation dbOperation = new DBOperation();
+        // Variables for selected list item 
         Incident selectedIncident = new Incident();
         Crew selectedCrew = new Crew();
 
+        // DB Operation for incident
+        DBOperation dbOperation = new DBOperation();
+
+        // Styles for incident and crew styles
         Style incidentStyle = new Style();
         Style crewStyle = new Style();
 
@@ -52,6 +60,7 @@ namespace RadioControlEventMgrUI
             InitializeComponent();
         }
 
+        // When page is loaded - get info from DB, set time combooxes and list view styles
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             RefreshIncidentList();
@@ -65,23 +74,93 @@ namespace RadioControlEventMgrUI
             loadTimeBoxes(cboLeaveSceneTimeHour, cboLeaveSceneTimeMin);
             loadTimeBoxes(cboMessageTimeHour, cboMessageTimeMin);
 
+            // Incident Styles - No arrive time RED, No Leave Time GREEN, Else default GRAY
             incidentStyle.Setters.Add(new Setter() {Property = Control.BackgroundProperty,Value = Brushes.LightGray});
             AddStyleTrigger(incidentStyle, "LeaveSceneTime", null, Brushes.LightGreen);
             AddStyleTrigger(incidentStyle, "AtSceneTime", null, Brushes.LightCoral);
             lstSituationIncidentList.Resources.Add(typeof(ListViewItem), incidentStyle);
 
+            // Crew Style - Available GREEN, Unavailable RED, Radio check Failed ORANGE
             AddStyleTrigger(crewStyle, "Status.StatusName", "Radio Check Failed", Brushes.LightSalmon);
             AddStyleTrigger(crewStyle, "Status.StatusName", "Available", Brushes.LightGreen);
             AddStyleTrigger(crewStyle, "Status.StatusName", "Unavailable", Brushes.LightCoral);
             lstCrewList.Resources.Add(typeof(ListViewItem), crewStyle);
+        }
 
+        // ---------------------------------------------------------------------------------------//
+        // List box Selection Change
+        // ---------------------------------------------------------------------------------------//
+
+        // Incident selection changed, set selected user and enable context menu options
+        private void lstSituationIncidentList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (lstSituationIncidentList.SelectedIndex >= 0)
+            {
+                submenuAtScene.IsEnabled = false;
+                submenuLeaveScene.IsEnabled = false;
+
+                selectedIncident = incidents.ElementAt(lstSituationIncidentList.SelectedIndex);
+
+                // if no at scene time enable context option, else if no leave scene time enable context option
+                if (selectedIncident.AtSceneTime == null)
+                {
+                    submenuAtScene.IsEnabled = true;
+                }
+                else if (selectedIncident.LeaveSceneTime == null)
+                {
+                    submenuLeaveScene.IsEnabled = true;
+                }
+
+                // If current operation is edit then show incident details in panel
+                if (dbOperation == DBOperation.Edit)
+                {
+                    ClearSituationDetails();
+                    UpdateSituationDetails();
+                }
+               
+                submenuEditIncident.IsEnabled = true;
+                submenuDeleteIncident.IsEnabled = true;
+            }
+            else
+            {
+                submenuDeleteIncident.IsEnabled = false;
+                submenuEditIncident.IsEnabled = false;
+            }
+        }
+
+        // Crew selection changed, set selected Crew and enable context menu options
+        private void lstCrewList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            submenuNewMessage.IsEnabled = false;
+            submenuLocation.IsEnabled = false;
+            submenuStatus.IsEnabled = false;
+            submenuIncident.IsEnabled = false;
+            submenuClearIncident.IsEnabled = false;
+
+            // Only allow New message and status change for control user
+            if (lstCrewList.SelectedIndex == 0)
+            {
+                submenuNewMessage.IsEnabled = true;
+                submenuStatus.IsEnabled = true;
+
+            }
+            if (lstCrewList.SelectedIndex >= 1)
+            {
+                submenuNewMessage.IsEnabled = true;
+                submenuLocation.IsEnabled = true;
+                submenuStatus.IsEnabled = true;
+                submenuIncident.IsEnabled = true;
+                submenuClearIncident.IsEnabled = true;
+            }
+            selectedCrew = crews.ElementAt(lstCrewList.SelectedIndex);
+            UpdateCrewDetails();
         }
 
         // ---------------------------------------------------------------------------------------//
         // Incident context menu Click Events
         // ---------------------------------------------------------------------------------------//
 
-        // Context menu - Add incident button - show incident stackpanel , and set time to now
+        // Add incident click event - set DBOperation, show clear incident stackpanel , and set time to now
         private void submenuAddIncident_Click(object sender, RoutedEventArgs e)
         {
             dbOperation = DBOperation.Add;
@@ -95,6 +174,7 @@ namespace RadioControlEventMgrUI
             CreateLogEntry("User opened add incident panel", loggedInUser.UserId);
         }
 
+        // Edit incident click event - set DBOperation, show updated panel and note in system log
         private void submenuEditIncident_Click(object sender, RoutedEventArgs e)
         {
             dbOperation = DBOperation.Edit;
@@ -109,10 +189,12 @@ namespace RadioControlEventMgrUI
             CreateLogEntry("User opened edit incident panel", loggedInUser.UserId);
         }
 
+        // At scene  click event - Set selected incident at scene time to now, enable leave scene option and note in system log
         private void submenuAtScene_Click(object sender, RoutedEventArgs e)
         {
             try
             {
+                // Set selcted incident at scene time to now
                 foreach (var incident in db.Incidents.Where(t => t.IncidentID == selectedIncident.IncidentID))
                 {
                     incident.AtSceneTime = new TimeSpan(DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
@@ -130,15 +212,18 @@ namespace RadioControlEventMgrUI
             submenuLeaveScene.IsEnabled = true;
         }
 
+        // At scene  click event - Set selected incident at scene time to now, remove from all crew and note in system log
         private void submenuLeaveScene_Click(object sender, RoutedEventArgs e)
         {
             try
             {
+                // Set selcted incident at scene time to now
                 foreach (var incident in db.Incidents.Where(t => t.IncidentID == selectedIncident.IncidentID))
                 {
                     incident.LeaveSceneTime = new TimeSpan(DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
                 }
 
+                // Remove incident from all crew
                 foreach (var crew in db.Crews.Where(t => t.IncidentID == selectedIncident.IncidentID))
                 {
                     crew.IncidentID = null;
@@ -156,8 +241,10 @@ namespace RadioControlEventMgrUI
             submenuLeaveScene.IsEnabled = false;
         }
 
+        // Delecte incident click event - Confirm with user, Delete user from DB and note in system log
         private void submenuDeleteIncident_Click(object sender, RoutedEventArgs e)
         {
+            // Confirm proceede ?
             MessageBoxResult confirm = MessageBox.Show($"Are you sure you want to delete incident: {selectedIncident.IncidentNo}", "Delete Incident", MessageBoxButton.YesNo,MessageBoxImage.Question);
 
             if (confirm == MessageBoxResult.Yes)
@@ -170,26 +257,28 @@ namespace RadioControlEventMgrUI
         }
 
         // ---------------------------------------------------------------------------------------//
-        // Incident panel Click Events
+        // Incident panel Click Events and V
         // ---------------------------------------------------------------------------------------//
 
-        // Incident panel - Now button - Set time to now in combobox
+        // Reported Now button - Set reported time to now in combobox
         private void btnSituationNow_Click(object sender, RoutedEventArgs e)
         {
             SetTimeBoxNow(cboSituationTimeHour,cboSituationTimeMin);
         }
 
+        // At Scene Now button - Set At Scene time to now in combobox
         private void btnAtSceneNow_Click(object sender, RoutedEventArgs e)
         {
             SetTimeBoxNow(cboAtSceneTimeHour, cboAtSceneTimeMin);
         }
 
+        // Leave Scene Now button - Set Leave Scene time to now in combobox
         private void btnLeaveSceneNow_Click(object sender, RoutedEventArgs e)
         {
             SetTimeBoxNow(cboLeaveSceneTimeHour, cboLeaveSceneTimeMin);
         }
 
-        // Incident panel - Cancel button - hide incident stackpanel
+        // Cancel button - Close panel without saving and note in system log
         private void btnSituationCancel_Click(object sender, RoutedEventArgs e)
         {
             stkSituationIncident.Visibility = Visibility.Collapsed;
@@ -197,64 +286,65 @@ namespace RadioControlEventMgrUI
             CreateLogEntry("User closed add incident panel", loggedInUser.UserId);
         }
 
-        // Incident panel - Ok button - hide message stackpanel
+        // Ok button - validate details then perform the selected operation and hide panel
         private void btnSituationOk_Click(object sender, RoutedEventArgs e)
         {
-            if (ValidateIncidentDetails())
+            try
             {
-                TimeSpan reportTime = new TimeSpan(Convert.ToInt32(cboSituationTimeHour.SelectedValue), Convert.ToInt32(cboSituationTimeMin.SelectedValue), 0);
-                Location location = (Location)cboSituationLocation.SelectedItem;
-                string details = txtSituationDetails.Text.Trim() ;
-
-                if (dbOperation == DBOperation.Add)
+                if (ValidateIncidentDetails())
                 {
-                    CreateIncidentEntry(reportTime, location, details);
-                }
-                if (dbOperation == DBOperation.Edit)
-                {
-                    UpdateIncident(reportTime, location, details);
+                    TimeSpan reportTime = new TimeSpan(Convert.ToInt32(cboSituationTimeHour.SelectedValue), Convert.ToInt32(cboSituationTimeMin.SelectedValue), 0);
+                    Location location = (Location)cboSituationLocation.SelectedItem;
+                    string details = txtSituationDetails.Text.Trim();
 
-                    if (cboAtSceneTimeHour.SelectedIndex >= 0 )
+                    if (dbOperation == DBOperation.Add)
                     {
-                        try
+                        CreateIncidentEntry(reportTime, location, details);
+                    }
+                    if (dbOperation == DBOperation.Edit)
+                    {
+                        UpdateIncident(reportTime, location, details);
+
+                        if (cboAtSceneTimeHour.SelectedIndex >= 0)
                         {
+                            // if At Scene Time selected then update time in DB
                             foreach (var incident in db.Incidents.Where(t => t.IncidentID == selectedIncident.IncidentID))
                             {
                                 incident.AtSceneTime = new TimeSpan(Convert.ToInt32(cboAtSceneTimeHour.SelectedValue), Convert.ToInt32(cboAtSceneTimeMin.SelectedValue), 0);
                                 submenuAtScene.IsEnabled = false;
                                 submenuLeaveScene.IsEnabled = true;
                             }
+                            SaveDBChanges();
                         }
-                        catch (EntityException)
+                        if (cboLeaveSceneTimeHour.SelectedIndex >= 0)
                         {
-                            DBConnectionError();
-                        }
-                        SaveDBChanges();
-                    }
-                    if (cboLeaveSceneTimeHour.SelectedIndex >= 0)
-                    {
-                        try
-                        {
+
+                            // if leave Scene Time selected then update time in DB
                             foreach (var incident in db.Incidents.Where(t => t.IncidentID == selectedIncident.IncidentID))
                             {
                                 incident.LeaveSceneTime = new TimeSpan(Convert.ToInt32(cboLeaveSceneTimeHour.SelectedValue), Convert.ToInt32(cboLeaveSceneTimeMin.SelectedValue), 0);
                                 submenuLeaveScene.IsEnabled = false;
                             }
+                            SaveDBChanges();
                         }
-                        catch (EntityException)
-                        {
-                            DBConnectionError();
-                        }
-                        SaveDBChanges();
                     }
-                }
 
-                RefreshIncidentList();
-                stkSituationIncident.Visibility = Visibility.Collapsed;
-                lstSituationMessages.Visibility = Visibility.Visible;
+                    RefreshIncidentList();
+                    stkSituationIncident.Visibility = Visibility.Collapsed;
+                    lstSituationMessages.Visibility = Visibility.Visible;
+                }
+            }
+            catch (EntityException)
+            {
+                DBConnectionError();
             }
         }
 
+        // ---------------------------------------------------------------------------------------//
+        // Incident Details Validations 
+        // ---------------------------------------------------------------------------------------//
+        
+        // Validate Incident details supplied in the panel, if invlaid show usful error message for each item.
         private bool ValidateIncidentDetails()
         {
             bool valid = true;
@@ -276,7 +366,7 @@ namespace RadioControlEventMgrUI
                 valid = false;
             }
 
-
+            // If invlaid show the cumulative error message
             if (!valid)
             {
                 MessageBox.Show(errorMessage, "Incident Detail's Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
@@ -290,7 +380,7 @@ namespace RadioControlEventMgrUI
         // Crew Context Click Events
         // ---------------------------------------------------------------------------------------//
 
-        // Context menu - New message button - show message stackpanel, and set time to now
+        // New message click event - show message stackpanel, set time to now and note in system log
         private void submenuNewMessage_Click(object sender, RoutedEventArgs e)
         {
             stkMessage.Visibility = Visibility.Visible;
@@ -299,6 +389,7 @@ namespace RadioControlEventMgrUI
             CreateLogEntry("User opened new message panel", loggedInUser.UserId);
         }
 
+        // Incident click event - Get the selected item, update selected crew with change and note to system log
         private void submenuIncident_Click(object sender, RoutedEventArgs e)
         {
             MenuItem selectedItem = e.OriginalSource as MenuItem;
@@ -307,6 +398,7 @@ namespace RadioControlEventMgrUI
             CreateMessageEntry(DateTime.Now, selectedCrew, selectedCrew.Incident, selectedCrew.Status, $"Assigned to incident - {selectedCrew.Incident.IncidentNo}");
         }
 
+        // Location click event - Get the selected item, update selected crew with change and note to system log
         private void submenuLocation_Click(object sender, RoutedEventArgs e)
         {
             MenuItem selectedItem = e.OriginalSource as MenuItem;
@@ -315,6 +407,7 @@ namespace RadioControlEventMgrUI
             CreateMessageEntry(DateTime.Now, selectedCrew, selectedCrew.Incident, selectedCrew.Status, $"Changed to location - {selectedCrew.Location.LocationName}");
         }
 
+        // Status click event - Get the selected item, update selected crew with change and note to system log
         private void submenuStatus_Click(object sender, RoutedEventArgs e)
         {
             MenuItem selectedItem = e.OriginalSource as MenuItem;
@@ -323,6 +416,7 @@ namespace RadioControlEventMgrUI
             CreateMessageEntry(DateTime.Now, selectedCrew, selectedCrew.Incident, selectedCrew.Status, $"Changed status to - {selectedCrew.Status.StatusName}");
         }
 
+        // Clear Incident click  event - clear incident from selected crew and note to system log 
         private void submenuClearIncident_Click(object sender, RoutedEventArgs e)
         {
             CreateMessageEntry(DateTime.Now, selectedCrew, selectedCrew.Incident, selectedCrew.Status, $"Unassigned from incident - {selectedCrew.Incident.IncidentNo}");
@@ -333,13 +427,13 @@ namespace RadioControlEventMgrUI
         // Message panel Click Events
         // ---------------------------------------------------------------------------------------//
 
-        // Message panel - Now button - Set time to now in combobox
+        // Now button - Set  message time to now in combobox
         private void btnMessageNow_Click(object sender, RoutedEventArgs e)
         {
             SetTimeBoxNow(cboMessageTimeHour, cboMessageTimeMin);
         }
 
-        // Message Panel  - Cancel button - hide message stackpanel
+        // Cancel button - Close panel without saving and note in system log
         private void btnMessageCancel_Click(object sender, RoutedEventArgs e)
         {
             stkMessage.Visibility = Visibility.Collapsed;
@@ -347,7 +441,7 @@ namespace RadioControlEventMgrUI
             CreateLogEntry("User closed new message panel", loggedInUser.UserId);
         }
 
-        // Message Panel  - Ok button - hide message stackpanel
+        // Ok button - Update crew, Add Message and clear + hide panel
         private void btnMessageOk_Click(object sender, RoutedEventArgs e)
         {
             DateTime dateTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, Convert.ToInt32(cboMessageTimeHour.SelectedValue), Convert.ToInt32(cboMessageTimeMin.SelectedValue), 0);
@@ -367,9 +461,10 @@ namespace RadioControlEventMgrUI
         }
 
         // ---------------------------------------------------------------------------------------//
-        // Refreshing Data in tables and combo boxes
+        // Refreshing Data in tables and combo boxes, Add Style Trigger
         // ---------------------------------------------------------------------------------------//
 
+        // Refresh Incident details list from DB and set information message in label panel
         private void RefreshIncidentList()
         {
             int incidentCount = 0;
@@ -400,16 +495,18 @@ namespace RadioControlEventMgrUI
             txtNoIncidents.Text = incidentCount.ToString();
             txtOpenIncidents.Text = activeCount.ToString();
 
+            // Order with Leave Scene to end 
             incidents = incidents.OrderBy(t => t.LeaveSceneTime.HasValue).ToList();
 
             lstSituationIncidentList.ItemsSource = incidents;
             cboMessageIncident.ItemsSource = activeIncidents;
             submenuIncident.ItemsSource = activeIncidents;
-
             lstSituationIncidentList.Items.Refresh();
             cboMessageIncident.Items.Refresh();
             submenuIncident.Items.Refresh();
         }
+
+        // Refresh crew details list from DB and set information message in label panel
         private void RefreshCrewList()
         {
             int crewNum = 0;
@@ -422,10 +519,12 @@ namespace RadioControlEventMgrUI
                 {
                     crews.Add(crew);
 
+                    // Ignore control in count
                     if (crew.CallSignID > 0)
                     {
                         crewNum++;
-                    }                  
+                    }   
+                    // If crew still in radio check failed/unknow then show radio check button
                     if (crew.StatusID < 3)
                     {
                         btnRadioCheck.Visibility = Visibility.Visible;
@@ -449,12 +548,14 @@ namespace RadioControlEventMgrUI
             lstCrewList.Items.Refresh();
         }
 
+        // Refresh Locations details list from DB and set information message in label panel
         private void RefreshLocations()
         {
             locations.Clear();
 
             try
             {
+                // Ignore control location
                 foreach (var location in db.Locations.Where(t=>t.LocationID > 0))
                 {
                     locations.Add(location);
@@ -469,18 +570,19 @@ namespace RadioControlEventMgrUI
             cboSituationLocation.ItemsSource = locations;
             cboMessageLocation.ItemsSource = locations;
             submenuLocation.ItemsSource = locations;
-
             cboSituationLocation.Items.Refresh();
             cboMessageLocation.Items.Refresh();
             submenuLocation.Items.Refresh();
         }
 
+        // Refresh Status details list from DB and set information message in label panel
         private void RefreshStatus()
         {
             statuses.Clear();
 
             try
             {
+                // Only allow chnage to Available/Unavailble
                 foreach (var status in db.Status.Where(t=> t.StatusID >= 3))
                 {
                     statuses.Add(status);
@@ -499,6 +601,7 @@ namespace RadioControlEventMgrUI
             submenuStatus.Items.Refresh();
         }
 
+        // Refresh Message details list from DB
         private void RefreshMessagesList()
         {
             try
@@ -508,6 +611,8 @@ namespace RadioControlEventMgrUI
                 {
                     messages.Add(message);
                 }
+
+                // Order by date descending
                 messages = messages.OrderByDescending(t => t.Date).ToList();
                 lstSituationMessages.ItemsSource = messages;
 
@@ -519,150 +624,60 @@ namespace RadioControlEventMgrUI
             }
         }
 
-        private void SetTimeBoxNow(ComboBox hour, ComboBox min)
+        // Initialise given hour boxs to 00-23 and minutes box to 00-59
+        private void loadTimeBoxes(ComboBox hour, ComboBox min)
         {
-            if (DateTime.Now.Hour < 10) hour.SelectedValue = $"0{DateTime.Now.Hour}";
-            else hour.SelectedValue = DateTime.Now.Hour;
-
-            if (DateTime.Now.Minute < 10) min.SelectedValue = $"0{DateTime.Now.Minute}";
-            else min.SelectedValue = DateTime.Now.Minute;
-        }
-
-        // ---------------------------------------------------------------------------------------//
-        // List box selection changes + style setter
-        // ---------------------------------------------------------------------------------------//
-
-        private void lstSituationIncidentList_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (lstSituationIncidentList.SelectedIndex >= 0)
+            for (int i = 0; i <= 23; i++)
             {
-
-                submenuAtScene.IsEnabled = false;
-                submenuLeaveScene.IsEnabled = false;
-
-                selectedIncident = incidents.ElementAt(lstSituationIncidentList.SelectedIndex);
-                if (selectedIncident.AtSceneTime == null)
-                {
-                    submenuAtScene.IsEnabled = true;
-                }
-                else if (selectedIncident.LeaveSceneTime == null)
-                {
-                    submenuLeaveScene.IsEnabled = true;
-                }
-
-                if (dbOperation == DBOperation.Edit)
-                {
-                    ClearSituationDetails();
-                    UpdateSituationDetails();
-                }
-
-                submenuDeleteIncident.IsEnabled = true;
-                submenuEditIncident.IsEnabled = true;
+                if (i < 10) hour.Items.Add($"0{i}");
+                else hour.Items.Add(i);
             }
-            else
+            for (int i = 0; i <= 59; i++)
             {
-                submenuDeleteIncident.IsEnabled = false;
-                submenuEditIncident.IsEnabled = false;
+                if (i < 10) min.Items.Add($"0{i}");
+                else min.Items.Add(i);
             }
         }
 
-        private void lstCrewList_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-            submenuNewMessage.IsEnabled = false;
-            submenuLocation.IsEnabled = false;
-            submenuStatus.IsEnabled = false;
-            submenuIncident.IsEnabled = false;
-            submenuClearIncident.IsEnabled = false;
-
-            if (lstCrewList.SelectedIndex == 0)
-            {
-                submenuNewMessage.IsEnabled = true;
-                submenuStatus.IsEnabled = true;
-
-            }
-            if (lstCrewList.SelectedIndex >= 1)
-            {
-                submenuNewMessage.IsEnabled = true;
-                submenuLocation.IsEnabled = true;
-                submenuStatus.IsEnabled = true;
-                submenuIncident.IsEnabled = true;
-                submenuClearIncident.IsEnabled = true;
-            }
-            selectedCrew = crews.ElementAt(lstCrewList.SelectedIndex);
-            UpdateCrewDetails();
-
-        }
-
+        // Used to create the correct for List style using given values
         private void AddStyleTrigger(Style style, string binding, string value, Brush brush)
         {
-
+            // create a  new data trigger with binding and value
             DataTrigger dataTrigger = new DataTrigger()
             {
                 Binding = new Binding($"{binding}"),
                 Value = value
             };
+            // Add a setter to the trigger with brush
             dataTrigger.Setters.Add(new Setter()
             {
                 Property = Control.BackgroundProperty,
                 Value = brush
             });
+            // Add this trigger to the style
             style.Triggers.Add(dataTrigger);
-        }
-
-
-         private void loadTimeBoxes(ComboBox hour, ComboBox min)
-        {
-            for (int i = 0; i <= 23; i++)
-            {
-                if (i < 10)
-                {
-                    hour.Items.Add($"0{i}");
-                }
-                else
-                {
-                    hour.Items.Add(i);
-                }
-            }
-            for (int i = 0; i <= 59; i++)
-            {
-                if (i < 10)
-                {
-                    min.Items.Add($"0{i}");
-                }
-                else
-                {
-                    min.Items.Add(i);
-                }
-            }
         }
 
         // ---------------------------------------------------------------------------------------//
         // Panels update and clear
         // ---------------------------------------------------------------------------------------//
 
-        private void UpdateCrewDetails()
-        {
-            SetTimeBoxNow(cboMessageTimeHour,cboMessageTimeMin);
-            lblMessageTitle.Content = selectedCrew.CallSign;
-            cboMessageStatus.SelectedItem = selectedCrew.Status;
-            cboMessageLocation.SelectedItem = selectedCrew.Location;
-            cboMessageIncident.SelectedItem = selectedCrew.Incident;
-            txtMessageText.Text = "";
-        }
-
+        // Update incident details in panel
         private void UpdateSituationDetails()
         {
             TimeSpan reportedTime = (TimeSpan) selectedIncident.ReportedTime;
             cboSituationTimeHour.SelectedIndex = Convert.ToInt32(Math.Floor(reportedTime.TotalHours));
             cboSituationTimeMin.SelectedIndex = Convert.ToInt32((reportedTime.TotalHours - Math.Floor(reportedTime.TotalHours)) * 60);
 
+            // If incident has at scene time update comboboxes
             if (selectedIncident.AtSceneTime != null)
             {
                 TimeSpan atSceneTime = (TimeSpan)selectedIncident.AtSceneTime;
                 cboAtSceneTimeHour.SelectedIndex = Convert.ToInt32(Math.Floor(atSceneTime.TotalHours));
                 cboAtSceneTimeMin.SelectedIndex = Convert.ToInt32((atSceneTime.TotalHours - Math.Floor(atSceneTime.TotalHours)) * 60);
             }
+
+            // If incident has at leave time update comboboxes
             if (selectedIncident.LeaveSceneTime != null)
             {
                 TimeSpan leaveSceneTime = (TimeSpan)selectedIncident.LeaveSceneTime;
@@ -675,6 +690,7 @@ namespace RadioControlEventMgrUI
             txtSituationDetails.Text = selectedIncident.Description;
         }
 
+        // Clear incident details in panel
         private void ClearSituationDetails()
         {
             SetTimeBoxNow(cboSituationTimeHour, cboSituationTimeMin);
@@ -686,14 +702,36 @@ namespace RadioControlEventMgrUI
             txtSituationDetails.Text = "";
         }
 
+        // Update crew details in panel and clear message box
+        private void UpdateCrewDetails()
+        {
+            SetTimeBoxNow(cboMessageTimeHour, cboMessageTimeMin);
+            lblMessageTitle.Content = selectedCrew.CallSign;
+            cboMessageStatus.SelectedItem = selectedCrew.Status;
+            cboMessageLocation.SelectedItem = selectedCrew.Location;
+            cboMessageIncident.SelectedItem = selectedCrew.Incident;
+            txtMessageText.Text = "";
+        }
+
+        // Given Hour and Minutes comboboxes - set hours and minutes to now
+        private void SetTimeBoxNow(ComboBox hour, ComboBox min)
+        {
+            if (DateTime.Now.Hour < 10) hour.SelectedValue = $"0{DateTime.Now.Hour}";
+            else hour.SelectedValue = DateTime.Now.Hour;
+
+            if (DateTime.Now.Minute < 10) min.SelectedValue = $"0{DateTime.Now.Minute}";
+            else min.SelectedValue = DateTime.Now.Minute;
+        }
+
         // ---------------------------------------------------------------------------------------//
         // Database Updates 
         // ---------------------------------------------------------------------------------------//
 
+        // Function to create incident in the DB with given data and note in system logs
         private void CreateIncidentEntry(TimeSpan reportedTime, Location location, string details)
         {
+            // Create new incident with supplied details and add to DB
             Incident incident = new Incident();
-
             incident.IncidentNo = "NEWINC";
             incident.LocationID = location.LocationID;
             incident.ReportedTime = reportedTime;
@@ -701,18 +739,21 @@ namespace RadioControlEventMgrUI
             db.Entry(incident).State = System.Data.Entity.EntityState.Added;
             SaveDBChanges();
 
+            // Create Incident No in formation INC InicdntID
             incident.IncidentNo = $"INC {incident.IncidentID}";
             SaveDBChanges();
-            CreateLogEntry($"User created a new incident: {incident.IncidentNo} reported at {incident.ReportedTime} at {incident.Location.LocationName} ", loggedInUser.UserId);
 
+            CreateLogEntry($"User created a new incident: {incident.IncidentNo} reported at {incident.ReportedTime} at {incident.Location.LocationName} ", loggedInUser.UserId);
         }
 
+        // Function to update the selected incident with supplied details in DB and note in system logs
         private void UpdateIncident(TimeSpan reportedTime, Location location, string details)
         {
             if (selectedIncident.ReportedTime != reportedTime || selectedIncident.Location != location || selectedIncident.Description != details)
             {
                 try
                 {
+                    // Find the selected incident in the DB and change to supplied details
                     foreach (var incident in db.Incidents.Where(t => t.IncidentID == selectedIncident.IncidentID))
                     {
                         incident.ReportedTime = reportedTime;
@@ -734,34 +775,42 @@ namespace RadioControlEventMgrUI
                 }
                 else
                 {
+                    // If save is failed show message and note to system log
                     MessageBox.Show("Problem updating incident record, please try again or contact system administrator", "User Administration", MessageBoxButton.OK, MessageBoxImage.Error);
                     CreateLogEntry($"Error:  Problem updating user {selectedIncident.IncidentNo}", loggedInUser.UserId);
                 }
             }
         }
 
-            private void CreateMessageEntry(DateTime dateTime, Crew crew, Incident incident, Status status, string text)
+        // Function to create message in the DB with given data and note in system logs
+        private void CreateMessageEntry(DateTime dateTime, Crew crew, Incident incident, Status status, string text)
         {
+            // Create new message with supplied details and add to DB
             Message message = new Message();
             message.Date = dateTime;
             message.CallSignID = crew.CallSignID;
+            message.StatusID = status.StatusID;
+            message.MessageText = text;
 
+            // if incident supplied  update this also
             if (incident != null)
             {
                 message.IncidentID = incident.IncidentID;
             }
 
-            message.StatusID = status.StatusID;
-            message.MessageText = text;
             db.Entry(message).State = System.Data.Entity.EntityState.Added;
             SaveDBChanges();
+
             RefreshMessagesList();
             CreateLogEntry($"User created a new message: {crew.CallSignID} at {message.Date} ", loggedInUser.UserId);
         }
+
+        // Function to update the selected crew with supplied details in DB and note in system logs
         private void UpdateCrew(Status status, Location location, Incident incident)
         {
             try
             {
+                // Find the selected crew in the DB and change to supplied details
                 foreach (var crew in db.Crews.Where(t => t.CallSignID == selectedCrew.CallSignID))
                 {
                     crew.Status = status;
@@ -778,6 +827,7 @@ namespace RadioControlEventMgrUI
             SaveDBChanges();
             RefreshCrewList();
 
+            // create log entry depening on if incident attached or not
             if (selectedCrew.Incident != null)
             {
                CreateLogEntry($"User updated crew details: {selectedCrew.CallSign} with status {selectedCrew.Status.StatusName}, Location {selectedCrew.Location.LocationName} and Incident {selectedCrew.Incident.IncidentNo} ", loggedInUser.UserId);
@@ -790,16 +840,52 @@ namespace RadioControlEventMgrUI
         }
 
         // ---------------------------------------------------------------------------------------//
+        // Radio Check Click Event
+        // ---------------------------------------------------------------------------------------//
+
+        // Radio Check Click Event - Step though all uncheck crew and ask if radio check successful
+        private void btnRadioCheck_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // step though all crew not availble/unavailable
+                foreach (var crew in db.Crews.Where(t => t.StatusID < 3))
+                {
+                    // Ask if radio check successful yes/no/canel
+                    MessageBoxResult result = MessageBox.Show($"Radio Check with {crew.CallSign}, OK ?", "Radio Check", MessageBoxButton.YesNoCancel, MessageBoxImage.Information);
+
+                    // Yes change to available
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        crew.StatusID = 3;
+                    }
+                    // No change to radio check failed
+                    if (result == MessageBoxResult.No)
+                    {
+                        crew.StatusID = 2;
+                    }
+                    // Cancel break loop
+                    if (result == MessageBoxResult.Cancel)
+                    {
+                        break;
+                    }  
+                }
+
+                btnRadioCheck.Visibility = Visibility.Collapsed;
+                SaveDBChanges();
+                RefreshCrewList();
+            }
+            catch (EntityException)
+            {
+                DBConnectionError();
+            }
+        }
+
+        // ---------------------------------------------------------------------------------------//
         // Log Messages And DB Updates With Error Control
         // ---------------------------------------------------------------------------------------//
 
-        /// <summary>
-        /// Create an entry in the log database
-        /// </summary>
-        /// <param name="eventDescription"></param>
-        /// Description of the event
-        /// <param name="userID"></param>
-        /// User ID of event generator
+        // Funtion to create new log and write to DB with supplied Description and userID
         public void CreateLogEntry(string eventDescription, int userID)
         {
             Log log = new Log();
@@ -810,6 +896,7 @@ namespace RadioControlEventMgrUI
             SaveDBChanges();
         }
 
+        // Error controled function to save to database. Return success/failure
         public int SaveDBChanges()
         {
             int success = 0;
@@ -824,43 +911,11 @@ namespace RadioControlEventMgrUI
             return success;
         }
 
+        // Display error message and close application should DB connection fail
         public void DBConnectionError()
         {
             MessageBox.Show("Problem connecting to the SQL server, contact system administrator. Application will now close.", "Connection to Database", MessageBoxButton.OK, MessageBoxImage.Error);
             Environment.Exit(0);
-        }
-
-        private void btnRadioCheck_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                foreach (var crew in db.Crews.Where(t=> t.StatusID < 3))
-                {
-                    MessageBoxResult result = MessageBox.Show($"Radio Check with {crew.CallSign}, OK ?", "Radio Check", MessageBoxButton.YesNoCancel, MessageBoxImage.Information);
-
-                    if (result == MessageBoxResult.Yes)
-                    {
-                        crew.StatusID = 3;
-                    }
-                    if (result == MessageBoxResult.No)
-                    {
-                        crew.StatusID = 2;
-                    }
-                    if (result == MessageBoxResult.Cancel)
-                    {
-                        break;
-                    }
-
-                    btnRadioCheck.Visibility = Visibility.Collapsed;
-                }
-
-                SaveDBChanges();
-                RefreshCrewList();
-            }
-            catch (EntityException)
-            {
-                DBConnectionError();
-            }
         }
     }
 }

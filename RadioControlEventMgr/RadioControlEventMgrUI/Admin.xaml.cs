@@ -34,7 +34,7 @@ namespace RadioControlEventMgrUI
             Edit
         }
 
-        //Db Connection string
+        // DB Connection string
         RadioDBEntities db = new RadioDBEntities("metadata=res://*/RadioModel.csdl|res://*/RadioModel.ssdl|res://*/RadioModel.msl;provider=System.Data.SqlClient;provider connection string='data source=192.168.60.132" +
                                                  ";initial catalog=RadioDB;user id=radiouser;password=password;pooling=False;MultipleActiveResultSets=True;App=EntityFramework'");
         
@@ -170,7 +170,7 @@ namespace RadioControlEventMgrUI
         // User Context Click Events
         // ---------------------------------------------------------------------------------------//
 
-        // Add user click event - add user to DB, clear + hide panel and note in system log
+        // Add user click event - add user to DB, clear + show panel and note in system log
         private void submenuAddNewUser_Click(object sender, RoutedEventArgs e)
         {
             dbUserOperation = DBOperation.Add;
@@ -179,7 +179,7 @@ namespace RadioControlEventMgrUI
             CreateLogEntry("User opened add user panel", loggedInUser.UserId);
         }
 
-        // Edit user click event - Edit user in DB, clear + hide panel and note in system log
+        // Edit user click event - Edit user in DB, show panel and note in system log
         private void submenuEditUser_Click(object sender, RoutedEventArgs e)
         {
             dbUserOperation = DBOperation.Edit;
@@ -235,7 +235,7 @@ namespace RadioControlEventMgrUI
             }            
         }
 
-        // Function to create user in the DB with given data and note in system logs.
+        // Function to create user in the DB with given data and note in system logs
         private void CreateUser(string username, string password, string forename, string surname, AccessLevel accessLevel)
         {
             // Create new user with supplied details and add to DB
@@ -1162,7 +1162,7 @@ namespace RadioControlEventMgrUI
             }
         }
 
-        // Write button click - Using save dialog write formatted event data to file.
+        // Write button click - Using save dialog write formatted event data to file
         private void btnWriteToCSV_Click(object sender, RoutedEventArgs e)
         {
             // Check that a user has supplied an event name and date
@@ -1244,7 +1244,7 @@ namespace RadioControlEventMgrUI
             RefreshLogsList();
         }
 
-        // Error controled function to save to database. Return success/failure.
+        // Error controled function to save to database. Return success/failure
         public int SaveDBChanges()
         {
             int success = 0;

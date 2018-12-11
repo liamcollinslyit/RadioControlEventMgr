@@ -11,7 +11,7 @@
     <!-- XAML for admin screen - Event data, user control and system logs -->
     <Grid>
         <Grid.Resources>
-            <!-- List view header style - Black background with bold white text, not editabl e-->
+            <!-- List view header style - Black background with bold white text, not editable-->
             <Style TargetType="{x:Type GridViewColumnHeader}">
                 <Setter Property="FontSize" Value="13"/>
                 <Setter Property="FontWeight" Value="DemiBold"/>
@@ -145,8 +145,8 @@
                     <ListView Name="lstCrewList" Grid.Row="3" Grid.Column="1" Margin="10" Padding="5" Background="AliceBlue" 
                               SelectionChanged="lstCrewList_SelectionChanged" >
                         <ListView.View>
+                            <!-- Grid View for Call sign, Type and Location -->
                             <GridView>
-                                <!-- Grid View for Call sign, Type and Location -->
                                 <GridViewColumn Header="Call Sign" Width="175" >
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
@@ -308,8 +308,8 @@
                     <!-- Row 1 - List of user details -->
                     <ListView Grid.Row="1" Name="lstUserList" Padding="5" Background="AliceBlue" SelectionChanged="lstUserList_SelectionChanged">
                         <ListView.View>
+                            <!-- Grid View for Username, password, Surname, forename and access level name -->
                             <GridView>
-                                <!-- Grid View for Username, password, Surname, forename and access level name -->
                                 <GridViewColumn Header="UserName" Width="200">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
@@ -442,7 +442,7 @@
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <!-- Row 0 - Filter Panel and List Stats -->
+                    <!-- Row 0 - Filter Panel and List Stats, Clear Incidents Button -->
                     <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Background="LightGray">
                         <Label Content="Filter Text:"  Margin="10,0,0,0" Foreground="Black"/>
                         <TextBox Name="txtFilterLogs" Width="200" MaxLength="30" Height="25"  Margin="0,0,10,0" VerticalContentAlignment="Center"/>
@@ -452,7 +452,6 @@
 
                         <TextBlock Name="tbxLogStats" Width="auto" Margin="10,0" TextAlignment="Center" VerticalAlignment="Center"/>
                     </StackPanel>
-
                     <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Background="LightGray">
                         <Button Name="btnClearAdminLogs" Content="Clear Log"  Width="75" Margin="10,0"  Height="25" Click="btnClearAdminLogs_Click"/>
                     </StackPanel>
@@ -460,8 +459,8 @@
                     <!-- Row 1 - List of system log details -->
                     <ListView Name="lstLogsList" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Padding="5" Background="AliceBlue">
                         <ListView.View>
+                            <!-- Grid View for Date/Time, Event and Username -->
                             <GridView>
-                                <!-- Grid View for Date/Time, Event and Username -->
                                 <GridViewColumn Header="Date/Time" Width="200">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>

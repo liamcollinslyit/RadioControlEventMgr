@@ -16,13 +16,15 @@ using System.Windows.Shapes;
 
 namespace RadioControlEventMgrUI
 {
-
-    // C# code for dashboard
-
+    /// <summary>
+    /// Interaction logic for dashboard screen - Situation, Logs, Map, Admin and Exit buttons
+    /// </summary>
     public partial class Dashboard : Window
     {
+        // Currently logged in user, passed from login screen
         public User loggedInUser = new User();
 
+        // DB Connection string
         RadioDBEntities db = new RadioDBEntities("metadata=res://*/RadioModel.csdl|res://*/RadioModel.ssdl|res://*/RadioModel.msl;provider=System.Data.SqlClient;provider connection string='data source=192.168.60.132" +
                                          ";initial catalog=RadioDB;user id=radiouser;password=password;pooling=False;MultipleActiveResultSets=True;App=EntityFramework'");
 
@@ -31,6 +33,7 @@ namespace RadioControlEventMgrUI
             InitializeComponent();
         }
 
+        // When window is loaded, check user's access level to display appropiate buttons
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             CheckUserAccess(loggedInUser);
@@ -40,7 +43,7 @@ namespace RadioControlEventMgrUI
         // Dashboard Button Click Events
         // ---------------------------------------------------------------------------------------//
 
-        // Situation button - Open Situation page in frame
+        // Situation button - Open Situation page in frame, pass logged in user and note in log
         private void btnSituation_Click(object sender, RoutedEventArgs e)
         {
             Situation situation = new Situation();
@@ -58,7 +61,7 @@ namespace RadioControlEventMgrUI
             CreateLogEntry("User opened Logs screen", loggedInUser.UserId);
         }
 
-        // Map button - Open Map page in frame
+        // Map button - Open Map page in frame, pass logged in user and note in log
         private void btnMap_Click(object sender, RoutedEventArgs e)
         {
             Map map = new Map();
@@ -67,7 +70,7 @@ namespace RadioControlEventMgrUI
             CreateLogEntry("User opened Map screen", loggedInUser.UserId);
         }
 
-        // Admin button - Open Admin page in frame
+        // Admin button - Open Admin page in frame, pass logged in user and note in log
         private void btnAdmin_Click(object sender, RoutedEventArgs e)
         {
             Admin admin = new Admin();
@@ -76,7 +79,7 @@ namespace RadioControlEventMgrUI
             CreateLogEntry("User opened Admin screen", loggedInUser.UserId);
         }
 
-        //Exit button - close application
+        //Exit button - close application and note in log
         private void btnExit_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
@@ -88,6 +91,7 @@ namespace RadioControlEventMgrUI
         // Check User Access
         // ---------------------------------------------------------------------------------------//
 
+        // Check logged in user's access level and display appropaite buttons
         private void CheckUserAccess(User user)
         {
             if (user.LevelID == 3)
@@ -103,11 +107,11 @@ namespace RadioControlEventMgrUI
             }
         }
 
-
         // ---------------------------------------------------------------------------------------//
         // Log Messages And DB Updates With Error Control
         // ---------------------------------------------------------------------------------------//
 
+        // Funtion to create new log and write to DB with supplied Description and userID
         public void CreateLogEntry(string eventDescription, int userID)
         {
             Log log = new Log();
@@ -118,6 +122,7 @@ namespace RadioControlEventMgrUI
             SaveDBChanges();
         }
 
+        // Error controled function to save to database. Return success/failure
         public int SaveDBChanges()
         {
             int success = 0;
@@ -132,6 +137,7 @@ namespace RadioControlEventMgrUI
             return success;
         }
 
+        // Display error message and close application should DB connection fail
         public void DBConnectionError()
         {
             MessageBox.Show("Problem connecting to the SQL server, contact system administrator. Application will now close.", "Connection to Database", MessageBoxButton.OK, MessageBoxImage.Error);

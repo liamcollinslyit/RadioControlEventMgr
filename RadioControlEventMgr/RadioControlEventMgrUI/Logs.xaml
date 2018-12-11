@@ -8,10 +8,11 @@
       Loaded="Page_Loaded"
       d:DesignHeight="700" d:DesignWidth="1200"
       Title="Logs">
-    <!-- XAML for logs page, viewing message and detailed incident information -->
+    <!-- XAML for logs screen, viewing message and detailed incident information -->
     <Grid>
 
         <Grid.Resources>
+            <!-- List view header style - Black background with bold white text, not editable-->
             <Style TargetType="{x:Type GridViewColumnHeader}">
                 <Setter Property="FontSize" Value="13"/>
                 <Setter Property="FontWeight" Value="DemiBold"/>
@@ -21,38 +22,46 @@
                 <Setter Property="Foreground" Value="White"/>
                 <Setter Property="IsHitTestVisible" Value="False" />
             </Style>
+            <!-- Label Style - Bold white text -->
             <Style TargetType="{x:Type Label}" >
                 <Setter Property="Foreground" Value="White"/>
                 <Setter Property="FontWeight" Value="DemiBold"/>
             </Style>
         </Grid.Resources>
 
-        <!-- Tab control for Message and Logs -->
+        <!-- Tab control for screen -->
         <TabControl Name="tabLogsOptions" Background="Transparent">
+            <!-- Tab header style - Font size 13 -->
             <TabControl.Resources>
                 <Style TargetType="{x:Type TabItem}">
                     <Setter Property="FontSize" Value="13"/>
                 </Style>
             </TabControl.Resources>
             
-            <!-- Message log tab, list view with 4 columns-->
+            <!-- Tab 1 - Message log tab -->
             <TabItem Header="Message Log" ToolTip="Log of Event messages">
                 <Grid>
+                    <!-- Grid - 2 Rows -->
                     <Grid.RowDefinitions>
                         <RowDefinition Height="auto"/>
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
+                    <!-- Row 0 - Filter Panel and List Stats-->
                     <StackPanel Grid.Row="0" Orientation="Horizontal" Background="LightGray">
                         <Label Content="Filter Text:"  Margin="10,0,0,0" Foreground="Black"/>
                         <TextBox Name="txtFilterMessages" Width="200" MaxLength="30" Height="25"  Margin="0,0,10,0" VerticalContentAlignment="Center"/>
+                        
                         <Button Name="btnFilterMessages" Content="Filter" Width="75" Margin="10,0"  Height="25" Click="btnFilterMessages_Click" />
                         <Button Name="btnClearFilterMessages" Content="Clear" Width="75" Margin="10,0"  Height="25" Click="btnClearFilterMessages_Click"    />
+                        
                         <TextBlock Name="tbxMessgesStats" Width="auto" Margin="10,0" TextAlignment="Center" VerticalAlignment="Center"/>
                     </StackPanel>
 
+                    <!-- Row 1 - List of message log details -->
                     <ListView Name="lstMessageList" Grid.Row="1" Padding="5" Background="AliceBlue">
                         <ListView.View>
+                            <!-- Grid View for Date/Time, Call Sign, Status, Incident and Message Text -->
                             <GridView>
                                 <GridViewColumn Header="Date/Time" Width="200">
                                     <GridViewColumn.CellTemplate>
@@ -94,27 +103,33 @@
                     </ListView>
                 </Grid>
             </TabItem>
-            
-            <!-- Incident log tab, list view with 5 columns, a context menu to open stack panel -->
+
+            <!-- Tab 2 - Incident log tab -->
             <TabItem Header="Incident Log" ToolTip="Log of Event Incidents">
                 <Grid>
-                    <!-- 2*1 Grid -->
+                    <!-- Grid - 3 Rows-->
                     <Grid.RowDefinitions>
                         <RowDefinition Height="auto"/>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
 
+                    <!-- Row 0 - Filter Panel and List Stats-->
                     <StackPanel Grid.Row="0" Orientation="Horizontal" Background="LightGray">
                         <Label Content="Filter Text:"  Margin="10,0,0,0" Foreground="Black"/>
                         <TextBox Name="txtFilterIncidents" Width="200" MaxLength="30" Height="25"  Margin="0,0,10,0" VerticalContentAlignment="Center"/>
+                        
                         <Button Name="btnFilterIncidents" Content="Filter" Width="75" Margin="10,0"  Height="25" Click="btnFilterIncidents_Click" />
                         <Button Name="btnClearFilterIncidents" Content="Clear" Width="75" Margin="10,0"  Height="25" Click="btnClearFilterIncidents_Click"/>
+                        
                         <TextBlock Name="tbxIncidentStats" Width="auto" Margin="10,0" TextAlignment="Center" VerticalAlignment="Center"/>
                     </StackPanel>
 
-                    <ListView Name="lstIncidentList" Grid.Row="1" SelectionChanged="lstIncidentList_SelectionChanged" Padding="5" Background="AliceBlue">
+                    <!-- Row 1 - List of incident details -->
+                    <ListView Name="lstIncidentList" Grid.Row="1"  Padding="5" Background="AliceBlue" 
+                              SelectionChanged="lstIncidentList_SelectionChanged">
                         <ListView.View>
+                            <!-- Grid View for Incident No, Location, Report At, At Scene, Leave Scene and Description -->
                             <GridView>
                                 <GridViewColumn Header="Incident No" Width="150">
                                     <GridViewColumn.CellTemplate>
@@ -176,11 +191,16 @@
                         </ListView.ContextMenu>
                     </ListView>
 
-                    <!-- Stackpanel for displying detail incident information-->
+                    <!-- Row 2 - Stackpanel for displying detail incident information -->
                     <StackPanel Name="stkIncident" Grid.Row="2" HorizontalAlignment="Center" Margin="50" 
                                 Background="CornflowerBlue" Visibility="Visible" Width="1000">
                         <Grid>
-                            <!-- 8*3 Grid -->
+                            <!-- Grid - 3 Rows, 8 Columns -->
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="auto"/>
                                 <ColumnDefinition Width="auto"/>
@@ -192,45 +212,43 @@
                                 <ColumnDefinition Width="auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
 
-                            <!-- lblIncidentTitle will display incident number -->
-                            <Label Name="lblIncidentTitle"  Content="Incident No" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="8" 
+                            <!-- Row 0 - Label for incident number -->
+                            <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="8" Name="lblIncidentTitle" Content="Incident No"
                                    Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24"/>
-                            <Label Content="Reported At:" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" 
-                                   VerticalAlignment="Center" Margin="10,0,0,0"/>
-                            <Label Content="At Scene:" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Right" 
-                                   VerticalAlignment="Center" Margin="10,0,0,0"/>
-                            <Label Content="Leave Scene:" Grid.Row="1" Grid.Column="4" HorizontalAlignment="Right" 
-                                   VerticalAlignment="Center" Margin="10,0,0,0" />
-                            <Label Content="Location:" Grid.Row="1" Grid.Column="6" HorizontalAlignment="Right" 
-                                   VerticalAlignment="Center" Margin="10,0,0,0" />
 
-                            <!-- Read only text box for diaplying info -->
-                            <TextBox Name="txtIncidentReported" Grid.Row="1" Grid.Column="1" TabIndex="0" Width="75" Height="20" 
-                                     VerticalContentAlignment="Center" HorizontalContentAlignment="Center" IsReadOnly="True" />
-                            <TextBox Name="txtIncidentAt" Grid.Row="1" Grid.Column="3" TabIndex="0" Width="75" Height="20" 
-                                     VerticalContentAlignment="Center" HorizontalContentAlignment="Center" IsReadOnly="True" />
-                            <TextBox Name="txtIncidentLeave" Grid.Row="1" Grid.Column="5" TabIndex="1"  Width="75" Height="20" 
-                                     VerticalContentAlignment="Center" HorizontalContentAlignment="Center"  IsReadOnly="True" />
-                            <TextBox Name="txtIncidentLocation" Grid.Row="1" Grid.Column="7" TabIndex="2"  Width="75" Height="20" 
-                                     VerticalContentAlignment="Center" HorizontalContentAlignment="Center"  IsReadOnly="True" />
-
-                            <!-- Stack panel for details label and read only text box -->
+                            <!-- Row 0 - Stack panel for details label and read only textbox -->
                             <StackPanel Grid.Row="0" Grid.Column="9" Grid.RowSpan="2" Margin="50,10,10,0">
                                 <Label Content="Description:"/>
-                                <TextBox Name="txtIncidentDescription" TabIndex="3" VerticalContentAlignment="Center" MinHeight="50" MaxHeight="100" 
-                                         IsReadOnly="True" TextWrapping="Wrap"/>
+                                <TextBox Name="txtIncidentDescription" TabIndex="3" VerticalContentAlignment="Center" 
+                                         MinHeight="50" MaxHeight="100" IsReadOnly="True" TextWrapping="Wrap"/>
                             </StackPanel>
 
-                            <!-- Listview for diaplying message related to incident, 4 columns -->
+                            <!-- Row 1 - Labels -->
+                            <Label Grid.Row="1" Grid.Column="0" Content="Reported At:" HorizontalAlignment="Right" 
+                                   VerticalAlignment="Center" Margin="10,0,0,0"/>
+                            <Label Grid.Row="1" Grid.Column="2" Content="At Scene:" HorizontalAlignment="Right" 
+                                   VerticalAlignment="Center" Margin="10,0,0,0"/>
+                            <Label Grid.Row="1" Grid.Column="4" Content="Leave Scene:" HorizontalAlignment="Right" 
+                                   VerticalAlignment="Center" Margin="10,0,0,0" />
+                            <Label Grid.Row="1" Grid.Column="6" Content="Location:" HorizontalAlignment="Right" 
+                                   VerticalAlignment="Center" Margin="10,0,0,0" />
+
+                            <!-- Row 1 - Labels - Read only textboxes -->
+                            <TextBox Grid.Row="1" Grid.Column="1" Name="txtIncidentReported" TabIndex="0" Width="75" Height="20" 
+                                     VerticalContentAlignment="Center" HorizontalContentAlignment="Center" IsReadOnly="True" />
+                            <TextBox Grid.Row="1" Grid.Column="3" Name="txtIncidentAt" TabIndex="0" Width="75" Height="20" 
+                                     VerticalContentAlignment="Center" HorizontalContentAlignment="Center" IsReadOnly="True" />
+                            <TextBox Grid.Row="1" Grid.Column="5" Name="txtIncidentLeave" TabIndex="1"  Width="75" Height="20" 
+                                     VerticalContentAlignment="Center" HorizontalContentAlignment="Center"  IsReadOnly="True" />
+                            <TextBox Grid.Row="1" Grid.Column="7" Name="txtIncidentLocation" TabIndex="2"  Width="75" Height="20" 
+                                     VerticalContentAlignment="Center" HorizontalContentAlignment="Center"  IsReadOnly="True" />
+
+                            <!-- Row 3 - Listview for displaying message related to incident -->
                             <ListView Name="lstIncidentMessages" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="9" 
                                       Margin="10" MinHeight="100" MaxHeight="500" Width="980" Padding="5">
                                 <ListView.View>
+                                    <!-- Grid View for Date/Time, Call sign, Status and Message Text -->
                                     <GridView>
                                         <GridViewColumn Header="Date/Time" Width="150">
                                             <GridViewColumn.CellTemplate>

@@ -16,11 +16,12 @@ using System.Windows.Shapes;
 
 namespace RadioControlEventMgrUI
 {
-
-    // C# code for map page
-
+    /// <summary>
+    /// Interaction logic for map screen - Display local and online map
+    /// </summary>
     public partial class Map : Page
     {
+        // Currently logged in user, passed from dashboard
         public User loggedInUser = new User();
 
         public Map()
