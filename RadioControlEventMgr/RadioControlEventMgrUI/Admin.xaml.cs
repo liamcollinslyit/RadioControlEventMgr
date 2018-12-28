@@ -37,7 +37,8 @@ namespace RadioControlEventMgrUI
         // DB Connection string
         RadioDBEntities db = new RadioDBEntities("metadata=res://*/RadioModel.csdl|res://*/RadioModel.ssdl|res://*/RadioModel.msl;provider=System.Data.SqlClient;provider connection string='data source=192.168.60.132" +
                                                  ";initial catalog=RadioDB;user id=radiouser;password=password;pooling=False;MultipleActiveResultSets=True;App=EntityFramework'");
-        
+        AdminMethods adminMethods = new AdminMethods();
+
         // List for storing information read from DB
         List<User> users = new List<User>();
         List<Crew> crews = new List<Crew>();
@@ -309,31 +310,31 @@ namespace RadioControlEventMgrUI
             bool valid = true;
             string errorMessage = "User Detail's Error:";
 
-            if (txtEditUsername.Text.Length < 1 || txtEditUsername.Text.Length > 30)
+            if (!adminMethods.CheckUsername(txtEditUsername.Text))
             {
                 txtEditUsername.Background = Brushes.LightCoral;
-                errorMessage += Environment.NewLine + "Username must be between 1 and 30 charatcers.";
+                errorMessage += Environment.NewLine + "Username must be between 1-30 characters and contain no special characters";
                 valid = false;
             }
-            if (txtEditPassword.Text.Length < 1 || txtEditPassword.Text.Length > 30)
+            if (!adminMethods.CheckPassword(txtEditPassword.Text))
             {
                 txtEditPassword.Background = Brushes.LightCoral;
-                errorMessage += Environment.NewLine + "Password must be between 1 and 30 charatcers.";
+                errorMessage += Environment.NewLine + "Password must be between 1-30 characters.";
                 valid = false;
             }
-            if (txtEditForename.Text.Length < 1 || txtEditForename.Text.Length > 30)
+            if (!adminMethods.CheckForename(txtEditForename.Text))
             {
                 txtEditForename.Background = Brushes.LightCoral;
-                errorMessage += Environment.NewLine + "Forename must be between 1 and 30 charatcers.";
+                errorMessage += Environment.NewLine + "Forename must be between 1-30 characters and contain no special characters/numbers";
                 valid = false;
             }
-            if (txtEditSurname.Text.Length < 1 || txtEditSurname.Text.Length > 30)
+            if (!adminMethods.CheckSurname(txtEditSurname.Text))
             {
                 txtEditSurname.Background = Brushes.LightCoral;
-                errorMessage += Environment.NewLine + "Surname must be between 1 and 30 charatcers.";
+                errorMessage += Environment.NewLine + "Surname must be between 1-30 characters and contain no special characters/numbers";
                 valid = false;
             }
-            if (cboEditUserAccess.SelectedIndex < 0)
+            if (!adminMethods.CheckAccessLevel(cboEditUserAccess.SelectedIndex))
             {
                 errorMessage += Environment.NewLine + "User's access level must be selected.";
                 valid = false;
@@ -362,6 +363,7 @@ namespace RadioControlEventMgrUI
             if (!valid)
             {
                 MessageBox.Show(errorMessage, "User Detail's Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                if (errorMessage.Length > 150) errorMessage = errorMessage.Substring(0, 150);
                 CreateLogEntry($"Error: Invalid user details entered - {errorMessage}", loggedInUser.UserId);
             }
 

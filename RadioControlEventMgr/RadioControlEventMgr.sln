@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RadioControlEventMgrUI", "R
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RadioLibrary", "RadioLibrary\RadioLibrary.csproj", "{B60AF83E-3E00-4985-8699-70AA63BA384D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RadioLibrary.Tests", "RadioLibrary.Tests\RadioLibrary.Tests.csproj", "{7B8500C3-52DB-4C67-8510-4021B0104DAF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{B60AF83E-3E00-4985-8699-70AA63BA384D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B60AF83E-3E00-4985-8699-70AA63BA384D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B60AF83E-3E00-4985-8699-70AA63BA384D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B8500C3-52DB-4C67-8510-4021B0104DAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B8500C3-52DB-4C67-8510-4021B0104DAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B8500C3-52DB-4C67-8510-4021B0104DAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B8500C3-52DB-4C67-8510-4021B0104DAF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

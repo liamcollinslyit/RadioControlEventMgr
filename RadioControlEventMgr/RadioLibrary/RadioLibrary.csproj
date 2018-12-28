@@ -53,6 +53,7 @@
     <Compile Include="AccessLevel.cs">
       <DependentUpon>RadioModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="AdminMethods.cs" />
     <Compile Include="Crew.cs">
       <DependentUpon>RadioModel.tt</DependentUpon>
     </Compile>
